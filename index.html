@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBL Workspace Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Skip link for accessibility -->
+<a href="#mainContent" class="skip-link">Zum Inhalt springen</a>
+
+<!-- ===== HEADER (admin.ch CD) ===== -->
+<header class="site-header" role="banner">
+
+  <!-- Row 1: Federal bar (dark) -->
+  <div class="federal-bar">
+    <button class="federal-bar__authorities" aria-expanded="false">
+      Alle Schweizer Bundesbeh&ouml;rden
+      <svg viewBox="0 0 12 12" aria-hidden="true"><polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="federal-bar__lang" aria-label="Sprache" aria-expanded="false">
+      DE
+      <svg viewBox="0 0 12 12" aria-hidden="true"><polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Row 2: Brand bar (logo + department) -->
+  <div class="brand-bar">
+    <div class="brand-bar__left" style="cursor:pointer" onclick="navigateTo('home')">
+      <svg class="brand-bar__coat-of-arms" viewBox="0 0 40 44" role="img" aria-label="Schweizer Wappen">
+        <path d="m38.5778 3.2s-7.2-3.2-19.3-3.2c-12.00002 0-19.2000222 3.2-19.2000222 3.2s-.6999998 14.1 2.1000022 22.1c4.8 14 17.20002 18 17.20002 18s12.3-3.9 17.2-18c2.6-8 2-22.1 2-22.1z" fill="#ff0000"/>
+        <path d="m32.0779 15.4v7.8h-9v9.1h-7.7v-9.1h-8.99997v-7.8h8.99997v-9.09995h7.7v9.09995z" fill="#ffffff"/>
+      </svg>
+      <div class="brand-bar__text">
+        Schweizerische Eidgenossenschaft<br>
+        Conf&eacute;d&eacute;ration suisse<br>
+        Confederazione Svizzera<br>
+        Confederaziun svizra
+      </div>
+      <div class="brand-bar__divider"></div>
+      <div class="brand-bar__dept">Bundesamt f&uuml;r Bauten und Logistik BBL</div>
+    </div>
+    <div class="brand-bar__right">
+      <button class="brand-bar__search" aria-label="Suche">
+        Suche
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Row 3: Navigation -->
+  <nav class="app-nav-bar" aria-label="Hauptnavigation">
+    <!-- Hamburger for mobile -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Men&uuml; &ouml;ffnen" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="app-nav" id="appNav">
+      <div class="app-nav__item">
+        <button class="app-nav__btn" data-nav="shop" data-dropdown="dd-shop" aria-expanded="false" aria-haspopup="true">
+          Produktkatalog
+          <svg viewBox="0 0 12 12"><polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega-dropdown" id="dd-shop" role="menu">
+          <div class="mega-dropdown__section">
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('shop');return false">nach Produktgruppen</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('shop','new');return false">nach Neuheiten</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('shop','brands');return false">nach Marken</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('shop','dealers');return false">nach Fachh&auml;ndler</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('shop','designers');return false">nach Designer</a>
+          </div>
+        </div>
+      </div>
+      <div class="app-nav__item">
+        <button class="app-nav__btn" data-nav="planung" data-dropdown="dd-planung" aria-expanded="false" aria-haspopup="true">
+          B&uuml;roplanung
+          <svg viewBox="0 0 12 12"><polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega-dropdown" id="dd-planung" role="menu">
+          <div class="mega-dropdown__section">
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('planung','stilwelten');return false">Stilwelten</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('planung','beispiele');return false">Planungsbeispiele</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('planung','cad');return false">CAD-Daten</a>
+          </div>
+        </div>
+      </div>
+      <div class="app-nav__item">
+        <button class="app-nav__btn" data-nav="circular" data-dropdown="dd-circular" aria-expanded="false" aria-haspopup="true">
+          Circular-Hub
+          <svg viewBox="0 0 12 12"><polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mega-dropdown" id="dd-circular" role="menu">
+          <div class="mega-dropdown__section">
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('circular','info');return false">Kreislaufwirtschaft</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('circular','lager');return false">Aktuell im Lager</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('circular','scan');return false">Objekt Scannen</a>
+            <a class="mega-dropdown__link" href="#" onclick="navigateTo('circular','erfassen');return false">Neues Objekt erfassen</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- ===== MAIN APP ===== -->
+<div id="app"></div>
+
+<footer class="app-footer">
+  <div>&copy; 2026 Bundesamt f&uuml;r Bauten und Logistik BBL &mdash; Schweizerische Eidgenossenschaft</div>
+  <div class="app-footer__links">
+    <a href="#">Impressum</a>
+    <a href="#">Rechtliches</a>
+    <a href="#">Barrierefreiheit</a>
+    <a href="#">Kontakt</a>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>

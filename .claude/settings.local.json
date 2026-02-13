@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell:*)",
+      "Bash(npx serve:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:swiss.github.io)",
+      "WebFetch(domain:designsystem.swiss)",
+      "WebFetch(domain:designsystem.admin.ch)",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:oblique.bit.admin.ch)",
+      "WebFetch(domain:www.liip.ch)",
+      "Bash(gh api:*)",
+      "Bash(python:*)",
+      "Bash(certutil -decode:*)",
+      "Bash(where:*)",
+      "WebFetch(domain:oblique.directus.app)",
+      "WebFetch(domain:www.npmjs.com)"
+    ]
+  }
+}

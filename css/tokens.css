@@ -1,0 +1,157 @@
+/* ==========================================================================
+   DESIGN TOKENS – CD Bund (Modern / Oblique)
+   BBL Workspace Management
+
+   Based on the modern Swiss Federal Design System (Oblique).
+   NOT the legacy CD Bund (Frutiger-based, Bootstrap).
+
+   Reference: oblique.bit.admin.ch
+   Reference implementation: kbob-fdk
+   ========================================================================== */
+
+:root {
+
+  /* ── BRAND ────────────────────────────────────────────────────────────── */
+  --color-accent:              #DC0018;          /* Swiss Red (Schweizer Rot) */
+  --color-accent-light:        #F7001D;
+  --color-accent-dark:         #B00014;
+
+  /* ── PRIMARY (interactive) ────────────────────────────────────────────── */
+  --color-primary:             #006699;
+  --color-primary-hover:       #005580;
+  --color-primary-light:       #E6F0F7;
+  --color-primary-dark:        #004B6E;
+
+  /* ── NEUTRALS ─────────────────────────────────────────────────────────── */
+  --color-black:               #000000;
+  --color-white:               #FFFFFF;
+
+  --color-gray-50:             #FAFAFA;
+  --color-gray-100:            #F5F5F5;
+  --color-gray-200:            #E0E0E0;
+  --color-gray-300:            #BDBDBD;
+  --color-gray-400:            #9E9E9E;
+  --color-gray-500:            #757575;
+  --color-gray-600:            #474747;
+  --color-gray-800:            #262626;
+
+  /* ── SEMANTIC TEXT ─────────────────────────────────────────────────────── */
+  --color-text-primary:        #1a2a3a;
+  --color-text-secondary:      #4a5568;
+  --color-text-muted:          #718096;
+  --color-text-inverse:        #FFFFFF;
+
+  /* ── SURFACES & BACKGROUNDS ───────────────────────────────────────────── */
+  --color-bg-default:          #FFFFFF;
+  --color-bg-alt:              #F5F5F5;
+  --color-bg-surface:          #f7fafc;
+  --color-bg-highlight:        #FFFAB2;
+  --color-surface-dark:        #3e5060;          /* Federal bar, footer */
+  --color-surface-darker:      #2d3a44;          /* Footer bottom */
+
+  /* ── BORDERS ──────────────────────────────────────────────────────────── */
+  --color-border:              #E0E0E0;
+  --color-border-light:        #e5e7eb;
+  --color-border-input:        #9ca3af;
+
+  /* ── FOCUS ────────────────────────────────────────────────────────────── */
+  --color-focus:               #66AFE9;
+  --color-focus-input:         #6366f1;
+
+  /* ── STATUS / SEMANTIC ────────────────────────────────────────────────── */
+  --color-success:             #3E8A27;
+  --color-success-light:       #E8F5E3;
+  --color-warning:             #E89F00;
+  --color-warning-light:       #FCF8E3;
+  --color-error:               #C4161C;
+  --color-error-light:         #F2DEDE;
+  --color-info:                #31708F;
+  --color-info-light:          #D9EDF7;
+
+  /* ── CIRCULAR-HUB (project-specific) ──────────────────────────────────── */
+  --color-circular:            #3E8A27;
+  --color-circular-light:      #E8F5E3;
+
+  /* ── TYPOGRAPHY ───────────────────────────────────────────────────────── */
+  --font-family:               "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono:          "JetBrains Mono", "Fira Code", Consolas, monospace;
+
+  /* Type scale (Major Third 1.25) */
+  --text-display:              2.25rem;           /* 36px */
+  --text-h1:                   1.75rem;           /* 28px */
+  --text-h2:                   1.5rem;            /* 24px */
+  --text-h3:                   1.25rem;           /* 20px */
+  --text-h4:                   1.125rem;          /* 18px */
+  --text-h5:                   1rem;              /* 16px */
+  --text-body:                 1rem;              /* 16px */
+  --text-body-sm:              0.875rem;          /* 14px */
+  --text-body-xs:              0.6875rem;         /* 11px */
+  --text-caption:              0.75rem;           /* 12px */
+  --text-label:                0.875rem;          /* 14px */
+
+  /* Line heights */
+  --line-height-tight:         1.2;
+  --line-height-snug:          1.3;
+  --line-height-normal:        1.5;
+  --line-height-relaxed:       1.6;
+  --line-height-loose:         1.8;
+
+  /* Font weights */
+  --font-weight-normal:        400;
+  --font-weight-medium:        500;
+  --font-weight-semibold:      600;
+  --font-weight-bold:          700;
+
+  /* ── SPACING (4px base unit) ──────────────────────────────────────────── */
+  --space-xs:                  4px;
+  --space-sm:                  8px;
+  --space-md:                  16px;
+  --space-lg:                  24px;
+  --space-xl:                  32px;
+  --space-2xl:                 48px;
+  --space-3xl:                 64px;
+  --space-4xl:                 80px;
+
+  /* ── LAYOUT ───────────────────────────────────────────────────────────── */
+  --container-max-width:       1564px;
+  --container-padding:         var(--space-xl);   /* 32px */
+  --grid-gutter:               24px;
+  --sidebar-width:             260px;
+
+  /* Component heights */
+  --topbar-height:             46px;
+  --brand-height:              auto;
+  --nav-height:                64px;
+  --footer-height:             64px;
+
+  /* ── BREAKPOINTS (reference only, not usable in media queries) ────────── */
+  /* --breakpoint-sm:  576px;  */
+  /* --breakpoint-md:  768px;  */
+  /* --breakpoint-lg:  992px;  */
+  /* --breakpoint-xl:  1200px; */
+
+  /* ── BORDER RADIUS ────────────────────────────────────────────────────── */
+  --radius-sm:                 2px;
+  --radius:                    4px;
+  --radius-lg:                 8px;
+  --radius-full:               9999px;
+
+  /* ── SHADOWS ──────────────────────────────────────────────────────────── */
+  --shadow-sm:                 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow:                    0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md:                 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg:                 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* ── TRANSITIONS ──────────────────────────────────────────────────────── */
+  --transition-fast:           150ms ease;
+  --transition-normal:         250ms ease;
+  --transition-slow:           350ms ease;
+
+  /* ── Z-INDEX SCALE ────────────────────────────────────────────────────── */
+  --z-dropdown:                100;
+  --z-topbar:                  150;
+  --z-sticky:                  200;
+  --z-modal-backdrop:          300;
+  --z-modal:                   400;
+  --z-tooltip:                 500;
+}

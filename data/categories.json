@@ -1,0 +1,61 @@
+[
+  { "id": "alle", "label": "Alle Produkte", "children": [] },
+  { "id": "regale", "label": "Regale", "children": [
+    { "id": "wandregale", "label": "Wandregale", "children": [] },
+    { "id": "buecherregale", "label": "B\u00fccherregale", "children": [] },
+    { "id": "standregale", "label": "Standregale", "children": [] }
+  ]},
+  { "id": "stuehle", "label": "St\u00fchle", "children": [
+    { "id": "besucherstuhl", "label": "Besucherstuhl", "children": [] },
+    { "id": "konferenzsessel", "label": "Konferenzsessel", "children": [] },
+    { "id": "buerostuehle", "label": "B\u00fcrost\u00fchle", "children": [] },
+    { "id": "barstuehle", "label": "Barst\u00fchle", "children": [] },
+    { "id": "barhocker", "label": "Barhocker", "children": [] },
+    { "id": "rollhocker", "label": "Rollhocker", "children": [] },
+    { "id": "stapelstuehle", "label": "Stapelst\u00fchle", "children": [] },
+    { "id": "fauteuil", "label": "Fauteuil", "children": [
+      { "id": "fauteuil-leder", "label": "Leder", "children": [] },
+      { "id": "fauteuil-stoff", "label": "Stoff", "children": [] }
+    ]},
+    { "id": "cafeteria-stuehle", "label": "Cafeteria-St\u00fchle", "children": [] },
+    { "id": "konferenzstuehle", "label": "Konferenzst\u00fchle", "children": [] },
+    { "id": "freischwinger", "label": "Freischwinger", "children": [] }
+  ]},
+  { "id": "korpus", "label": "Korpus", "children": [
+    { "id": "rollkorpus", "label": "Rollkorpus", "children": [] },
+    { "id": "standkorpus", "label": "Standkorpus", "children": [] }
+  ]},
+  { "id": "sondermobiliar", "label": "Sondermobiliar", "children": [] },
+  { "id": "flipcharts", "label": "Flipcharts", "children": [] },
+  { "id": "lampen", "label": "Lampen", "children": [
+    { "id": "schreibtischlampen", "label": "Schreibtischlampen", "children": [] },
+    { "id": "stehlampen", "label": "Stehlampen", "children": [] }
+  ]},
+  { "id": "clubsessel-sofa", "label": "Clubsessel/Sofa", "children": [] },
+  { "id": "sichtschutz", "label": "Sichtschutz/Akustik/Trennw\u00e4nde", "children": [] },
+  { "id": "usm", "label": "USM", "children": [
+    { "id": "usm-haller", "label": "USM Haller", "children": [] },
+    { "id": "usm-kitos", "label": "USM Kitos", "children": [] }
+  ]},
+  { "id": "zeitungssammler", "label": "Zeitungssammler/St\u00e4nder", "children": [] },
+  { "id": "tresor", "label": "Tresor", "children": [] },
+  { "id": "garderobe", "label": "Garderobe", "children": [
+    { "id": "kleiderstaender", "label": "Kleiderst\u00e4nder", "children": [] },
+    { "id": "garderobenleiste", "label": "Garderobenleiste", "children": [] }
+  ]},
+  { "id": "buerozubehoer", "label": "B\u00fcrozubeh\u00f6r", "children": [] },
+  { "id": "tische", "label": "Tische", "children": [
+    { "id": "schreibtische", "label": "Schreibtische", "children": [] },
+    { "id": "konferenztische", "label": "Konferenztische", "children": [] },
+    { "id": "beistelltische", "label": "Beistelltische", "children": [] },
+    { "id": "stehtische", "label": "Stehtische", "children": [] }
+  ]},
+  { "id": "sicherheitsschraenke", "label": "Sicherheitsschr\u00e4nke", "children": [
+    { "id": "wertschutzschraenke", "label": "Wertschutzschr\u00e4nke", "children": [] },
+    { "id": "datensicherung", "label": "Datensicherung", "children": [] }
+  ]},
+  { "id": "schraenke", "label": "Schr\u00e4nke", "children": [
+    { "id": "aktenschraenke", "label": "Aktenschr\u00e4nke", "children": [] },
+    { "id": "haengeregistratur", "label": "H\u00e4ngeregistratur", "children": [] }
+  ]}
+]
