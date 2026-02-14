@@ -1902,7 +1902,6 @@ ul, ol { list-style: none; }
   background: var(--color-surface-dark);
   color: var(--color-text-inverse);
   padding: 1rem var(--_center-pad);
-  border-top: 1px solid var(--color-text-inverse);
   box-shadow: var(--shadow-2xl);
   animation: slideUp var(--transition-normal) ease;
 }
