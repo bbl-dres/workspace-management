@@ -1,5 +1,9 @@
 # BBL Workspace Management
 
+> [!CAUTION]
+> **This is an unofficial mockup for demonstration purposes only.**
+> All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
+
 A single-page application (SPA) prototype for the Swiss Federal Office for Buildings and Logistics (BBL). It manages workspace infrastructure — furniture ordering, office planning, circular economy, and building occupancy.
 
 <p align="center">
@@ -69,3 +73,7 @@ A Mapbox access token is embedded for the prototype. For production use, replace
 ## Design System
 
 Follows the modern Swiss Confederation Corporate Design (CD Bund) with the Noto Sans typeface. See [DESIGNGUIDE.md](docs/DESIGNGUIDE.md) for details.
+
+> [!CAUTION]
+> **This is an unofficial mockup for demonstration purposes only.**
+> All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
