@@ -1872,7 +1872,7 @@ function renderCircular() {
       <aside class="sidebar" role="navigation" aria-label="Kategorien">
         <div class="sidebar__title">Kategorien</div>
         <div class="cat-tree" role="tree">
-          ${renderCategoryTree(CATEGORIES)}
+          ${renderCategoryTree(CATEGORIES, countFurnitureInCategory)}
         </div>
       </aside>
       <main class="main-content" id="mainContent">
