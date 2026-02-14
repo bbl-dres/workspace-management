@@ -18,7 +18,8 @@
       "WebFetch(domain:oblique.directus.app)",
       "WebFetch(domain:www.npmjs.com)",
       "Bash(curl:*)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(git -C \"c:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\workspace-management\" diff --stat)"
     ]
   }
 }

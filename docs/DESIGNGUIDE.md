@@ -1,22 +1,19 @@
 # BBL Workspace Management – Design Guide
 
-## Modernes CD Bund (Oblique)
+## Swiss Federal Design System
 
-Dieses Projekt folgt dem **modernen** Swiss Federal Design System (**Oblique**),
-**nicht** dem Legacy CD Bund (Frutiger-basiert, Bootstrap).
+Dieses Projekt folgt dem **Swiss Federal Design System** (swiss/designsystem),
+dem offiziellen Design-System der Schweizer Bundesverwaltung.
 
-| Aspekt           | Modern (Oblique)                                | Legacy CD Bund                       |
-|------------------|-------------------------------------------------|--------------------------------------|
-| Schriftart       | Noto Sans                                       | Frutiger                             |
-| Framework        | Angular / Framework-agnostisch                  | Bootstrap 4                          |
-| Referenz         | oblique.bit.admin.ch                            | swiss.github.io/styleguide           |
-| Visueller Stil   | Flach, minimalistisch, grosse Weissräume        | Klassisch, dekorativ                 |
-| GitHub           | github.com/oblique-bit/oblique                  | github.com/swiss/styleguide          |
+| Aspekt           | Wert                                                    |
+|------------------|---------------------------------------------------------|
+| Schriftart       | Noto Sans                                               |
+| Framework        | Vanilla JS (Framework-agnostisch)                       |
+| Referenz         | github.com/swiss/designsystem                           |
+| Token-Basis      | Tailwind CSS Config (umgesetzt als CSS Custom Properties)|
+| Visueller Stil   | Flach, minimalistisch, grosse Weissraeume               |
 
-**Wichtig**: Die beiden Systeme sind leicht zu verwechseln. Wir verwenden
-ausschliesslich das moderne System (Oblique).
-
-Referenz-Implementation: `kbob-fdk` (C:\Users\DavidRasner\Documents\GitHub\kbob-fdk)
+Referenz-Implementation: `kbob-fdk` (lokale Kopie)
 
 ---
 
@@ -24,40 +21,23 @@ Referenz-Implementation: `kbob-fdk` (C:\Users\DavidRasner\Documents\GitHub\kbob-
 
 ### 1.1 Grundwerte der Bundesverwaltung
 
-Die folgenden Grundwerte sind in den CD-Bund-Richtlinien verankert und bilden
-die Basis für alle visuellen Entscheidungen:
-
-> «Der einheitliche Einsatz der CD-Elemente sorgt für ein durchgängiges
-> Erscheinungsbild über alle Webauftritte des Bundes. Er stellt sicher, dass
+> «Der einheitliche Einsatz der CD-Elemente sorgt fuer ein durchgaengiges
+> Erscheinungsbild ueber alle Webauftritte des Bundes. Er stellt sicher, dass
 > eine Website sofort als Webauftritt des Bundes erkennbar ist. Gleichzeitig
-> vermittelt er die Grundwerte der täglichen Arbeit der Bundesverwaltung:
-> **Qualität, Effizienz und Transparenz.**»
+> vermittelt er die Grundwerte der taeglichen Arbeit der Bundesverwaltung:
+> **Qualitaet, Effizienz und Transparenz.**»
 >
 > — CD Bund Richtlinien, Bundeskanzlei
 
-### 1.2 Oblique Design-Prinzipien
-
-Aus dem offiziellen Oblique-Repository (github.com/oblique-bit/oblique):
-
-| Prinzip                | Beschreibung                                                                                              |
-|------------------------|-----------------------------------------------------------------------------------------------------------|
-| **Konsistenz**         | Einheitliches Erscheinungsbild über alle Bundesprojekte hinweg                                            |
-| **Wartbarkeit**        | Code und Design müssen langfristig pflegbar sein                                                          |
-| **Hohe Qualität**      | Anspruch an hochwertige Frontend-Entwicklung                                                              |
-| **Design-to-Code**     | Strikte 1:1-Entsprechung zwischen Figma-Tokens und CSS-Variablen – eine gemeinsame «Single Source of Truth» |
-| **Minimale Abweichung**| Abweichungen von Oblique-Standards minimieren, um Upgrade-Komplexität zu reduzieren                       |
-
-### 1.3 Angewandte Prinzipien (Projekt)
-
-Abgeleitet aus den offiziellen Vorgaben für dieses Projekt:
+### 1.2 Angewandte Prinzipien
 
 | Prinzip            | Umsetzung                                                                   |
 |--------------------|-----------------------------------------------------------------------------|
-| **Klarheit**       | Informationshierarchie durch konsistente Typografie und Abstände            |
+| **Klarheit**       | Informationshierarchie durch konsistente Typografie und Abstaende           |
 | **Barrierefreiheit** | WCAG 2.1 AA als Mindeststandard (gesetzlich verankert via BehiG)          |
-| **Vertrauen**      | Offizielle Ästhetik, die Seriosität und Zuverlässigkeit vermittelt         |
-| **Effizienz**      | Aufgabenorientierte Oberflächen, die kognitive Belastung minimieren        |
-| **Konsistenz**     | Einheitliche visuelle Sprache über alle Bereiche (Shop, Planung, Circular) |
+| **Vertrauen**      | Offizielle Aesthetik, die Seriositaet und Zuverlaessigkeit vermittelt      |
+| **Effizienz**      | Aufgabenorientierte Oberflaechen, die kognitive Belastung minimieren       |
+| **Konsistenz**     | Einheitliche visuelle Sprache ueber alle Bereiche (Shop, Planung, Circular)|
 
 ---
 
@@ -65,53 +45,38 @@ Abgeleitet aus den offiziellen Vorgaben für dieses Projekt:
 
 ### 2.1 Element-Klassifikation
 
-Das CD Bund definiert drei Kategorien von Design-Elementen:
-
 | Kategorie               | Beschreibung                            | Beispiele                                                |
 |--------------------------|-----------------------------------------|----------------------------------------------------------|
-| **Corporate (CD)**       | Pflicht, nicht veränderbar              | Logo/Wappen, roter Strich, Farbpalette, Schrift, Footer  |
+| **Corporate (CD)**       | Pflicht, nicht veraenderbar             | Logo/Wappen, roter Strich, Farbpalette, Schrift, Footer  |
 | **Fixed (FIX)**          | Pflicht, Platzierung vorgegeben         | Header, Navigation, Breadcrumb, Suche, Sprachwechsel     |
 | **Flexible (FLEX)**      | Optional, konfigurierbar               | Facetten-Navigation, Galerien, Kontaktboxen              |
 
-### 2.2 Nicht veränderbare Elemente
-
-Diese CD-Elemente dürfen **nicht modifiziert** werden:
+### 2.2 Nicht veraenderbare Elemente
 
 1. **Logo & Bezeichnung** — Schweizer Wappen mit viersprachigem Text,
    Name der Organisationseinheit, graue Trennlinie
-2. **Roter Strich** — Aktiver Navigationsindikator (#DC0018)
-3. **Farbpalette** — Rot für Selektion, Blau (#006699) für Text-Links,
-   Grautöne für Text und Hintergründe
-4. **Typografie** — Noto Sans (modernes CD Bund)
+2. **Roter Strich** — Aktiver Navigationsindikator (`--color-accent`)
+3. **Farbpalette** — Rot fuer Selektion, Blau (`--color-primary`) fuer Text-Links,
+   Grautuene fuer Text und Hintergruende
+4. **Typografie** — Noto Sans
 5. **Footer** — Einheitliche Fusszeile mit Copyright und rechtlichen Hinweisen
-
-### 2.3 Farbregeln
-
-| Farbe             | Verwendung                                                    |
-|--------------------|--------------------------------------------------------------|
-| **Schweizer Rot**  | Header-Linie, Navigations-Selektion, Hover auf Links        |
-| **Interaktions-Blau** | Standard-Linkfarbe, primäre Buttons                       |
-| **Grautöne**       | Text, Hintergründe, Borders – je nach Hierarchie            |
 
 ---
 
 ## 3. Design-Token-Architektur
 
-### 3.1 Drei-Stufen-System (Oblique)
+### 3.1 Token-System
 
-Oblique definiert Design Tokens auf drei Ebenen:
+Alle visuellen Werte sind in **`css/tokens.css`** als CSS Custom Properties definiert.
+`style.css` importiert `tokens.css` und referenziert die Tokens ueber `--ob-*` Aliases.
 
-| Stufe           | Beschreibung                                  | Nutzung                        |
-|-----------------|-----------------------------------------------|--------------------------------|
-| **Primitive**   | Rohe Werte (z.B. exakte Hex-Codes)           | Nur intern                     |
-| **Semantic**    | Bedeutungsvolle Referenzen auf Primitives     | Projektverwendung, CSS-Variablen |
-| **Component**   | Referenzen auf Semantic Tokens                | Komponentenstile               |
+Token-Werte sind an das offizielle Swiss Design System (Tailwind Config) angeglichen:
+- Graupalette: Tailwind-Graus mit Blauunterton
+- Schatten: Offizielle Dual-Layer-Definitionen
+- Radien: Offizielle Skala (Default 3px)
+- Fokus: Offizielles Purple (#8655F6)
 
 ### 3.2 Token-Namenskonvention
-
-Oblique: `--ob-[scope]-[category]-[property]-[variant]`
-
-Projekt (vereinfacht): `--{kategorie}-{eigenschaft}-{variante}`
 
 ```
 --color-primary-dark      Semantischer Farbtoken
@@ -120,90 +85,82 @@ Projekt (vereinfacht): `--{kategorie}-{eigenschaft}-{variante}`
 --font-weight-bold        Schriftschnitt-Token
 ```
 
-### 3.3 Modes-System
-
-> «Modes sind ein Mechanismus, um die Werte einer Sammlung verwandter Tokens
-> bedingt zu ändern.»
-> — Oblique Design System
-
-Gesteuert über CSS-Klassen und Media Queries. Ermöglicht Features wie
-Dark Mode ohne zusätzlichen Entwicklungsaufwand. (Im aktuellen Prototyp
-noch nicht implementiert.)
-
-### 3.4 Unsere Token-Datei
-
-Alle visuellen Werte in **`css/tokens.css`** als CSS Custom Properties.
-`style.css` importiert `tokens.css` und referenziert die Tokens.
-
 ---
 
 ## 4. Design Tokens (Referenz)
-
-Alle visuellen Werte sind als CSS Custom Properties in **`css/tokens.css`** definiert.
-Komponentenstile in `style.css` referenzieren diese Tokens.
 
 ### 4.1 Farbpalette
 
 #### Markenfarben (Brand)
 
+| Token                     | Wert      | Verwendung                             |
+|---------------------------|-----------|----------------------------------------|
+| `--color-accent`          | `#D8232A` | Swiss Red – aktive Nav-Linie, Badges   |
+| `--color-accent-light`    | `#E53940` | primary-500                            |
+| `--color-accent-dark`     | `#BF1F25` | primary-700                            |
+
+#### Primaerfarben (Interactive)
+
 | Token                     | Wert      | Verwendung                         |
 |---------------------------|-----------|-------------------------------------|
-| `--color-accent`          | `#DC0018` | Schweizer Rot – aktive Nav-Linie, Badges |
-| `--color-accent-light`    | `#F7001D` | Hover-Variante                     |
-| `--color-accent-dark`     | `#B00014` | Dunkle Variante                    |
-
-#### Primärfarben (Interactive)
-
-| Token                     | Wert      | Verwendung                         |
-|---------------------------|-----------|-------------------------------------|
-| `--color-primary`         | `#006699` | Links, Buttons, aktive Zustände    |
+| `--color-primary`         | `#006699` | Links, Buttons, aktive Zustaende   |
 | `--color-primary-hover`   | `#005580` | Button Hover                       |
-| `--color-primary-light`   | `#E6F0F7` | Badge-Hintergründe, Ghost-Button   |
+| `--color-primary-light`   | `#E6F0F7` | Badge-Hintergruende, Ghost-Button  |
 | `--color-primary-dark`    | `#004B6E` | Pressed-State                      |
 
-#### Neutralfarben
+#### Neutralfarben (Tailwind-aligned)
 
 | Token                     | Wert      | Verwendung                         |
 |---------------------------|-----------|-------------------------------------|
-| `--color-gray-50`         | `#FAFAFA` | Subtilster Hintergrund             |
-| `--color-gray-100`        | `#F5F5F5` | Alternativer Hintergrund           |
-| `--color-gray-200`        | `#E0E0E0` | Borders, Trennlinien               |
-| `--color-gray-300`        | `#BDBDBD` | Input-Borders, Divider             |
-| `--color-gray-400`        | `#9E9E9E` | Placeholder, Counts                |
-| `--color-gray-500`        | `#757575` | Sekundärtext, Labels               |
-| `--color-gray-600`        | `#474747` | Nav-Text, Beschreibungen           |
-| `--color-gray-800`        | `#262626` | Primärtext, Überschriften          |
+| `--color-gray-50`         | `#F9FAFB` | Subtilster Hintergrund             |
+| `--color-gray-100`        | `#F3F4F6` | Alternativhintergrund (`--bg-alt`) |
+| `--color-gray-200`        | `#E5E7EB` | Borders, Trennlinien               |
+| `--color-gray-300`        | `#D1D5DB` | Input-Borders, Divider             |
+| `--color-gray-400`        | `#9CA3AF` | Placeholder, Muted Text            |
+| `--color-gray-500`        | `#6B7280` | Sekundaertext, Labels              |
+| `--color-gray-600`        | `#4B5563` | Nav-Text, Beschreibungen           |
+| `--color-gray-700`        | `#374151` | Betonte Beschreibungen             |
+| `--color-gray-800`        | `#1F2937` | Primaertext, Ueberschriften       |
+| `--color-gray-900`        | `#111827` | Staerkster Kontrast                |
 
 #### Semantische Textfarben
 
+| Token                     | Wert            | Verwendung                       |
+|---------------------------|-----------------|----------------------------------|
+| `--color-text-primary`    | `#1F2937`       | Haupttext (= gray-800)          |
+| `--color-text-secondary`  | `#6B7280`       | Beschreibungen (= gray-500)     |
+| `--color-text-muted`      | `#9CA3AF`       | Hilfstext (= gray-400)          |
+| `--color-text-inverse`    | `#FFFFFF`       | Text auf dunklem Hintergrund    |
+| `--color-text-on-dark`    | `rgba(255,255,255,0.7)` | Gedaempfter Text auf Dunkel |
+
+#### Oberflaechen
+
 | Token                     | Wert      | Verwendung                         |
 |---------------------------|-----------|-------------------------------------|
-| `--color-text-primary`    | `#1a2a3a` | Haupttext                          |
-| `--color-text-secondary`  | `#4a5568` | Beschreibungen                     |
-| `--color-text-muted`      | `#718096` | Deaktivierter / Hilfstext          |
-| `--color-text-inverse`    | `#FFFFFF` | Text auf dunklem Hintergrund       |
-
-#### Oberflächen
-
-| Token                     | Wert      | Verwendung                         |
-|---------------------------|-----------|-------------------------------------|
-| `--color-surface-dark`    | `#3e5060` | Federal Bar, Footer                |
-| `--color-surface-darker`  | `#2d3a44` | Footer-Unterzeile                  |
 | `--color-bg-default`      | `#FFFFFF` | Standard-Hintergrund               |
-| `--color-bg-alt`          | `#F5F5F5` | Alternativhintergrund              |
+| `--color-bg-alt`          | `#F3F4F6` | Alternativhintergrund (= gray-100) |
+| `--color-bg-surface`      | `#F9FAFB` | Subtiler Hintergrund (= gray-50)   |
+| `--color-surface-dark`    | `#3e5060` | Federal Bar, Footer-Info           |
+| `--color-surface-darker`  | `#2d3a44` | Footer-Unterzeile                  |
 
-#### Statusfarben
+#### Statusfarben (aligned mit offiziellen Paletten)
+
+| Token                     | Wert      | Offizielle Palette | Verwendung         |
+|---------------------------|-----------|--------------------|--------------------|
+| `--color-success`         | `#047857` | green-700          | Erfolg, Circular   |
+| `--color-success-light`   | `#D1FAE5` | green-100          | Erfolg-Hintergrund |
+| `--color-warning`         | `#F59E0B` | yellow-500         | Warnung            |
+| `--color-warning-light`   | `#FEF3C7` | yellow-100         | Warnung-Hintergrund|
+| `--color-error`           | `#D8232A` | red-600            | Fehler             |
+| `--color-error-light`     | `#FEE2E2` | red-100            | Fehler-Hintergrund |
+| `--color-info`            | `#0F6B75` | teal-700           | Information        |
+| `--color-info-light`      | `#CCFBF1` | teal-100           | Info-Hintergrund   |
+
+#### Fokus
 
 | Token                     | Wert      | Verwendung                         |
 |---------------------------|-----------|-------------------------------------|
-| `--color-success`         | `#3E8A27` | Erfolg, Circular-Hub Grün          |
-| `--color-success-light`   | `#E8F5E3` | Erfolg-Hintergrund                 |
-| `--color-warning`         | `#E89F00` | Warnung                            |
-| `--color-warning-light`   | `#FCF8E3` | Warnung-Hintergrund                |
-| `--color-error`           | `#C4161C` | Fehler                             |
-| `--color-error-light`     | `#F2DEDE` | Fehler-Hintergrund                 |
-| `--color-info`            | `#31708F` | Information                        |
-| `--color-info-light`      | `#D9EDF7` | Info-Hintergrund                   |
+| `--color-focus`           | `#8655F6` | Offizielles Purple – Focus-Ring    |
 
 ---
 
@@ -215,21 +172,22 @@ Komponentenstile in `style.css` referenzieren diese Tokens.
 font-family: "Noto Sans", "Helvetica Neue", Arial, sans-serif;
 ```
 
-#### Typografie-Skala (Major Third, Faktor 1.25)
+#### Typografie-Skala
 
-| Token           | Grösse    | Pixel | Verwendung                       |
-|-----------------|-----------|-------|----------------------------------|
-| `--text-display`| 2.25rem   | 36px  | Hero-Titel                       |
-| `--text-h1`     | 1.75rem   | 28px  | Seitentitel                      |
-| `--text-h2`     | 1.5rem    | 24px  | Sektionsüberschriften            |
-| `--text-h3`     | 1.25rem   | 20px  | Kartenüberschriften              |
-| `--text-h4`     | 1.125rem  | 18px  | Unterüberschriften               |
-| `--text-h5`     | 1rem      | 16px  | Kleine Überschriften             |
-| `--text-body`   | 1rem      | 16px  | Fliesstext                       |
-| `--text-body-sm`| 0.875rem  | 14px  | Kompakter Text, Labels           |
-| `--text-body-xs`| 0.6875rem | 11px  | Federal Bar Text, Wappen-Text    |
-| `--text-caption`| 0.75rem   | 12px  | Bildunterschriften, Badges       |
-| `--text-label`  | 0.875rem  | 14px  | Formular-Labels                  |
+| Token           | Groesse   | Pixel | Offizielles Aequivalent | Verwendung              |
+|-----------------|-----------|-------|-------------------------|-------------------------|
+| `--text-display`| 2.75rem   | 44px  | (projekt-spezifisch)    | Hero-Titel              |
+| `--text-h1`     | 2.25rem   | 36px  | (projekt-spezifisch)    | Seitentitel             |
+| `--text-h2`     | 1.75rem   | 28px  | (projekt-spezifisch)    | Sektionsueberschriften  |
+| `--text-h3`     | 1.375rem  | 22px  | 2xl                     | Kartenueberschriften    |
+| `--text-h4`     | 1.125rem  | 18px  | lg                      | Unterueberschriften     |
+| `--text-h5`     | 1rem      | 16px  | base                    | Kleine Ueberschriften   |
+| `--text-body`   | 1rem      | 16px  | base                    | Fliesstext              |
+| `--text-body-sm`| 0.875rem  | 14px  | sm                      | Kompakter Text, Labels  |
+| `--text-body-xs`| 0.75rem   | 12px  | xs                      | Federal Bar, Wappen     |
+| `--text-caption`| 0.75rem   | 12px  | xs                      | Bildunterschriften      |
+| `--text-compact`| 0.8125rem | 13px  | (projekt-spezifisch)    | Buttons, Dropdowns      |
+| `--text-label`  | 0.875rem  | 14px  | sm                      | Formular-Labels         |
 
 #### Schriftschnitte
 
@@ -237,23 +195,24 @@ font-family: "Noto Sans", "Helvetica Neue", Arial, sans-serif;
 |---------------------------|------|----------------------------------|
 | `--font-weight-normal`    | 400  | Fliesstext                       |
 | `--font-weight-medium`    | 500  | Produktnamen, Links              |
-| `--font-weight-semibold`  | 600  | Buttons, Labels, Überschriften   |
-| `--font-weight-bold`      | 700  | Preise, Hauptüberschriften       |
+| `--font-weight-semibold`  | 600  | Buttons, Labels, Ueberschriften  |
+| `--font-weight-bold`      | 700  | Preise, Hauptueberschriften      |
 
-#### Zeilenhöhen
+#### Zeilenhoehen
 
 | Token                     | Wert | Verwendung                       |
 |---------------------------|------|----------------------------------|
-| `--line-height-tight`     | 1.2  | Überschriften                    |
+| `--line-height-tight`     | 1.2  | Ueberschriften                   |
 | `--line-height-snug`      | 1.3  | Federal-Bar-Text                 |
 | `--line-height-normal`    | 1.5  | Fliesstext (Standard)            |
 | `--line-height-relaxed`   | 1.6  | Beschreibungen                   |
+| `--line-height-loose`     | 1.8  | Grosszuegiger Text               |
 
 ---
 
-### 4.3 Abstände (Spacing)
+### 4.3 Abstaende (Spacing)
 
-Basis: **4px** Einheit.
+Basis: **4px** Einheit (= Tailwind 0.25rem Inkremente).
 
 | Token          | Wert  | Verwendung                       |
 |----------------|-------|----------------------------------|
@@ -263,7 +222,7 @@ Basis: **4px** Einheit.
 | `--space-lg`   | 24px  | Zwischen Sektionen               |
 | `--space-xl`   | 32px  | Container-Padding, grosse Gaps   |
 | `--space-2xl`  | 48px  | Sektions-Padding                 |
-| `--space-3xl`  | 64px  | Page-Hero-Padding                |
+| `--space-3xl`  | 64px  | Hero-Padding                     |
 | `--space-4xl`  | 80px  | Maximaler Abstand                |
 
 ---
@@ -272,10 +231,38 @@ Basis: **4px** Einheit.
 
 | Token                     | Wert    | Verwendung                       |
 |---------------------------|---------|----------------------------------|
-| `--container-max-width`   | 1564px  | Maximale Inhaltsbreite           |
+| `--container-max-width`   | 1544px  | Offizieller 2xl Breakpoint       |
 | `--container-padding`     | 32px    | Horizontales Padding             |
 | `--grid-gutter`           | 24px    | Grid-Abstand                     |
 | `--sidebar-width`         | 260px   | Kategorie-Sidebar                |
+
+---
+
+### 4.5 Border Radius (aligned mit offizieller Skala)
+
+| Token          | Wert  | Offiziell | Verwendung                       |
+|----------------|-------|-----------|----------------------------------|
+| `--radius-xs`  | 1px   | xs        | Minimaler Radius                 |
+| `--radius-sm`  | 2px   | sm        | Badges, Tags                     |
+| `--radius`     | 3px   | DEFAULT   | Standard (Buttons, Karten, Inputs)|
+| `--radius-lg`  | 5px   | lg        | Groessere Elemente               |
+| `--radius-xl`  | 6px   | xl        | Panels                           |
+| `--radius-2xl` | 8px   | 2xl       | Modals, grosse Karten            |
+| `--radius-3xl` | 10px  | 3xl       | Spezialkomponenten               |
+| `--radius-full`| 9999px| full      | Kreise, Pills                    |
+
+---
+
+### 4.6 Schatten (offizielle Dual-Layer-Definitionen)
+
+| Token         | Definition                                                              |
+|---------------|-------------------------------------------------------------------------|
+| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)`                                           |
+| `--shadow`    | `0 1px 2px rgba(0,0,0,0.06), 0 1px 5px rgba(0,0,0,0.08)`             |
+| `--shadow-md` | `0 2px 4px -1px rgba(0,0,0,0.06), 0 4px 10px -1px rgba(0,0,0,0.08)` |
+| `--shadow-lg` | `0 2px 6px -1px rgba(0,0,0,0.06), 0 5px 20px -3px rgba(0,0,0,0.08)` |
+| `--shadow-xl` | `0 6px 10px -5px rgba(0,0,0,0.06), 0 15px 25px -3px rgba(0,0,0,0.09)`|
+| `--shadow-2xl`| `0 10px 20px rgba(0,0,0,0.06), 1px 10px 70px -8px rgba(0,0,0,0.13)`  |
 
 ---
 
@@ -284,86 +271,121 @@ Basis: **4px** Einheit.
 Der Header folgt dem 3-zeiligen admin.ch-Muster:
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│ FEDERAL BAR (#3e5060, 46px)                                  │
-│ "Alle Schweizer Bundesbehörden"                    "DE" ▾    │
-├──────────────────────────────────────────────────────────────┤
-│ BRAND BAR (weiss, ~100px)                                    │
-│ [🇨🇭] Schweizerische Eidgenossenschaft │ BBL    [Suche 🔍]  │
-│      Confédération suisse               │                    │
-│      Confederazione Svizzera            │                    │
-│      Confederaziun svizra               │                    │
-├──────────────────────────────────────────────────────────────┤
-│ NAV BAR (weiss, 64px, border top+bottom)                     │
-│ Produktkatalog ▾    Büroplanung ▾    Circular-Hub ▾          │
-│ ═══════════════ (roter aktiver Strich, 3px, #DC0018)         │
-└──────────────────────────────────────────────────────────────┘
++--------------------------------------------------------------+
+| FEDERAL BAR (#3e5060, 46px)                                   |
+| "Alle Schweizer Bundesbehoerden"   [LS] [GS] [Anmelden] [DE]|
++--------------------------------------------------------------+
+| BRAND BAR (weiss)                                             |
+| [CH] Schweizerische Eidgenossenschaft | BBL   Jobs Kontakt Q |
++--------------------------------------------------------------+
+| NAV BAR (weiss, 64px, border top+bottom)                      |
+| Produktkatalog  Gebrauchte Moebel  Arbeitsplaetze gestalten   |
+| =============== (roter aktiver Strich, 3px)                   |
++--------------------------------------------------------------+
 ```
 
 ### 5.1 Federal Bar
 
 - Hintergrund: `--color-surface-dark` (#3e5060)
-- Höhe: `--topbar-height` (46px)
-- Text: weiss, 14px, font-weight 400
-- Inhalt links: "Alle Schweizer Bundesbehörden" mit Chevron
-- Inhalt rechts: Sprachkürzel "DE" mit Chevron
+- Hoehe: `--topbar-height` (46px)
+- Links: "Alle Schweizer Bundesbehoerden" mit Chevron
+- Rechts: Leichte Sprache (Icon+Label), Gebaerdensprache (Icon+Label),
+  Anmelden-Button, Language Switcher Dropdown (DE/FR/IT/RM)
+- Accessibility-Links: Label nur auf Desktop, nur Icon auf Mobile
 
 ### 5.2 Brand Bar
 
 - Hintergrund: weiss
-- Padding: 24px 32px
-- Links: Wappen (34px) + Viersprachiger Text (11px) + Divider (1px, 60px hoch) + Departement (16px bold)
-- Rechts: Suche-Button
+- Links: Wappen (34px) + Viersprachiger Text + Divider + Departementsname
+- Rechts: Meta-Navigation (Jobs, Kontakt, Medien) + Suche + Warenkorb
+- Meta-Navigation: Getrennt durch vertikale Linie, hidden auf Mobile
 - Wappen fungiert als Home-Link
 
 ### 5.3 Navigation Bar
 
-- Höhe: `--nav-height` (64px)
-- Border oben und unten: 1px solid `--color-gray-200`
-- Aktiver Tab: `::after` Pseudo-Element, 3px Höhe, `--color-accent` (#DC0018)
-- Hover: Text wird `--color-primary`
-- Dropdown-Trigger mit animiertem Chevron (rotate 180° bei open)
+- Hoehe: `--nav-height` (64px)
+- Links: Produktkatalog, Gebrauchte Moebel, Arbeitsplaetze gestalten, Arbeitsplaetze verwalten
+- Aktiver Tab: `::after` Pseudo-Element, 3px Hoehe, `--color-accent`
+- Hover: Text wird `--color-accent`
+- Mobile: Hamburger-Menu mit Slide-Down
 
 ---
 
-## 6. Komponenten
+## 6. Seitenstruktur
 
-### 6.1 Mega-Dropdown
+### 6.1 Home Page
 
-- Position: absolute, unter Nav-Item
-- Border-top: 2px solid `--color-primary`
-- Padding: 28px 36px
-- Animation: fadeIn 150ms
-- Min-width: 680px (Desktop)
-- Sektionsüberschriften: 13px uppercase, primary-Farbe
-- Links: 14px, gray-600, hover → primary mit 4px padding-left Shift
+1. **Hero Section** — Text links (Titel, Beschreibung, 2 CTAs), Bild rechts. Weisser Hintergrund.
+2. **Tile-Grid** (`section--bg-alt`) — 3 Karten ohne Icons: Produktkatalog, Arbeitsplaetze gestalten, Gebrauchte Moebel
+3. **Neuheiten** — Produktgrid mit 6 neuen Produkten + "Alle Produkte einsehen" Link
 
-### 6.2 Produkt-Karte
+### 6.2 Planung Page
+
+1. Breadcrumb + Page Hero
+2. Tile-Grid — 3 Karten: Stilwelten, Planungsbeispiele, CAD-Daten
+3. Stilwelten-Grid (`section--bg-alt`) — 6 Bild-Karten
+
+### 6.3 Section-Wrapper
+
+- `.section` — padding mit `--_center-pad` fuer fluid centering
+- `.section--bg-alt` — Alternating Background (`--color-bg-alt`)
+- Hintergrund-Alternation: weiss → grau → weiss
+
+---
+
+## 7. Komponenten
+
+### 7.1 Karten (Cards)
+
+#### Centered Card (Tile)
+
+- Ohne Icons, nur Text (Titel + Beschreibung + Pfeil)
+- Pfeil: 36px Box, `--color-accent` Border
+- **Hover**: Pfeil fuellt sich rot, verschiebt 2px rechts. Titel bleibt unveraendert.
+- Klasse: `.card--centered .card--interactive`
+
+#### Produkt-Karte
+
+- Bild (responsive srcset 400w/600w/800w), Titel, Beschreibung, Preis, Marke
+- Badges: "Neu" (accent), "Gebraucht" (circular)
+- Hover: Shadow-Erhoehung
+
+#### Card-Varianten
+
+| Variante             | Klasse                  | Beschreibung                      |
+|----------------------|-------------------------|-----------------------------------|
+| Horizontal           | `.card--horizontal`     | Bild links, Inhalt rechts         |
+| Highlight (rot)      | `.card--highlight`      | 5px roter Top-Border              |
+| Highlight (blau)     | `.card--highlight-primary` | 5px blauer Top-Border          |
+
+### 7.2 Buttons
+
+| Variante      | Klasse           | Stil                                    |
+|---------------|------------------|-----------------------------------------|
+| Primary       | `.btn--primary`  | BG primary, Text weiss                  |
+| Outline       | `.btn--outline`  | Border gray-300, Text gray-600          |
+| Secondary     | `.btn--secondary`| BG primary-light, Border primary        |
+| Ghost         | `.btn--ghost`    | Kein Border, Text primary               |
+| Link          | `.btn--link`     | Underline, kein Padding                 |
+| Negative      | `.btn--negative` | Weisser Rahmen, transparent BG          |
+| Small         | `.btn--sm`       | Kompaktes Padding                       |
+| Large         | `.btn--lg`       | Groesseres Padding + Font               |
+
+Alle Buttons: border-radius `--radius` (3px), font-weight 600, transition 150ms.
+
+### 7.3 Hero Section
+
+- Layout: Flexbox, Text links + Bild rechts (50/50)
+- Titel: `--text-display` (44px), `--color-text-primary`
+- Beschreibung: `--text-body`, `--color-text-secondary`
+- CTAs: Primary-Button + Outline-Button mit Arrow-Icon
+- Mobile: Stacked (Text oben, Bild unten)
+- Bild: Responsive `<picture>` mit srcset
+
+### 7.4 Breadcrumbs
 
 ```
-┌─────────────────────┐
-│                     │  ← Bild-Bereich (200px Höhe, gray-100 BG)
-│    [SVG Icon]       │     Badges oben rechts (Neu/Gebraucht)
-│                     │
-├─────────────────────┤
-│ Produktname         │  ← 14px, medium, primary-Farbe
-│ Beschreibung        │  ← 12px, gray-500
-│ CHF 180.00          │  ← 15px, bold, gray-800
-├─────────────────────┤
-│ Marke    [Bestellen]│  ← 11px grau | Primary Button sm
-└─────────────────────┘
-```
-
-- Border: 1px solid gray-200
-- Border-radius: 4px
-- Hover: border primary, shadow, translateY(-2px)
-- Cursor: pointer (ganze Karte klickbar)
-- Grid: `repeat(auto-fill, minmax(280px, 1fr))`
-
-### 6.3 Breadcrumbs
-
-```
-Produkte › Stühle › Bürostühle › Produktname
+Home > Produktkatalog > Stuehle > Produktname
 ```
 
 - Separator: Chevron-Right SVG (14px)
@@ -371,149 +393,166 @@ Produkte › Stühle › Bürostühle › Produktname
 - Letzte Position: gray-800 (nicht verlinkt)
 - Links: gray-600, hover → primary
 
-### 6.4 Buttons
+### 7.5 Kategorie-Baum (Sidebar)
 
-| Variante      | Klasse           | Stil                                    |
-|---------------|------------------|-----------------------------------------|
-| Primary       | `.btn--primary`  | BG primary, Text weiss                  |
-| Outline       | `.btn--outline`  | Border gray-300, Text gray-600          |
-| Ghost         | `.btn--ghost`    | Kein Border, Text primary               |
-| Green         | `.btn--green`    | BG success (#3E8A27), Text weiss        |
-| Small         | `.btn--sm`       | Padding 5px 10px, Font 12px             |
-
-Alle Buttons: border-radius 4px, font-weight 600, transition 150ms.
-
-### 6.5 Kategorie-Baum (Sidebar)
-
-- Radio-Button-Style für aktive Kategorie
-- Expand/Collapse mit rotierendem Chevron (90°)
-- Einrückung pro Ebene: +28px padding-left
+- Radio-Button-Style fuer aktive Kategorie
+- Expand/Collapse mit rotierendem Chevron (90 Grad)
+- Einrueckung pro Ebene: +28px padding-left
 - Max 3 Ebenen
-- Animierte max-height Transition (350ms cubic-bezier)
 
-### 6.6 Footer
+### 7.6 Footer
 
-- Hintergrund: `--color-surface-dark` (#3e5060)
-- Text: rgba(255,255,255,0.7)
-- Links: gleiche Farbe, hover → weiss
-- Inhalt: Copyright + Impressum/Rechtliches/Barrierefreiheit/Kontakt
+Zwei-teiliger Footer:
+
+1. **Footer-Info** (`--color-surface-dark`) — 3-Spalten Grid:
+   - Ueber uns (Beschreibungstext)
+   - Bleiben Sie informiert (Social Links: Facebook, Instagram, LinkedIn, X, YouTube + Newsletter-Button)
+   - Weitere Informationen (Link-Liste mit Pfeilen)
+
+2. **Footer-Bottom** (`--color-surface-darker`) — Copyright + Impressum/Rechtliches/Barrierefreiheit/Kontakt
+
+### 7.7 Back-to-Top Button
+
+- Fixed bottom-right, erscheint nach 400px Scroll
+- `--color-accent` Border, Chevron-up Icon
+- Hover: Roter Hintergrund, weisses Icon
+- Smooth-scroll nach oben
+
+### 7.8 Cookie/Consent Banner
+
+- Fixed bottom, `--color-surface-dark` Hintergrund
+- Text + "Akzeptieren" (primary) / "Ablehnen" (outline) Buttons
+- localStorage-Persistenz (Key: `cookieConsent`)
+- Slide-up Animation
+
+### 7.9 Language Switcher
+
+- "DE" Button im Federal Bar mit Dropdown
+- Optionen: Deutsch, Francais, Italiano, Rumantsch
+- Visuell funktional (aendert Button-Text), keine echte Uebersetzung
+- Click-outside schliesst Dropdown
 
 ---
 
-## 7. Responsive Breakpoints
+## 8. Responsive Breakpoints
 
-| Breakpoint | Anpassungen                                                     |
-|------------|------------------------------------------------------------------|
-| ≤ 1100px   | Stats-Grid: 4 → 2 Spalten                                      |
-| ≤ 768px    | Hamburger-Menü statt Inline-Nav                                 |
-|            | Sidebar ausgeblendet                                            |
-|            | Tile-Grid: 3 → 1 Spalte                                        |
-|            | Stilwelt-Grid: 3 → 1 Spalte                                    |
-|            | Produktdetail: Row → Column                                    |
-|            | Federal-Bar: kleinere Schrift                                   |
-|            | Brand-Bar: Divider ausgeblendet                                |
-| ≤ 480px    | Stats-Grid: 2 → 1 Spalte                                       |
-|            | Toolbar: Column-Layout                                         |
-|            | Wappen verkleinert (28px)                                      |
+Breakpoints aligned mit offiziellen Werten:
+
+| Breakpoint | Offiziell | Anpassungen                                             |
+|------------|-----------|----------------------------------------------------------|
+| <= 768px   | md        | Hamburger-Menu, Sidebar hidden, Tile-Grid 1 Spalte      |
+|            |           | Hero stacked, Meta-Nav hidden, A11y-Labels hidden        |
+|            |           | Produktdetail Column, Federal-Bar kleinere Schrift       |
+|            |           | Cookie-Banner stacked                                    |
+| <= 480px   | xs        | Wappen 28px, Toolbar stacked                             |
 
 ---
 
-## 8. Interaktionsmuster
+## 9. Interaktionsmuster
 
-### 8.1 Seitenübergänge
+### 9.1 Seitenuebergaenge
 
 - Fade-in Animation (250ms) bei Seitenwechsel
 - Smooth scroll-to-top bei Navigation
 
-### 8.2 Hover-Effekte
+### 9.2 Hover-Effekte
 
-- Karten: translateY(-2px) + Schatten + Border-Farbe Primary
-- Links: Farbe → Primary, text-decoration je nach Kontext
-- Dropdown-Links: padding-left +4px Shift
-- Nav-Buttons: Textfarbe → Primary
+- **Karten**: Shadow-Erhoehung, Pfeil fuellt sich rot mit 2px Rechts-Shift
+- **Links**: Farbe → Primary, text-decoration je nach Kontext
+- **Nav-Links**: Text → Accent
+- **Back-to-Top**: BG → Accent, Icon → weiss
 
-### 8.3 Focus-Stile
+### 9.3 Focus-Stile
 
-- Outline: 2px solid primary, offset 2px
-- Sichtbar nur bei Keyboard-Navigation (:focus-visible)
+- Outline: **2px solid `--color-focus` (#8655F6 Purple)**, offset 2px
+- Sichtbar nur bei Keyboard-Navigation (`:focus-visible`)
+- Offizielles Purple statt Blau – aligned mit Swiss Design System
 
-### 8.4 Dropdown-Verhalten
+### 9.4 Dropdown-Verhalten
 
-- Klick öffnet/schliesst
-- Klick ausserhalb schliesst alle
-- Escape-Taste schliesst alle
-- Chevron rotiert bei geöffnetem Zustand
+- Klick oeffnet/schliesst
+- Klick ausserhalb schliesst (Language Switcher)
+- Chevron rotiert bei geoeffnetem Zustand
 
 ---
 
-## 9. Barrierefreiheit
+## 10. Barrierefreiheit
 
-### 9.1 Strukturelle Semantik
+### 10.1 Strukturelle Semantik
 
-- `<header role="banner">` für Site-Header
-- `<nav aria-label="Hauptnavigation">` für Navigation
-- `<main id="mainContent">` für Hauptinhalt
-- `<footer>` für Footer
+- `<header role="banner">` fuer Site-Header
+- `<nav aria-label="Hauptnavigation">` fuer Navigation
+- `<main id="mainContent">` fuer Hauptinhalt
+- `<footer>` fuer Footer
 - Skip-Link als erstes Element im Body
+- Cookie-Banner mit `role="alert"`
 
-### 9.2 ARIA-Attribute
+### 10.2 ARIA-Attribute
 
 ```html
-<!-- Dropdown -->
-<button aria-expanded="false" aria-haspopup="true">Produktkatalog ▾</button>
+<!-- Language Switcher -->
+<button aria-expanded="false" aria-haspopup="true">DE</button>
+<div role="listbox"><button role="option" aria-selected="true">Deutsch</button></div>
 
 <!-- Kategorie-Baum -->
 <div role="tree">
-  <div role="treeitem" aria-expanded="true" tabindex="0">Stühle</div>
+  <div role="treeitem" aria-expanded="true" tabindex="0">Stuehle</div>
 </div>
 
 <!-- Produktkarte -->
-<div role="button" tabindex="0" aria-label="Bürostuhl Giroflex 64">...</div>
+<div role="button" tabindex="0" aria-label="Buerostuhl Giroflex 64">...</div>
 ```
 
-### 9.3 Rechtliche Grundlage
+### 10.3 Accessibility-Links
 
-> «Alle Internet-Angebote des Bundes müssen so gestaltet sein, dass
-> Menschen mit Behinderungen sie ohne Einschränkung nutzen können.»
-> — CD Bund Richtlinien
+- Leichte Sprache + Gebaerdensprache im Federal Bar
+- Desktop: Icon + Label, Mobile: nur Icon
+- Skip-Link: "Zum Inhalt springen"
 
-**Massgebliche Standards:**
-- Behindertengleichstellungsgesetz (BehiG)
-- P028-Richtlinien des Bundes für barrierefreie Webangebote
-- Web Content Accessibility Guidelines (WCAG) 2.1, Konformitätsstufe AA
-- WAI-ARIA 1.0
+### 10.4 Kontrastverhaaeltnisse
 
-### 9.4 Kontrastverhältnisse
-
-Die Farbkombinationen sind auf WCAG AA Kontrast (4.5:1 für Text) ausgelegt:
-
-| Kombination                | Verhältnis | Status |
-|----------------------------|-----------|--------|
-| gray-800 auf weiss         | ~14:1     | AAA    |
-| primary (#006699) auf weiss| ~5.5:1    | AA     |
-| weiss auf surface-dark     | ~7:1      | AAA    |
-| gray-500 auf weiss         | ~4.6:1    | AA     |
+| Kombination                | Verhaeltnis | Status |
+|----------------------------|-------------|--------|
+| gray-800 (#1F2937) auf weiss | ~13:1    | AAA    |
+| primary (#006699) auf weiss  | ~5.5:1   | AA     |
+| weiss auf surface-dark       | ~7:1     | AAA    |
+| gray-500 (#6B7280) auf weiss | ~5.0:1   | AA     |
+| focus purple auf weiss       | ~4.6:1   | AA     |
 
 ---
 
-## 10. Datei-Konventionen
+## 11. Datei-Konventionen
 
-### 10.1 CSS-Naming
+### 11.1 CSS-Naming
 
 BEM-artige Konvention:
 
 ```
-.block                     → .product-card
-.block__element             → .product-card__image
-.block__element--modifier   → .product-card__badge--new
+.block                     -> .product-card
+.block__element            -> .product-card__image
+.block__element--modifier  -> .product-card__badge--new
 ```
 
-### 10.2 CSS Custom Properties
+### 11.2 Dateistruktur
 
-Siehe Abschnitt 3.2 (Token-Namenskonvention).
+| Datei         | Inhalt                                                    |
+|---------------|-----------------------------------------------------------|
+| `tokens.css`  | Nur `:root`-Variablen, keine Selektoren                   |
+| `style.css`   | `--ob-*` Aliases + alle Komponentenstile                  |
+| `index.html`  | Statische Shell (Header, Footer, Cookie Banner, Back-to-Top) |
+| `app.js`      | SPA-Logik (Routing, Rendering, Events, Interaktive Komponenten) |
+| `data/*.json` | Kategorien und Produkte                                    |
 
-### 10.3 Dateistruktur
+### 11.3 Navigation (Routes)
 
-- `tokens.css`: Nur `:root`-Variablen, keine Selektoren
-- `style.css`: Importiert `tokens.css`, enthält alle Komponentenstile
-- `app.js`: Gesamte SPA-Logik in einer Datei (Routing, Rendering, Events)
+| Route          | Seite                        | Nav-Mapping  |
+|----------------|------------------------------|--------------|
+| `#/home`       | Home (Hero + Tiles + Neuheiten) | —         |
+| `#/shop`       | Produktkatalog               | shop         |
+| `#/product/:id`| Produktdetail                | shop         |
+| `#/planung`    | Arbeitsplaetze gestalten     | planung      |
+| `#/grundriss`  | Arbeitsplaetze verwalten     | grundriss    |
+| `#/circular`   | Gebrauchte Moebel            | circular     |
+| `#/scan`       | Objekt scannen               | circular     |
+| `#/erfassen`   | Neues Objekt erfassen        | circular     |
+| `#/charta`     | Charta kreislauforientiertes Bauen | circular |

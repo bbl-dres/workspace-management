@@ -31,9 +31,9 @@ let state = {
 // ===================================================================
 // ICONS
 // ===================================================================
-const CHEVRON_RIGHT = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,6 15,12 9,18"/></svg>`;
-
 const ICONS = {
+  chevronRight: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,6 15,12 9,18"/></svg>`,
+  arrowRight: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>`,
   placeholder: `<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
   search: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>`,
   chair: `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.9"><path d="M7 18v3M17 18v3M5 10V6a2 2 0 012-2h10a2 2 0 012 2v4M5 10h14a2 2 0 012 2v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4a2 2 0 012-2z"/></svg>`,
@@ -94,7 +94,7 @@ const PRODUCT_IMAGES = {
 function getProductImage(product) {
   const photoId = PRODUCT_IMAGES[product.id];
   if (photoId) {
-    return `<img src="https://images.unsplash.com/${photoId}?w=600&h=400&fit=crop&auto=format&q=80" alt="${product.name}" loading="lazy">`;
+    return `<img src="https://images.unsplash.com/${photoId}?w=600&h=400&fit=crop&auto=format&q=80" srcset="https://images.unsplash.com/${photoId}?w=400&h=267&fit=crop&auto=format&q=80 400w, https://images.unsplash.com/${photoId}?w=600&h=400&fit=crop&auto=format&q=80 600w, https://images.unsplash.com/${photoId}?w=800&h=533&fit=crop&auto=format&q=80 800w" sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 280px" alt="${product.name}" loading="lazy">`;
   }
   return getProductIcon(product);
 }
@@ -185,7 +185,7 @@ function countProductsInCategory(catId) {
 // Usage: renderBreadcrumb(['Produktkatalog', "navigateTo('shop')"], ['Stühle'])
 // Last item = current page (no link). Previous items = links.
 function renderBreadcrumb(...items) {
-  const SEP = ` <span class="breadcrumb__sep">${CHEVRON_RIGHT}</span> `;
+  const SEP = ` <span class="breadcrumb__sep">${ICONS.chevronRight}</span> `;
   let html = `<a href="#" onclick="navigateTo('home');return false">Home</a>`;
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
@@ -294,13 +294,15 @@ function render() {
   const app = document.getElementById('app');
 
   // Update nav active states
-  const activePage = ['scan', 'erfassen', 'charta'].includes(state.page) ? 'circular' : state.page;
-  document.querySelectorAll('.app-nav__link').forEach(link => {
+  const activePage = ['scan', 'erfassen', 'charta'].includes(state.page) ? 'circular'
+                   : ['stilwelten', 'planungsbeispiele', 'cad'].includes(state.page) ? 'planung'
+                   : state.page;
+  document.querySelectorAll('.main-navigation__link').forEach(link => {
     const nav = link.dataset.nav;
     if (nav === activePage) {
-      link.classList.add('app-nav__link--active');
+      link.classList.add('main-navigation__link--active');
     } else {
-      link.classList.remove('app-nav__link--active');
+      link.classList.remove('main-navigation__link--active');
     }
   });
 
@@ -319,6 +321,9 @@ function render() {
     case 'scan': app.innerHTML = renderScan(); break;
     case 'erfassen': app.innerHTML = renderErfassen(); break;
     case 'charta': app.innerHTML = renderCharta(); break;
+    case 'stilwelten': app.innerHTML = renderStilwelten(); break;
+    case 'planungsbeispiele': app.innerHTML = renderPlanungsbeispiele(); break;
+    case 'cad': app.innerHTML = renderCad(); break;
     default: app.innerHTML = renderShop(); attachShopEvents();
   }
 }
@@ -326,39 +331,52 @@ function render() {
 // ---- HOME ----
 function renderHome() {
   return `
-    <div class="page-container page-container--with-top-pad" id="mainContent">
-      ${renderBreadcrumb(['Home'])}
-      <div class="page-hero">
-        <h1 class="page-hero__title">Workspace Management</h1>
-        <p class="page-hero__subtitle">Willkommen beim Bundesamt f\u00fcr Bauten und Logistik. Planen, bestellen und verwalten Sie Ihre B\u00fcroausstattung.</p>
+    <section class="hero" id="mainContent">
+      <div class="hero__content">
+        <h1 class="hero__title">Workspace Management</h1>
+        <p class="hero__description">Die Plattform des BBL f\u00fcr die Einrichtung und Verwaltung von Arbeitspl\u00e4tzen der Bundesverwaltung. Bestellen Sie B\u00fcrom\u00f6bel, gestalten Sie R\u00e4ume und nutzen Sie gebrauchte M\u00f6bel weiter.</p>
+        <div class="hero__cta">
+          <a href="#/shop" class="btn btn--filled btn--lg" onclick="navigateTo('shop');return false">Produkte entdecken ${ICONS.arrowRight}</a>
+          <a href="#/planung" class="btn btn--outline btn--lg" onclick="navigateTo('planung');return false">Arbeitspl\u00e4tze planen ${ICONS.arrowRight}</a>
+        </div>
       </div>
+      <div class="hero__image">
+        <picture>
+          <source srcset="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=800&fit=crop&auto=format&q=80" media="(min-width: 768px)">
+          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=533&fit=crop&auto=format&q=80" alt="Moderne Arbeitspl\u00e4tze" loading="eager">
+        </picture>
+      </div>
+    </section>
 
+    <section class="section section--bg-alt">
       <div class="tile-grid">
-        <div class="card card--centered card--interactive" onclick="navigateTo('shop')" role="button" tabindex="0">
+        <div class="card card--centered card--clickable" onclick="navigateTo('shop')" role="button" tabindex="0">
           <h3 class="card__title">Produktkatalog</h3>
-          <p class="card__desc">Entdecken Sie unser Sortiment an B\u00fcrom\u00f6beln, Sitzm\u00f6beln, Beleuchtung und Zubeh\u00f6r f\u00fcr Ihren Arbeitsplatz. Alle Produkte entsprechen den Standards der Bundesverwaltung.</p>
+          <p class="card__description">Entdecken Sie unser Sortiment an B\u00fcrom\u00f6beln, Sitzm\u00f6beln, Beleuchtung und Zubeh\u00f6r f\u00fcr Ihren Arbeitsplatz. Alle Produkte entsprechen den Standards der Bundesverwaltung.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
-        <div class="card card--centered card--interactive" onclick="navigateTo('planung')" role="button" tabindex="0">
+        <div class="card card--centered card--clickable" onclick="navigateTo('planung')" role="button" tabindex="0">
           <h3 class="card__title">Arbeitspl\u00e4tze gestalten</h3>
-          <p class="card__desc">Gestalten Sie Ihre Workspaces mit Stilwelten, Planungsbeispielen und CAD-Daten. Finden Sie Inspiration und Vorlagen f\u00fcr Ihre B\u00fcroplanung.</p>
+          <p class="card__description">Gestalten Sie Ihre Workspaces mit Stilwelten, Planungsbeispielen und CAD-Daten. Finden Sie Inspiration und Vorlagen f\u00fcr Ihre B\u00fcroplanung.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
-        <div class="card card--centered card--interactive" onclick="navigateTo('circular')" role="button" tabindex="0">
+        <div class="card card--centered card--clickable" onclick="navigateTo('circular')" role="button" tabindex="0">
           <h3 class="card__title">Gebrauchte M\u00f6bel</h3>
-          <p class="card__desc">Gebrauchte M\u00f6bel wiederverwenden statt entsorgen. Scannen Sie bestehende Objekte, erfassen Sie neue und st\u00f6bern Sie im Angebot verf\u00fcgbarer Gebrauchtm\u00f6bel.</p>
+          <p class="card__description">Gebrauchte M\u00f6bel wiederverwenden statt entsorgen. Scannen Sie bestehende Objekte, erfassen Sie neue und st\u00f6bern Sie im Angebot verf\u00fcgbarer Gebrauchtm\u00f6bel.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
       </div>
+    </section>
 
-      <h2 class="section-heading">Neuheiten</h2>
+    <section class="section">
+      <h2 class="section__title">Neuheiten</h2>
       <div class="product-grid product-grid--spaced">
         ${PRODUCTS.filter(p => p.isNew && !p.isCircular).slice(0, 6).map(p => renderProductCard(p)).join('')}
       </div>
       <div class="section-link">
         <a href="#/shop" class="section-link__a" onclick="navigateTo('shop');return false">Alle Produkte einsehen &rarr;</a>
       </div>
-    </div>
+    </section>
   `;
 }
 
@@ -398,7 +416,7 @@ function renderShop() {
   }
 
   return `
-    <div class="page-container page-container--with-top-pad page-container--no-bottom">
+    <div class="container container--with-top-pad container--no-bottom">
       ${renderBreadcrumb(...bcItems)}
     </div>
     <div class="app-layout">
@@ -410,11 +428,11 @@ function renderShop() {
       </aside>
       <main class="main-content" id="mainContent">
         <div class="toolbar">
-          <div class="search-bar">
-            <input class="search-bar__input" type="search" placeholder="Suchen..." id="searchInput" value="${escapeHtml(state.searchQuery)}" aria-label="Produkte suchen">
-            <button class="search-bar__btn" aria-label="Suchen">${ICONS.search}</button>
+          <div class="search">
+            <input class="search__field" type="search" placeholder="Suchen..." id="searchInput" value="${escapeHtml(state.searchQuery)}" aria-label="Produkte suchen">
+            <button class="search__button" aria-label="Suchen">${ICONS.search}</button>
           </div>
-          <select class="sort-select" id="sortSelect" aria-label="Sortierung">
+          <select class="select" id="sortSelect" aria-label="Sortierung">
             <option value="name-asc" ${state.sortBy==='name-asc'?'selected':''}>Name A-Z</option>
             <option value="name-desc" ${state.sortBy==='name-desc'?'selected':''}>Name Z-A</option>
             <option value="price-asc" ${state.sortBy==='price-asc'?'selected':''}>Preis aufsteigend</option>
@@ -444,12 +462,12 @@ function renderProductCard(p) {
     <div class="card card--product" onclick="navigateTo('product',${p.id})" tabindex="0" role="button" aria-label="${escapeHtml(p.name)}">
       <div class="card__image card__image--placeholder">
         ${getProductImage(p)}
-        ${p.isNew ? '<span class="card__badge card__badge--new">Neu</span>' : ''}
-        ${p.isCircular ? '<span class="card__badge card__badge--circular">Gebraucht</span>' : ''}
+        ${p.isNew ? '<span class="badge badge--new">Neu</span>' : ''}
+        ${p.isCircular ? '<span class="badge badge--circular">Gebraucht</span>' : ''}
       </div>
       <div class="card__body">
         <div class="card__title">${escapeHtml(p.name)}</div>
-        <div class="card__desc">${escapeHtml(p.description)}</div>
+        <div class="card__description">${escapeHtml(p.description)}</div>
         <div class="card__price">${p.currency} ${p.price.toFixed(2)}</div>
       </div>
       <div class="card__footer">
@@ -464,7 +482,7 @@ function renderProductDetail(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) {
     return `
-      <div class="page-container page-container--with-top-pad" id="mainContent">
+      <div class="container container--with-top-pad" id="mainContent">
         ${renderBreadcrumb(['Produktkatalog', "navigateTo('shop')"], ['Nicht gefunden'])}
         <div class="no-results">
           <div class="no-results__icon">${ICONS.placeholder}</div>
@@ -492,13 +510,13 @@ function renderProductDetail(id) {
   const articleNr = 'ART-' + String(p.id).padStart(5, '0');
 
   return `
-    <div class="page-container page-container--with-top-pad" id="mainContent">
+    <div class="container container--with-top-pad" id="mainContent">
       ${renderBreadcrumb(...bcItems)}
       <div class="product-detail">
         <div class="product-detail__image">
           ${getProductImage(p)}
-          ${p.isNew ? '<span class="card__badge card__badge--new">Neu</span>' : ''}
-          ${p.isCircular ? '<span class="card__badge card__badge--circular">Gebraucht</span>' : ''}
+          ${p.isNew ? '<span class="badge badge--new">Neu</span>' : ''}
+          ${p.isCircular ? '<span class="badge badge--circular">Gebraucht</span>' : ''}
         </div>
         <div class="product-detail__info">
           <h1 class="product-detail__title">${escapeHtml(p.name)}</h1>
@@ -515,7 +533,7 @@ function renderProductDetail(id) {
           </div>
           <div class="product-detail__price">${p.currency} ${p.price.toFixed(2)}</div>
           <div class="product-detail__actions">
-            <button class="btn btn--primary">
+            <button class="btn btn--filled">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
               Bestellen
             </button>
@@ -529,17 +547,8 @@ function renderProductDetail(id) {
 
 // ---- PLANUNG ----
 function renderPlanung() {
-  const stilwelten = [
-    { title: "Fokus-Arbeitsplatz", desc: "Konzentriertes Arbeiten mit Akustik-Elementen", image: "photo-1497366216548-37526070297c" },
-    { title: "Kollaborationszone", desc: "Offene Bereiche f\u00fcr Teamarbeit und Workshops", image: "photo-1497215842964-222b430dc094" },
-    { title: "Lounge & Empfang", desc: "Repr\u00e4sentative R\u00e4ume mit Wohncharakter", image: "photo-1524758631624-e2822e304c36" },
-    { title: "Konferenz & Meeting", desc: "Professionelle Besprechungsr\u00e4ume", image: "photo-1462826303086-329426d1aef5" },
-    { title: "Flex-Desk", desc: "Shared Desks mit Buchungssystem", image: "photo-1593642632559-0c6d3fc62b89" },
-    { title: "Bibliothek & Archiv", desc: "Ruhezonen mit Regal-Systemen", image: "photo-1507842217343-583bb7270b66" }
-  ];
-
   return `
-    <div class="page-container page-container--with-top-pad" id="mainContent">
+    <div class="container container--with-top-pad" id="mainContent">
       ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten'])}
       <div class="page-hero">
         <h1 class="page-hero__title">Workspaces gestalten</h1>
@@ -547,33 +556,94 @@ function renderPlanung() {
       </div>
 
       <div class="tile-grid">
-        <div class="card card--centered card--interactive">
+        <div class="card card--centered card--clickable" onclick="navigateTo('stilwelten')" role="button" tabindex="0">
           <h3 class="card__title">Stilwelten</h3>
-          <p class="card__desc">Entdecken Sie vordefinierte B\u00fcro-Stile und Einrichtungskonzepte. Von klassisch bis modern \u2013 finden Sie die passende Atmosph\u00e4re f\u00fcr Ihr Arbeitsumfeld.</p>
+          <p class="card__description">Entdecken Sie vordefinierte B\u00fcro-Stile und Einrichtungskonzepte. Von klassisch bis modern \u2013 finden Sie die passende Atmosph\u00e4re f\u00fcr Ihr Arbeitsumfeld.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
-        <div class="card card--centered card--interactive">
+        <div class="card card--centered card--clickable" onclick="navigateTo('planungsbeispiele')" role="button" tabindex="0">
           <h3 class="card__title">Planungsbeispiele</h3>
-          <p class="card__desc">Lassen Sie sich von realisierten Referenzprojekten inspirieren. Sehen Sie, wie andere Bundesstellen ihre R\u00e4ume gestaltet haben.</p>
+          <p class="card__description">Lassen Sie sich von realisierten Referenzprojekten inspirieren. Sehen Sie, wie andere Bundesstellen ihre R\u00e4ume gestaltet haben.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
-        <div class="card card--centered card--interactive">
+        <div class="card card--centered card--clickable" onclick="navigateTo('cad')" role="button" tabindex="0">
           <h3 class="card__title">CAD-Daten</h3>
-          <p class="card__desc">Laden Sie CAD-Dateien und technische Zeichnungen f\u00fcr die professionelle Raumplanung herunter. F\u00fcr Planer und Architekten.</p>
+          <p class="card__description">Laden Sie CAD-Dateien und technische Zeichnungen f\u00fcr die professionelle Raumplanung herunter. F\u00fcr Planer und Architekten.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
       </div>
 
-      <h2 class="section-heading">Stilwelten</h2>
+    </div>
+
+    <section class="section section--bg-alt">
+      <h2 class="section__title">Stilwelten</h2>
+      <div class="tile-grid">
+        <div class="card card--clickable" onclick="navigateTo('stilwelten')" role="button" tabindex="0">
+          <div class="card__image card__image--visual">
+            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=300&fit=crop&auto=format&q=80" alt="Fokus-Arbeitsplatz" loading="lazy">
+          </div>
+          <div class="card__body">
+            <div class="card__title">Fokus-Arbeitsplatz</div>
+            <div class="card__description">Konzentriertes Arbeiten mit optimaler Akustik und erg\u00e4nzenden Elementen f\u00fcr ungest\u00f6rte Einzelarbeit.</div>
+          </div>
+          <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
+        </div>
+        <div class="card card--clickable" onclick="navigateTo('stilwelten')" role="button" tabindex="0">
+          <div class="card__image card__image--visual">
+            <img src="https://images.unsplash.com/photo-1497215842964-222b430dc094?w=600&h=300&fit=crop&auto=format&q=80" alt="Kollaborationszone" loading="lazy">
+          </div>
+          <div class="card__body">
+            <div class="card__title">Kollaborationszone</div>
+            <div class="card__description">Offene, flexibel m\u00f6blierte Bereiche f\u00fcr spontane Teamarbeit und geplante Workshops.</div>
+          </div>
+          <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
+        </div>
+        <div class="card card--clickable" onclick="navigateTo('stilwelten')" role="button" tabindex="0">
+          <div class="card__image card__image--visual">
+            <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=300&fit=crop&auto=format&q=80" alt="Lounge &amp; Empfang" loading="lazy">
+          </div>
+          <div class="card__body">
+            <div class="card__title">Lounge &amp; Empfang</div>
+            <div class="card__description">Repr\u00e4sentative R\u00e4ume mit Wohncharakter f\u00fcr Empfangs- und Wartebereiche.</div>
+          </div>
+          <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
+        </div>
+      </div>
+      <div class="section-link">
+        <a href="#/stilwelten" class="section-link__a" onclick="navigateTo('stilwelten');return false">Alle Stile entdecken &rarr;</a>
+      </div>
+    </section>
+  `;
+}
+
+// ---- STILWELTEN ----
+function renderStilwelten() {
+  const stilwelten = [
+    { title: "Fokus-Arbeitsplatz", desc: "Konzentriertes Arbeiten mit optimaler Akustik und erg\u00e4nzenden Elementen f\u00fcr ungest\u00f6rte Einzelarbeit. Schallabsorbierende Paneele, Sichtschutz und dimmbare Beleuchtung schaffen eine produktive Umgebung.", image: "photo-1497366216548-37526070297c" },
+    { title: "Kollaborationszone", desc: "Offene, flexibel m\u00f6blierte Bereiche f\u00fcr spontane Teamarbeit und geplante Workshops. Mobile Trennw\u00e4nde, Whiteboards und Stehtische f\u00f6rdern den kreativen Austausch.", image: "photo-1497215842964-222b430dc094" },
+    { title: "Lounge & Empfang", desc: "Repr\u00e4sentative R\u00e4ume mit Wohncharakter f\u00fcr Empfangs- und Wartebereiche. Hochwertige Polsterm\u00f6bel, Beistelltische und Pflanzen vermitteln eine einladende Atmosph\u00e4re.", image: "photo-1524758631624-e2822e304c36" },
+    { title: "Konferenz & Meeting", desc: "Professionell ausgestattete Besprechungsr\u00e4ume f\u00fcr formelle Sitzungen. Medientechnik, ergonomische St\u00fchle und modulare Tischsysteme f\u00fcr verschiedene Gruppengr\u00f6ssen.", image: "photo-1462826303086-329426d1aef5" },
+    { title: "Flex-Desk", desc: "Shared-Desk-Arbeitspl\u00e4tze mit pers\u00f6nlichen Schliessfachsystemen. Standardisierte Ausstattung f\u00fcr schnellen Wechsel, optimiert f\u00fcr Desk-Sharing und hybride Arbeitsmodelle.", image: "photo-1593642632559-0c6d3fc62b89" },
+    { title: "Bibliothek & Archiv", desc: "Ruhezonen mit Regalsystemen und Lesepl\u00e4tzen. Akustisch ged\u00e4mmte R\u00e4ume f\u00fcr konzentriertes Lesen und Recherche, kombiniert mit systematischen Ablagem\u00f6glichkeiten.", image: "photo-1507842217343-583bb7270b66" }
+  ];
+
+  return `
+    <div class="container container--with-top-pad" id="mainContent">
+      ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planung')"], ['Stilwelten'])}
+      <div class="page-hero">
+        <h1 class="page-hero__title">Stilwelten</h1>
+        <p class="page-hero__subtitle">Entdecken Sie vordefinierte B\u00fcro-Stile und Einrichtungskonzepte. Von klassisch bis modern \u2013 finden Sie die passende Atmosph\u00e4re f\u00fcr Ihr Arbeitsumfeld.</p>
+      </div>
+
       <div class="tile-grid">
         ${stilwelten.map(s => `
-          <div class="card card--interactive">
+          <div class="card card--clickable">
             <div class="card__image card__image--visual">
               <img src="https://images.unsplash.com/${s.image}?w=600&h=300&fit=crop&auto=format&q=80" alt="${s.title}" loading="lazy">
             </div>
             <div class="card__body">
               <div class="card__title">${s.title}</div>
-              <div class="card__desc">${s.desc}</div>
+              <div class="card__description">${s.desc}</div>
             </div>
             <div class="card__arrow">
               <span class="card__arrow-icon">&rarr;</span>
@@ -581,7 +651,75 @@ function renderPlanung() {
           </div>
         `).join('')}
       </div>
+    </div>
+  `;
+}
 
+// ---- PLANUNGSBEISPIELE ----
+function renderPlanungsbeispiele() {
+  const beispiele = [
+    { title: "Verwaltungsgeb\u00e4ude Bern", desc: "Neugestaltung von 120 Arbeitspl\u00e4tzen mit Fokus auf Activity-Based Working. Mischung aus Einzelarbeitspl\u00e4tzen, Kollaborationszonen und R\u00fcckzugsbereichen.", image: "photo-1497366216548-37526070297c" },
+    { title: "Bundeshaus S\u00fcd", desc: "Modernisierung der Sitzungszimmer und Empfangsbereiche. Integration von Medientechnik und barrierefreier Ausstattung.", image: "photo-1497215842964-222b430dc094" },
+    { title: "Zollverwaltung Basel", desc: "Umstellung auf Flex-Desk-Konzept f\u00fcr 80 Mitarbeitende. Pers\u00f6nliche Lockers, Buchungssystem und standardisierte Arbeitspl\u00e4tze.", image: "photo-1462826303086-329426d1aef5" },
+    { title: "Agroscope Posieux", desc: "Labornahe B\u00fcroumgebung mit erh\u00f6hten Anforderungen an Sauberkeit und Ergonomie. Spezialm\u00f6bel und h\u00f6henverstellbare Arbeitstische.", image: "photo-1524758631624-e2822e304c36" }
+  ];
+
+  return `
+    <div class="container container--with-top-pad" id="mainContent">
+      ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planung')"], ['Planungsbeispiele'])}
+      <div class="page-hero">
+        <h1 class="page-hero__title">Planungsbeispiele</h1>
+        <p class="page-hero__subtitle">Lassen Sie sich von realisierten Referenzprojekten inspirieren. Sehen Sie, wie andere Bundesstellen ihre R\u00e4ume gestaltet haben.</p>
+      </div>
+
+      <div class="tile-grid">
+        ${beispiele.map(b => `
+          <div class="card card--clickable">
+            <div class="card__image card__image--visual">
+              <img src="https://images.unsplash.com/${b.image}?w=600&h=300&fit=crop&auto=format&q=80" alt="${b.title}" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">${b.title}</div>
+              <div class="card__description">${b.desc}</div>
+            </div>
+            <div class="card__arrow">
+              <span class="card__arrow-icon">&rarr;</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ---- CAD-DATEN ----
+function renderCad() {
+  const cadKategorien = [
+    { title: "Einzelarbeitsplatz", desc: "Standardisierte Grundrisse und M\u00f6blierungsvorschl\u00e4ge f\u00fcr Einzelb\u00fcros. DWG- und PDF-Dateien inklusive Massbeschriftung.", icon: "M4 4h16v16H4z" },
+    { title: "Sitzungsraum", desc: "Planungsdaten f\u00fcr Besprechungsr\u00e4ume verschiedener Gr\u00f6ssen (4\u201320 Personen). Inklusive Medientechnik-Positionen.", icon: "M4 4h16v16H4z" },
+    { title: "Open Space", desc: "Grossraumb\u00fcro-Layouts mit verschiedenen Zonierungskonzepten. Flexible Rasteranordnungen und Verkehrswege.", icon: "M4 4h16v16H4z" },
+    { title: "Empfang & Lounge", desc: "Repr\u00e4sentative Empfangsbereiche und Wartezonen. M\u00f6blierungsvarianten mit Pflanzen und Beleuchtung.", icon: "M4 4h16v16H4z" },
+    { title: "Teek\u00fcche & Sozialraum", desc: "K\u00fcchenzeilen, Esspl\u00e4tze und Aufenthaltsm\u00f6bel. Installationspl\u00e4ne f\u00fcr Wasser- und Stromanschl\u00fcsse.", icon: "M4 4h16v16H4z" },
+    { title: "3D-Modelle", desc: "Komplette Raummodelle im IFC- und SketchUp-Format. F\u00fcr BIM-Planung und Visualisierung.", icon: "M4 4h16v16H4z" }
+  ];
+
+  return `
+    <div class="container container--with-top-pad" id="mainContent">
+      ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planung')"], ['CAD-Daten'])}
+      <div class="page-hero">
+        <h1 class="page-hero__title">CAD-Daten</h1>
+        <p class="page-hero__subtitle">Laden Sie CAD-Dateien und technische Zeichnungen f\u00fcr die professionelle Raumplanung herunter. F\u00fcr Planer und Architekten.</p>
+      </div>
+
+      <div class="tile-grid">
+        ${cadKategorien.map(c => `
+          <div class="card card--centered card--clickable">
+            <h3 class="card__title">${c.title}</h3>
+            <p class="card__description">${c.desc}</p>
+            <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 }
@@ -589,7 +727,7 @@ function renderPlanung() {
 // ---- GRUNDRISS-APP ----
 function renderGrundriss() {
   return `
-    <div class="page-container page-container--with-top-pad" id="mainContent">
+    <div class="container container--with-top-pad" id="mainContent">
       ${renderBreadcrumb(['Arbeitspl\u00e4tze verwalten'])}
 
       <div class="placeholder-area">
@@ -618,28 +756,32 @@ function renderCircular() {
   }
 
   return `
-    <div class="page-container page-container--with-top-pad page-container--no-bottom">
+    <div class="container container--with-top-pad container--no-bottom">
       ${renderBreadcrumb(...bcItems)}
+      <div class="page-hero">
+        <h1 class="page-hero__title">Gebrauchte M\u00f6bel</h1>
+        <p class="page-hero__subtitle">M\u00f6bel wiederverwenden statt entsorgen. Scannen Sie bestehende Objekte, erfassen Sie neue und st\u00f6bern Sie im Angebot verf\u00fcgbarer Gebrauchtm\u00f6bel.</p>
+      </div>
 
       <div class="tile-grid tile-grid--3col">
-        <div class="card card--centered card--interactive" onclick="navigateTo('scan')" role="button" tabindex="0">
+        <div class="card card--centered card--clickable" onclick="navigateTo('scan')" role="button" tabindex="0">
           <h3 class="card__title">Objekt scannen</h3>
-          <p class="card__desc">Scannen Sie den QR-Code oder geben Sie die Inventar-Nummer eines M\u00f6belst\u00fccks ein, um dessen Status und Verf\u00fcgbarkeit zu pr\u00fcfen.</p>
+          <p class="card__description">Scannen Sie den QR-Code oder geben Sie die Inventar-Nummer eines M\u00f6belst\u00fccks ein, um dessen Status und Verf\u00fcgbarkeit zu pr\u00fcfen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
-        <div class="card card--centered card--interactive" onclick="navigateTo('erfassen')" role="button" tabindex="0">
+        <div class="card card--centered card--clickable" onclick="navigateTo('erfassen')" role="button" tabindex="0">
           <h3 class="card__title">Neues Objekt erfassen</h3>
-          <p class="card__desc">Tragen Sie gebrauchte M\u00f6bel ins System ein und machen Sie diese f\u00fcr andere Bundesstellen verf\u00fcgbar. So f\u00f6rdern wir die Wiederverwendung.</p>
+          <p class="card__description">Tragen Sie gebrauchte M\u00f6bel ins System ein und machen Sie diese f\u00fcr andere Bundesstellen verf\u00fcgbar. So f\u00f6rdern wir die Wiederverwendung.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
-        <div class="card card--centered card--interactive" onclick="navigateTo('charta')" role="button" tabindex="0">
+        <div class="card card--centered card--clickable" onclick="navigateTo('charta')" role="button" tabindex="0">
           <h3 class="card__title">Charta kreislauforientiertes Bauen</h3>
-          <p class="card__desc">Erfahren Sie mehr \u00fcber unsere Strategie f\u00fcr Kreislaufwirtschaft und nachhaltiges Bauen in der Bundesverwaltung.</p>
+          <p class="card__description">Erfahren Sie mehr \u00fcber unsere Strategie f\u00fcr Kreislaufwirtschaft und nachhaltiges Bauen in der Bundesverwaltung.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
       </div>
 
-      <h2 class="section-heading">Gebrauchte M\u00f6bel</h2>
+      <h2 class="section__title">Gebrauchte M\u00f6bel</h2>
     </div>
     <div class="app-layout">
       <aside class="sidebar" role="navigation" aria-label="Kategorien">
@@ -650,11 +792,11 @@ function renderCircular() {
       </aside>
       <main class="main-content" id="mainContent">
         <div class="toolbar">
-          <div class="search-bar">
-            <input class="search-bar__input" type="search" placeholder="Gebrauchte M\u00f6bel suchen..." id="searchInput" value="${escapeHtml(state.searchQuery)}" aria-label="Gebrauchte M\u00f6bel suchen">
-            <button class="search-bar__btn" aria-label="Suchen">${ICONS.search}</button>
+          <div class="search">
+            <input class="search__field" type="search" placeholder="Gebrauchte M\u00f6bel suchen..." id="searchInput" value="${escapeHtml(state.searchQuery)}" aria-label="Gebrauchte M\u00f6bel suchen">
+            <button class="search__button" aria-label="Suchen">${ICONS.search}</button>
           </div>
-          <select class="sort-select" id="sortSelect" aria-label="Sortierung">
+          <select class="select" id="sortSelect" aria-label="Sortierung">
             <option value="name-asc" ${state.sortBy==='name-asc'?'selected':''}>Name A-Z</option>
             <option value="name-desc" ${state.sortBy==='name-desc'?'selected':''}>Name Z-A</option>
             <option value="price-asc" ${state.sortBy==='price-asc'?'selected':''}>Preis aufsteigend</option>
@@ -680,7 +822,7 @@ function renderCircular() {
 // ---- OBJEKT SCANNEN ----
 function renderScan() {
   return `
-    <div class="page-container page-container--with-top-pad" id="mainContent">
+    <div class="container container--with-top-pad" id="mainContent">
       ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Objekt scannen'])}
       <div class="page-hero">
         <h1 class="page-hero__title">Objekt scannen</h1>
@@ -697,7 +839,7 @@ function renderScan() {
           <p class="scan-area__text">Scannen Sie den QR-Code auf dem M\u00f6belst\u00fcck oder geben Sie die Inventar-Nummer manuell ein, um den Status und die Historie des Objekts einzusehen.</p>
           <div class="scan-area__input-row">
             <input class="scan-area__input" type="text" placeholder="z.B. INV-2024-001234">
-            <button class="btn btn--primary">Suchen</button>
+            <button class="btn btn--filled">Suchen</button>
           </div>
         </div>
       </div>
@@ -708,7 +850,7 @@ function renderScan() {
 // ---- NEUES OBJEKT ERFASSEN ----
 function renderErfassen() {
   return `
-    <div class="page-container page-container--with-top-pad" id="mainContent">
+    <div class="container container--with-top-pad" id="mainContent">
       ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Neues Objekt erfassen'])}
       <div class="page-hero">
         <h1 class="page-hero__title">Neues Objekt erfassen</h1>
@@ -755,7 +897,7 @@ function renderErfassen() {
             <textarea class="form-textarea" placeholder="Zus\u00e4tzliche Informationen zum Objekt..."></textarea>
           </div>
           <div class="form-actions">
-            <button class="btn btn--primary">Objekt erfassen</button>
+            <button class="btn btn--filled">Objekt erfassen</button>
             <button class="btn btn--outline">Abbrechen</button>
           </div>
         </div>
@@ -767,7 +909,7 @@ function renderErfassen() {
 // ---- CHARTA KREISLAUFORIENTIERTES BAUEN ----
 function renderCharta() {
   return `
-    <div class="page-container page-container--with-top-pad" id="mainContent">
+    <div class="container container--with-top-pad" id="mainContent">
       ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Charta kreislauforientiertes Bauen'])}
 
       <div class="placeholder-area">
@@ -879,8 +1021,8 @@ function navigateTo(page, subPage) {
   state.productId = (page === 'product') ? Number(subPage) : null;
   state.searchQuery = '';
   state.mobileMenuOpen = false;
-  document.getElementById('appNav').classList.remove('app-nav--mobile-open');
-  document.getElementById('hamburgerBtn').setAttribute('aria-expanded', 'false');
+  document.getElementById('appNav').classList.remove('main-navigation--mobile-open');
+  document.getElementById('burgerBtn').setAttribute('aria-expanded', 'false');
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -894,13 +1036,13 @@ function navigateTo(page, subPage) {
 }
 
 // ===================================================================
-// HAMBURGER MENU
+// BURGER MENU
 // ===================================================================
-document.getElementById('hamburgerBtn').addEventListener('click', () => {
+document.getElementById('burgerBtn').addEventListener('click', () => {
   const nav = document.getElementById('appNav');
-  const btn = document.getElementById('hamburgerBtn');
+  const btn = document.getElementById('burgerBtn');
   state.mobileMenuOpen = !state.mobileMenuOpen;
-  nav.classList.toggle('app-nav--mobile-open', state.mobileMenuOpen);
+  nav.classList.toggle('main-navigation--mobile-open', state.mobileMenuOpen);
   btn.setAttribute('aria-expanded', String(state.mobileMenuOpen));
 });
 
@@ -916,7 +1058,7 @@ function handleHash() {
     state.page = 'product';
     state.productId = Number(sub);
     state.subPage = null;
-  } else if (['home', 'shop', 'planung', 'grundriss', 'circular', 'scan', 'erfassen', 'charta'].includes(page)) {
+  } else if (['home', 'shop', 'planung', 'grundriss', 'circular', 'scan', 'erfassen', 'charta', 'stilwelten', 'planungsbeispiele', 'cad'].includes(page)) {
     state.page = page;
     state.subPage = sub;
     state.productId = null;
@@ -932,11 +1074,91 @@ window.addEventListener('popstate', handleHash);
 
 // Card keyboard support (delegated)
 document.addEventListener('keydown', (e) => {
-  if ((e.key === 'Enter' || e.key === ' ') && (e.target.classList.contains('card--interactive') || e.target.classList.contains('card--product'))) {
+  if ((e.key === 'Enter' || e.key === ' ') && (e.target.classList.contains('card--clickable') || e.target.classList.contains('card--product'))) {
     e.preventDefault();
     e.target.click();
   }
 });
+
+// ===================================================================
+// BACK-TO-TOP
+// ===================================================================
+(function initBackToTop() {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('back-to-top-btn--visible', window.scrollY > 400);
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// ===================================================================
+// COOKIE / CONSENT BANNER
+// ===================================================================
+(function initCookieBanner() {
+  const banner = document.getElementById('cookieBanner');
+  if (!banner) return;
+
+  if (localStorage.getItem('cookieConsent')) {
+    banner.remove();
+    return;
+  }
+
+  document.getElementById('cookieAccept')?.addEventListener('click', () => {
+    localStorage.setItem('cookieConsent', 'accepted');
+    banner.classList.add('notification-banner--hidden');
+  });
+
+  document.getElementById('cookieReject')?.addEventListener('click', () => {
+    localStorage.setItem('cookieConsent', 'rejected');
+    banner.classList.add('notification-banner--hidden');
+  });
+})();
+
+// ===================================================================
+// LANGUAGE SWITCHER
+// ===================================================================
+(function initLangSwitch() {
+  const wrapper = document.getElementById('langSwitch');
+  if (!wrapper) return;
+
+  const toggle = wrapper.querySelector('.top-bar__lang');
+  const options = wrapper.querySelectorAll('.language-switcher__option');
+
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = wrapper.classList.toggle('language-switcher--open');
+    toggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      options.forEach(o => {
+        o.classList.remove('language-switcher__option--active');
+        o.setAttribute('aria-selected', 'false');
+      });
+      opt.classList.add('language-switcher__option--active');
+      opt.setAttribute('aria-selected', 'true');
+
+      const langMap = { 'Deutsch': 'DE', 'Fran\u00e7ais': 'FR', 'Italiano': 'IT', 'Rumantsch': 'RM' };
+      toggle.firstChild.textContent = langMap[opt.textContent] || opt.textContent.substring(0, 2).toUpperCase();
+
+      wrapper.classList.remove('language-switcher--open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!wrapper.contains(e.target)) {
+      wrapper.classList.remove('language-switcher--open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
 
 // ===================================================================
 // INIT
