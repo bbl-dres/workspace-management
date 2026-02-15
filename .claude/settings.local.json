@@ -31,7 +31,8 @@
       "WebFetch(domain:docs.carto.com)",
       "WebFetch(domain:unpkg.com)",
       "Bash(ls:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(comm:*)"
     ]
   }
 }

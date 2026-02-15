@@ -80,7 +80,19 @@ Token-Werte sind an das offizielle Swiss Design System (Tailwind Config) angegli
 - Typografie: Mobile-first mit responsiven Skalierungen an offiziellen Breakpoints
 - Layout: Responsive Container-Padding, Grid-Gutter, Section-Padding
 
-### 3.2 Responsive Token-Architektur
+### 3.2 Token-Durchsetzung (Hard Rule)
+
+In `style.css` darf **kein einziger** hardcodierter Wert fuer Farben, Schriftgroessen,
+Abstaende, Radien, Schatten oder Uebergaenge vorkommen. Jeder solche Wert MUSS
+eine CSS Custom Property aus `tokens.css` referenzieren (`var(--token)`).
+
+Erlaubte Ausnahmen:
+- `html { font-size: 16px }` — Root-Basis
+- `1px` Border-Breiten — Strukturell, kein Design-Token
+- SVG-Attribute (viewBox, stroke-width) — Elementspezifisch
+- CSS-Werte in `url()` (SVG Data URIs) — Inline-Grafiken
+
+### 3.3 Responsive Token-Architektur
 
 Tokens skalieren automatisch an offiziellen Breakpoints via `@media`-Overrides in `tokens.css`.
 Dies ersetzt das PostCSS/Tailwind-Build-System der Referenz-Implementation durch natives CSS.
@@ -100,16 +112,21 @@ Dies ersetzt das PostCSS/Tailwind-Build-System der Referenz-Implementation durch
 }
 ```
 
-### 3.3 Token-Namenskonvention
+### 3.4 Token-Namenskonvention
 
 ```
 --color-primary-dark      Semantischer Farbtoken
 --color-secondary-600     Offizielle Sekundaerpalette
+--color-rp-primary        Projekt-spezifischer Token (Raumplanung)
+--color-white-50          Alpha/Overlay-Token
 --text-body-sm            Typografie-Token
+--text-compact            Kompakt-UI-Token (13px)
 --space-xl                Abstands-Token
+--space-1-5               Halb-Schritt-Abstands-Token
 --font-weight-bold        Schriftschnitt-Token
 --section-py              Responsiver Layout-Token
 --btn-min-h               Komponenten-Token
+--shadow-rp-lg            Projekt-spezifischer Schatten-Token
 ```
 
 ---
@@ -208,6 +225,42 @@ Dies ersetzt das PostCSS/Tailwind-Build-System der Referenz-Implementation durch
 |---------------------------|-----------|-------------------------------------|
 | `--color-focus`           | `#8655F6` | Offizielles Purple – Focus-Ring    |
 
+#### Alpha/Overlay-Tokens
+
+| Token                     | Wert                       | Verwendung                   |
+|---------------------------|----------------------------|-------------------------------|
+| `--color-white-50`        | `rgba(255,255,255,0.5)`    | Halbtransparentes Weiss       |
+| `--color-white-40`        | `rgba(255,255,255,0.4)`    | Button-Border auf Dunkel      |
+| `--color-white-30`        | `rgba(255,255,255,0.3)`    | Hover auf dunklem Hintergrund |
+| `--color-white-20`        | `rgba(255,255,255,0.2)`    | Subtiler Overlay              |
+| `--color-white-15`        | `rgba(255,255,255,0.15)`   | Button-Hover auf Dunkel       |
+| `--color-white-10`        | `rgba(255,255,255,0.1)`    | Minimaler Overlay             |
+| `--color-backdrop`        | `rgba(0,0,0,0.7)`          | Modal-Backdrop                |
+| `--color-black-10`        | `rgba(0,0,0,0.1)`          | Subtiler Border               |
+
+#### Raumplanung (projekt-spezifische Palette)
+
+| Token                     | Wert      | Verwendung                         |
+|---------------------------|-----------|-------------------------------------|
+| `--color-rp-primary`      | `#005EA8` | Raumplanung Primaerfarbe            |
+| `--color-rp-primary-dark` | `#003C69` | Panel-Toggle, Aktions-Buttons       |
+| `--color-rp-primary-hover`| `#00508C` | Hover-State                         |
+| `--color-rp-blue-50`      | `#E8F0FA` | Subtiler Hintergrund                |
+| `--color-rp-blue-100`     | `#E0EDFF` | Aktives Tool                        |
+| `--color-rp-blue-200`     | `#D0E2FA` | Aktives Tool Hover                  |
+| `--color-rp-surface`      | `#EBF0F5` | Accordion-Toggle Hintergrund        |
+| `--color-rp-surface-hover`| `#DEE5ED` | Accordion-Toggle Hover              |
+| `--color-rp-tool-text`    | `#5E666B` | Tool-Label Textfarbe                |
+
+#### Circular-Hub (projekt-spezifisch)
+
+| Token                     | Wert      | Verwendung                         |
+|---------------------------|-----------|-------------------------------------|
+| `--color-circular`        | `#047857` | Circular-Primaerfarbe (green-700)   |
+| `--color-circular-light`  | `#D1FAE5` | Circular-Hintergrund (green-100)    |
+| `--color-circular-dark`   | `#065F46` | Circular-Akzent (green-800)         |
+| `--color-circular-bg`     | `#ECFDF5` | Circular-Seiten-BG (green-50)       |
+
 ---
 
 ### 4.2 Typografie
@@ -266,16 +319,20 @@ Basiswerte (Mobile-first) entsprechen den offiziellen `text--*` Klassen.
 
 Basis: **4px** Einheit (= Tailwind 0.25rem Inkremente).
 
-| Token          | Wert  | Verwendung                       |
-|----------------|-------|----------------------------------|
-| `--space-xs`   | 4px   | Minimaler Abstand                |
-| `--space-sm`   | 8px   | Gap zwischen kleinen Elementen   |
-| `--space-md`   | 16px  | Standard-Padding / Gap           |
-| `--space-lg`   | 24px  | Zwischen Sektionen               |
-| `--space-xl`   | 32px  | Container-Padding, grosse Gaps   |
-| `--space-2xl`  | 48px  | Sektions-Padding                 |
-| `--space-3xl`  | 64px  | Hero-Padding                     |
-| `--space-4xl`  | 80px  | Maximaler Abstand                |
+| Token          | Wert  | Tailwind   | Verwendung                       |
+|----------------|-------|------------|----------------------------------|
+| `--space-0-5`  | 2px   | 0.5        | Minimaler Mikro-Abstand          |
+| `--space-xs`   | 4px   | 1          | Minimaler Abstand                |
+| `--space-1-5`  | 6px   | 1.5        | Kleiner Zwischen-Abstand         |
+| `--space-sm`   | 8px   | 2          | Gap zwischen kleinen Elementen   |
+| `--space-2-5`  | 10px  | 2.5        | Kompaktes Padding                |
+| `--space-3`    | 12px  | 3          | Zwischen-Padding                 |
+| `--space-md`   | 16px  | 4          | Standard-Padding / Gap           |
+| `--space-lg`   | 24px  | 6          | Zwischen Sektionen               |
+| `--space-xl`   | 32px  | 8          | Container-Padding, grosse Gaps   |
+| `--space-2xl`  | 48px  | 12         | Sektions-Padding                 |
+| `--space-3xl`  | 64px  | 16         | Hero-Padding                     |
+| `--space-4xl`  | 80px  | 20         | Maximaler Abstand                |
 
 ---
 
@@ -318,26 +375,28 @@ Offizielles Aequivalent: `py-3` → `md:py-4` → `lg:py-6` → `xl:py-8` → `3
 
 #### Feste Layout-Werte
 
-| Token                     | Wert    | Verwendung                       |
-|---------------------------|---------|----------------------------------|
-| `--sidebar-width`         | 260px   | Kategorie-Sidebar                |
-| `--topbar-height`         | 46px    | Federal Bar                      |
-| `--nav-height`            | 64px    | Navigationsleiste                |
+| Token                     | Wert    | Responsive             | Verwendung               |
+|---------------------------|---------|------------------------|--------------------------|
+| `--sidebar-width`         | 280px   | —                      | Kategorie-Sidebar        |
+| `--topbar-height`         | 46px    | —                      | Federal Bar              |
+| `--nav-height`            | 56px    | xl: 64px, 3xl: 80px   | Navigationsleiste        |
 
 ---
 
 ### 4.5 Border Radius (aligned mit offizieller Skala)
 
-| Token          | Wert  | Offiziell | Verwendung                       |
-|----------------|-------|-----------|----------------------------------|
-| `--radius-xs`  | 1px   | xs        | Minimaler Radius                 |
-| `--radius-sm`  | 2px   | sm        | Buttons (offiziell rounded-sm)   |
-| `--radius`     | 3px   | DEFAULT   | Standard (Karten, Inputs)        |
-| `--radius-lg`  | 5px   | lg        | Groessere Elemente               |
-| `--radius-xl`  | 6px   | xl        | Panels                           |
-| `--radius-2xl` | 8px   | 2xl       | Modals, grosse Karten            |
-| `--radius-3xl` | 10px  | 3xl       | Spezialkomponenten               |
-| `--radius-full`| 9999px| full      | Kreise, Pills                    |
+| Token           | Wert   | Offiziell | Verwendung                       |
+|-----------------|--------|-----------|----------------------------------|
+| `--radius-xs`   | 1px    | xs        | Minimaler Radius                 |
+| `--radius-sm`   | 2px    | sm        | Buttons (offiziell rounded-sm)   |
+| `--radius`      | 3px    | DEFAULT   | Standard (Karten, Inputs)        |
+| `--radius-lg`   | 5px    | lg        | Groessere Elemente               |
+| `--radius-xl`   | 6px    | xl        | Panels                           |
+| `--radius-2xl`  | 8px    | 2xl       | Modals, grosse Karten            |
+| `--radius-3xl`  | 10px   | 3xl       | Spezialkomponenten               |
+| `--radius-4xl`  | 12px   | 4xl       | Toolbar (Raumplanung)            |
+| `--radius-pill` | 20px   | —         | Pill-foermige Buttons            |
+| `--radius-full` | 9999px | full      | Kreise, Pills                    |
 
 ---
 
@@ -351,6 +410,18 @@ Offizielles Aequivalent: `py-3` → `md:py-4` → `lg:py-6` → `xl:py-8` → `3
 | `--shadow-lg` | `0 2px 6px -1px rgba(0,0,0,0.06), 0 5px 20px -3px rgba(0,0,0,0.08)` |
 | `--shadow-xl` | `0 6px 10px -5px rgba(0,0,0,0.06), 0 15px 25px -3px rgba(0,0,0,0.09)`|
 | `--shadow-2xl`| `0 10px 20px rgba(0,0,0,0.06), 1px 10px 70px -8px rgba(0,0,0,0.13)`  |
+
+#### Raumplanung-Schatten (projekt-spezifisch)
+
+| Token              | Definition                               | Verwendung              |
+|--------------------|------------------------------------------|-------------------------|
+| `--shadow-rp-sm`   | `0 1px 3px rgba(0,0,0,0.12)`            | Kleine Karten           |
+| `--shadow-rp`      | `0 2px 8px rgba(0,0,0,0.15)`            | Standard-Panels         |
+| `--shadow-rp-md`   | `0 2px 10px rgba(0,0,0,0.18)`           | Mittlere Panels         |
+| `--shadow-rp-lg`   | `0 2px 12px rgba(0,0,0,0.2)`            | Grosse Panels           |
+| `--shadow-rp-card` | `0 4px 12px rgba(0,0,0,0.15)`           | Karten-Schatten         |
+| `--shadow-rp-label`| `0 1px 4px rgba(0,0,0,0.2)`             | Map-Labels              |
+| `--shadow-rp-button`| `0 2px 4px rgba(0,0,0,0.15)`           | Tool-Buttons            |
 
 ---
 
@@ -366,7 +437,7 @@ Der Header folgt dem 3-zeiligen admin.ch-Muster:
 | BRAND BAR (weiss)                                             |
 | [CH] Schweizerische Eidgenossenschaft | BBL   Jobs Kontakt Q |
 +--------------------------------------------------------------+
-| NAV BAR (weiss, 64px, border top+bottom)                      |
+| NAV BAR (weiss, 56px/64px/80px responsive, border-bottom)     |
 | Produktkatalog  Gebrauchte Moebel  Arbeitsplaetze gestalten   |
 | =============== (roter aktiver Strich, 3px)                   |
 +--------------------------------------------------------------+
@@ -392,8 +463,8 @@ Der Header folgt dem 3-zeiligen admin.ch-Muster:
 
 ### 5.3 Navigation Bar
 
-- Hoehe: `--nav-height` (64px)
-- Links: Produktkatalog, Gebrauchte Moebel, Arbeitsplaetze gestalten, Arbeitsplaetze verwalten
+- Hoehe: `--nav-height` (56px, xl: 64px, 3xl: 80px)
+- Links: Produktkatalog, Gebrauchte Moebel, Arbeitsplaetze gestalten, Belegungsplanung
 - Aktiver Tab: `::after` Pseudo-Element, 3px Hoehe, `--color-accent`
 - Hover: Text wird `--color-accent`
 - Mobile: Hamburger-Menu mit Slide-Down
@@ -461,14 +532,16 @@ Der Header folgt dem 3-zeiligen admin.ch-Muster:
 
 #### Sizing & Spacing
 
-| Variante | Min-Height        | Font-Size        | Padding   | Radius        |
-|----------|-------------------|------------------|-----------|---------------|
-| Default  | `--btn-min-h`     | `--text-body`    | 0 1rem    | `--radius-sm` |
-| Small    | `--btn-sm-min-h`  | `--text-body-sm` | 0 0.75rem | `--radius-sm` |
-| Large    | `--btn-lg-min-h`  | `--text-h4`      | 0 1.5rem  | `--radius-sm` |
+| Variante | Min-Height        | Font-Size        | Padding | Radius        |
+|----------|-------------------|------------------|---------|---------------|
+| Default  | `--btn-min-h`     | `--text-body`    | 0 1rem  | `--radius-sm` |
+| Small    | `--btn-sm-min-h`  | `--text-body-sm` | 0 1rem  | `--radius-sm` |
+| Large    | `--btn-lg-min-h`  | `--text-h4`      | 0 1rem  | `--radius-sm` |
 
 Alle Buttons: border-radius `--radius-sm` (2px = offiziell rounded-sm),
-font-weight 700 (bold), transition 150ms, line-height tight (1.25).
+font-weight `--font-weight-normal` (400, per btn.postcss), transition `var(--transition-fast)`,
+line-height `--line-height-tight` (1.25).
+SVG-Icons: `stroke-width: 0.3px` per btn.postcss.
 
 > **Abweichung:** Offizielle Buttons nutzen `rounded-sm` (2px), nicht `rounded` (3px).
 > Buttons nutzen `--radius-sm`, andere Komponenten (Karten, Inputs) nutzen `--radius` (3px).
@@ -487,11 +560,11 @@ font-weight 700 (bold), transition 150ms, line-height tight (1.25).
 ### 7.3 Hero Section
 
 - Layout: Flexbox, Text links + Bild rechts (50/50)
-- Titel: `--text-display` (responsive 32px → 56px), `--color-text-primary`
+- Titel: `--text-h1` (responsive 26px → 48px), `--color-text-primary`
 - Beschreibung: `--text-h4`, `--line-height-snug`
 - CTAs: Primary-Button + Outline-Button mit Arrow-Icon
 - Gap: `--grid-gutter` (responsive)
-- Padding: `3rem --container-padding --section-py`
+- Padding: `var(--space-2xl) --container-padding --section-py`
 - Mobile: Stacked (Text oben, Bild unten), Padding `--section-py-half --container-padding`
 - Bild: Responsive `<picture>` mit srcset
 
@@ -520,22 +593,24 @@ Zwei-teiliger Footer:
 
 1. **Footer-Info** (`--color-surface-dark` = secondary-600) — 3-Spalten Grid:
    - Padding: `--section-py`
-   - Inner Gap: 4rem
+   - Inner Gap: `--space-3xl` (64px)
    - Ueber uns (Beschreibungstext)
    - Bleiben Sie informiert (Social Links + Newsletter-Button)
    - Weitere Informationen (Link-Liste mit Pfeilen)
    - Trennlinien: `--color-secondary-300`
-   - Hover-Hintergrund: `--color-secondary-100`
+   - Hover-Hintergrund: `--color-secondary-700`
 
 2. **Footer-Bottom** (`--color-surface-darker` = secondary-700) — Copyright + Impressum/Rechtliches/Barrierefreiheit/Kontakt
-   - Padding: 0.75rem
+   - Padding: `var(--space-3)` (12px)
    - Font-size: `--text-body-xs`
 
-### 7.7 Back-to-Top Button
+### 7.7 Back-to-Top Button (aligned mit back-to-top-btn.postcss)
 
 - Fixed bottom-right, erscheint nach 400px Scroll
-- `--color-accent` Border, Chevron-up Icon
-- Hover: Roter Hintergrund, weisses Icon
+- `--radius-sm` (2px), `--shadow-lg`, `--color-secondary-500` Text
+- Responsive Groessen: 44px (base), 48px (lg), 64px (xl)
+- Hover: BG → `--color-secondary-500`, Text → weiss, Shadow → `--shadow-xl`
+- SVG: fill + stroke, stroke-width 0.3px
 - Smooth-scroll nach oben
 
 ### 7.8 Cookie/Consent Banner
@@ -565,7 +640,7 @@ Breakpoints aligned mit offiziellen Werten aus `tailwind.config.js`:
 | sm         | 640px   | sm        | Container-Padding ↑, Grid-Gutter ↑                          |
 | md         | 768px   | md        | Top-Header-Padding ↑                                        |
 | lg         | 1024px  | lg        | Typografie skaliert (display–h3), Section-Padding ↑, Layout ↑|
-| xl         | 1280px  | xl        | Alle Typografie skaliert, Buttons ↑, Layout ↑               |
+| xl         | 1280px  | xl        | Alle Typografie skaliert, Buttons ↑, Nav-Height 64px, Layout ↑|
 | 3xl        | 1920px  | 3xl       | Finale Skalierung aller Tokens                               |
 
 ### Responsive Verhalten
@@ -703,19 +778,31 @@ BEM-artige Konvention:
 
 ---
 
-## 13. Entfernte Legacy-Elemente
+## 13. Entfernte Legacy-Elemente & Korrekturen
 
-Die folgenden Elemente wurden bei der Alignment-Refaktorierung entfernt:
+Die folgenden Elemente wurden bei der Alignment-Refaktorierung entfernt oder korrigiert:
 
 | Element               | Alter Wert    | Ersatz / Begruendung                     |
 |-----------------------|---------------|------------------------------------------|
 | `--ob-*` Alias-Block  | 20+ Aliases   | Direkte Token-Referenzen (`--color-*`)   |
-| `--text-compact`      | 0.8125rem     | `--text-body-sm` (0.875rem = offiziell)  |
 | `--footer-height`     | 200px         | Nicht benoetigt (auto-height)            |
 | `--brand-height`      | 80px          | Nicht benoetigt (auto-height)            |
 | `--color-focus-input`  | #006699      | Einheitlich `--color-focus` (#8655F6)    |
 | `--color-surface-dark` | #3e5060      | Korrigiert zu #2F4356 (secondary-600)    |
 | `--color-surface-darker`| #2d3a44     | Korrigiert zu #263645 (secondary-700)    |
+| `--color-badge-red-bg` | #FEE2E2      | Korrigiert zu #FAE1E2 (CD Bund red-100)  |
+| `--color-badge-red-text`| #991B1B     | Korrigiert zu #99191E (CD Bund red-800)  |
+| `var(--surface)`       | undefined     | Korrigiert zu `var(--color-bg-surface)`  |
+| `var(--border)`        | undefined     | Korrigiert zu `var(--color-border)`      |
+| `var(--text)`          | undefined     | Korrigiert zu `var(--color-text-primary)`|
+| `var(--font-family-body)` | undefined  | Korrigiert zu `var(--font-family)`       |
+
+Neue Tokens hinzugefuegt:
+- Halb-Schritt-Abstaende (`--space-0-5`, `--space-1-5`, `--space-2-5`, `--space-3`)
+- Kompakt-UI-Schriftgroessen (`--text-micro`, `--text-mini`, `--text-compact`)
+- Alpha/Overlay-Tokens (`--color-white-*`, `--color-backdrop`, `--color-black-10`)
+- Raumplanung-Palette und Schatten (`--color-rp-*`, `--shadow-rp-*`)
+- Zusaetzliche Radien (`--radius-4xl`, `--radius-pill`)
 
 ---
 

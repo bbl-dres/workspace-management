@@ -89,12 +89,36 @@
   --color-badge-green-text:    #065F46;          /* green-800 */
   --color-badge-blue-bg:       #DBEAFE;          /* blue-100 */
   --color-badge-blue-text:     #1E40AF;          /* blue-800 */
-  --color-badge-red-bg:        #FEE2E2;          /* red-100 */
-  --color-badge-red-text:      #991B1B;          /* red-800 */
+  --color-badge-red-bg:        #FAE1E2;          /* red-100 (CD Bund) */
+  --color-badge-red-text:      #99191E;          /* red-800 (CD Bund) */
   --color-badge-yellow-bg:     #FEF3C7;          /* yellow-100 */
   --color-badge-yellow-text:   #92400E;          /* yellow-800 */
   --color-badge-orange-bg:     #FFEDD5;          /* orange-100 */
   --color-badge-orange-text:   #9A3412;          /* orange-800 */
+
+  /* ── ALPHA / OVERLAY ──────────────────────────────────────────────────── */
+  --color-white-50:            rgba(255, 255, 255, 0.5);
+  --color-white-40:            rgba(255, 255, 255, 0.4);
+  --color-white-30:            rgba(255, 255, 255, 0.3);
+  --color-white-20:            rgba(255, 255, 255, 0.2);
+  --color-white-15:            rgba(255, 255, 255, 0.15);
+  --color-white-10:            rgba(255, 255, 255, 0.1);
+  --color-backdrop:            rgba(0, 0, 0, 0.7);
+  --color-black-10:            rgba(0, 0, 0, 0.1);
+
+  /* ── PROTOTYPE (project-specific) ───────────────────────────────────── */
+  --color-prototype-notice:    #ff4444;
+
+  /* ── RAUMPLANUNG (project-specific tool palette) ─────────────────────── */
+  --color-rp-primary:          #005ea8;
+  --color-rp-primary-dark:     #003C69;
+  --color-rp-primary-hover:    #00508C;
+  --color-rp-blue-50:          #e8f0fa;
+  --color-rp-blue-100:         #e0edff;
+  --color-rp-blue-200:         #d0e2fa;
+  --color-rp-surface:          #EBF0F5;
+  --color-rp-surface-hover:    #DEE5ED;
+  --color-rp-tool-text:        #5e666b;
 
   /* ── CIRCULAR-HUB (project-specific) ──────────────────────────────────── */
   --color-circular:            #047857;
@@ -118,7 +142,10 @@
   --text-body:                 1rem;             /* text--base (16px) */
   --text-body-sm:              0.875rem;         /* text--sm (14px) */
   --text-body-xs:              0.75rem;          /* text--xs (12px) */
+  --text-micro:                0.625rem;          /* 10px – compact UI labels */
+  --text-mini:                 0.6875rem;         /* 11px – small UI text */
   --text-caption:              0.75rem;          /* text--xs (12px) */
+  --text-compact:              0.8125rem;         /* 13px – compact component text */
   --text-label:                0.875rem;         /* text--sm (14px) */
 
   /* Line heights (aligned with Tailwind defaults) */
@@ -140,8 +167,12 @@
   --letter-spacing-wide:       1.2px;
 
   /* ── SPACING (4px base unit) ──────────────────────────────────────────── */
+  --space-0-5:                 2px;              /* 0.5 × 4px base */
   --space-xs:                  4px;
+  --space-1-5:                 6px;              /* 1.5 × 4px base */
   --space-sm:                  8px;
+  --space-2-5:                 10px;             /* 2.5 × 4px base */
+  --space-3:                   12px;             /* 3 × 4px base */
   --space-md:                  16px;
   --space-lg:                  24px;
   --space-xl:                  32px;
@@ -183,6 +214,8 @@
   --radius-xl:                 6px;
   --radius-2xl:                8px;
   --radius-3xl:                10px;
+  --radius-4xl:                12px;             /* CD Bund 4xl */
+  --radius-pill:               20px;             /* pill-shaped buttons */
   --radius-full:               9999px;
 
   /* ── SHADOWS (official dual-layer) ──────────────────────────────────── */
@@ -193,6 +226,15 @@
   --shadow-xl:                 0 6px 10px -5px rgba(0, 0, 0, 0.06), 0 15px 25px -3px rgba(0, 0, 0, 0.09);
   --shadow-2xl:                0 10px 20px rgba(0, 0, 0, 0.06), 1px 10px 70px -8px rgba(0, 0, 0, 0.13);
   --shadow-none:               0 0 0 rgba(0, 0, 0, 0);
+
+  /* Raumplanung-specific shadows (project-specific) */
+  --shadow-rp-sm:              0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-rp:                 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-rp-md:              0 2px 10px rgba(0, 0, 0, 0.18);
+  --shadow-rp-lg:              0 2px 12px rgba(0, 0, 0, 0.2);
+  --shadow-rp-card:            0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-rp-label:           0 1px 4px rgba(0, 0, 0, 0.2);
+  --shadow-rp-button:          0 2px 4px rgba(0, 0, 0, 0.15);
 
   /* ── TRANSITIONS ──────────────────────────────────────────────────────── */
   --transition-fast:           150ms ease;
@@ -248,7 +290,6 @@
     --section-py:              5rem;             /* py-20 (80px) */
     --section-py-half:         2.5rem;           /* py-10 (40px) */
     --top-header-py:           1.5rem;           /* py-6 (24px) */
-    --nav-height:              64px;             /* main-navigation lg */
   }
 }
 
@@ -272,6 +313,7 @@
     --container-padding:       3rem;             /* px-12 (48px) */
     --grid-gutter:             3rem;             /* gap-12 (48px) */
     --top-header-py:           2rem;             /* py-8 (32px) */
+    --nav-height:              64px;             /* main-navigation xl (h-16) */
 
     /* Buttons */
     --btn-min-h:               48px;
