@@ -1,0 +1,376 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "b-001",
+      "properties": {
+        "buildingId": "b-001",
+        "siteId": "be",
+        "name": "Bundeshaus Ost",
+        "objectCode": "1502.AB",
+        "address": {
+          "street": "Bundesgasse 3",
+          "postalCode": "3003",
+          "city": "Bern",
+          "canton": "BE",
+          "country": "CH"
+        },
+        "centroid": [
+          7.4474,
+          46.948
+        ],
+        "yearBuilt": "1892",
+        "status": "Gebäude bestehend",
+        "category": "Verwaltungsgebäude",
+        "areaGross": 12450,
+        "photo": "photo-1486406146926-c627a92ad1ab"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446935,
+              46.947841
+            ],
+            [
+              7.447865,
+              46.947841
+            ],
+            [
+              7.447865,
+              46.948159
+            ],
+            [
+              7.446935,
+              46.948159
+            ],
+            [
+              7.446935,
+              46.947841
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-002",
+      "properties": {
+        "buildingId": "b-002",
+        "siteId": "be",
+        "name": "Bundeshaus West",
+        "objectCode": "1502.AC",
+        "address": {
+          "street": "Bundesplatz 3",
+          "postalCode": "3003",
+          "city": "Bern",
+          "canton": "BE",
+          "country": "CH"
+        },
+        "centroid": [
+          7.4441,
+          46.9468
+        ],
+        "yearBuilt": "1857",
+        "status": "Gebäude bestehend",
+        "category": "Verwaltungsgebäude",
+        "areaGross": 9800,
+        "photo": "photo-1577495508048-b635879837f1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443567,
+              46.946618
+            ],
+            [
+              7.444633,
+              46.946618
+            ],
+            [
+              7.444633,
+              46.946982
+            ],
+            [
+              7.443567,
+              46.946982
+            ],
+            [
+              7.443567,
+              46.946618
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-003",
+      "properties": {
+        "buildingId": "b-003",
+        "siteId": "be",
+        "name": "Verwaltungsgebäude Hallwyl",
+        "objectCode": "1504.BA",
+        "address": {
+          "street": "Hallwylstrasse 15",
+          "postalCode": "3003",
+          "city": "Bern",
+          "canton": "BE",
+          "country": "CH"
+        },
+        "centroid": [
+          7.451,
+          46.944
+        ],
+        "yearBuilt": "1975",
+        "status": "Gebäude bestehend",
+        "category": "Verwaltungsgebäude",
+        "areaGross": 8200,
+        "photo": "photo-1554435493-93422e8220c8"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450578,
+              46.943856
+            ],
+            [
+              7.451422,
+              46.943856
+            ],
+            [
+              7.451422,
+              46.944144
+            ],
+            [
+              7.450578,
+              46.944144
+            ],
+            [
+              7.450578,
+              46.943856
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-010",
+      "properties": {
+        "buildingId": "b-010",
+        "siteId": "zh",
+        "name": "Zollkreisdirektion",
+        "objectCode": "2001.ZH",
+        "address": {
+          "street": "Seestrasse 356",
+          "postalCode": "8038",
+          "city": "Zürich",
+          "canton": "ZH",
+          "country": "CH"
+        },
+        "centroid": [
+          8.528,
+          47.344
+        ],
+        "yearBuilt": "1960",
+        "status": "Gebäude bestehend",
+        "category": "Verwaltungsgebäude",
+        "areaGross": 4600,
+        "photo": "photo-1497366811353-6870744d04b2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527635,
+              47.343876
+            ],
+            [
+              8.528365,
+              47.343876
+            ],
+            [
+              8.528365,
+              47.344124
+            ],
+            [
+              8.527635,
+              47.344124
+            ],
+            [
+              8.527635,
+              47.343876
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-011",
+      "properties": {
+        "buildingId": "b-011",
+        "siteId": "zh",
+        "name": "Bundesasylzentrum",
+        "objectCode": "2002.ZA",
+        "address": {
+          "street": "Duttweilerstrasse 100",
+          "postalCode": "8005",
+          "city": "Zürich",
+          "canton": "ZH",
+          "country": "CH"
+        },
+        "centroid": [
+          8.517,
+          47.389
+        ],
+        "yearBuilt": "2018",
+        "status": "Gebäude bestehend",
+        "category": "Spezialgebäude",
+        "areaGross": 6200,
+        "photo": "photo-1497215842964-222b430dc094"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.516481,
+              47.388823
+            ],
+            [
+              8.517519,
+              47.388823
+            ],
+            [
+              8.517519,
+              47.389177
+            ],
+            [
+              8.516481,
+              47.389177
+            ],
+            [
+              8.516481,
+              47.388823
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-020",
+      "properties": {
+        "buildingId": "b-020",
+        "siteId": "bs",
+        "name": "Zollverwaltung Nord",
+        "objectCode": "3001.BS",
+        "address": {
+          "street": "Elisabethenstrasse 31",
+          "postalCode": "4010",
+          "city": "Basel",
+          "canton": "BS",
+          "country": "CH"
+        },
+        "centroid": [
+          7.5886,
+          47.55
+        ],
+        "yearBuilt": "1985",
+        "status": "Gebäude bestehend",
+        "category": "Verwaltungsgebäude",
+        "areaGross": 5100,
+        "photo": "photo-1497366216548-37526070297c"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588215,
+              47.549869
+            ],
+            [
+              7.588985,
+              47.549869
+            ],
+            [
+              7.588985,
+              47.550131
+            ],
+            [
+              7.588215,
+              47.550131
+            ],
+            [
+              7.588215,
+              47.549869
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-030",
+      "properties": {
+        "buildingId": "b-030",
+        "siteId": "lu",
+        "name": "Bundesgebäude Luzern",
+        "objectCode": "4001.LU",
+        "address": {
+          "street": "Bahnhofstrasse 20",
+          "postalCode": "6002",
+          "city": "Luzern",
+          "canton": "LU",
+          "country": "CH"
+        },
+        "centroid": [
+          8.3093,
+          47.0502
+        ],
+        "yearBuilt": "1970",
+        "status": "Gebäude bestehend",
+        "category": "Verwaltungsgebäude",
+        "areaGross": 3800,
+        "photo": "photo-1524758631624-e2822e304c36"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308968,
+              47.050087
+            ],
+            [
+              8.309632,
+              47.050087
+            ],
+            [
+              8.309632,
+              47.050313
+            ],
+            [
+              8.308968,
+              47.050313
+            ],
+            [
+              8.308968,
+              47.050087
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

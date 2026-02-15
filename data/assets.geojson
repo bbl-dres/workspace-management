@@ -1,0 +1,3138 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "INV-2020-000112",
+      "properties": {
+        "assetId": "INV-2020-000112",
+        "name": "Giroflex Bürostuhl 64",
+        "inventoryNumber": "INV-2020-000112",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-001",
+        "floorId": "b-001-eg",
+        "roomId": "b-001-eg-EG02",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-03-10",
+        "acquisitionCost": 890,
+        "centroid": [
+          7.447142,
+          46.947984
+        ],
+        "productId": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447138,
+              46.947981
+            ],
+            [
+              7.447146,
+              46.947981
+            ],
+            [
+              7.447146,
+              46.947986
+            ],
+            [
+              7.447138,
+              46.947986
+            ],
+            [
+              7.447138,
+              46.947981
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000113",
+      "properties": {
+        "assetId": "INV-2020-000113",
+        "name": "Giroflex Bürostuhl 64",
+        "inventoryNumber": "INV-2020-000113",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-001",
+        "floorId": "b-001-eg",
+        "roomId": "b-001-eg-EG02",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-03-10",
+        "acquisitionCost": 890,
+        "centroid": [
+          7.447154,
+          46.947984
+        ],
+        "productId": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.44715,
+              46.947981
+            ],
+            [
+              7.447158,
+              46.947981
+            ],
+            [
+              7.447158,
+              46.947986
+            ],
+            [
+              7.44715,
+              46.947986
+            ],
+            [
+              7.44715,
+              46.947981
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000045",
+      "properties": {
+        "assetId": "INV-2019-000045",
+        "name": "Lista Office Schreibtisch 160×80",
+        "inventoryNumber": "INV-2019-000045",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-001",
+        "floorId": "b-001-eg",
+        "roomId": "b-001-eg-EG02",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2019-06-15",
+        "acquisitionCost": 1200,
+        "centroid": [
+          7.447173,
+          46.947982
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447162,
+              46.947979
+            ],
+            [
+              7.447183,
+              46.947979
+            ],
+            [
+              7.447183,
+              46.947986
+            ],
+            [
+              7.447162,
+              46.947986
+            ],
+            [
+              7.447162,
+              46.947979
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000201",
+      "properties": {
+        "assetId": "INV-2021-000201",
+        "name": "Dell UltraSharp U2722D Monitor",
+        "inventoryNumber": "INV-2021-000201",
+        "brand": "Dell",
+        "categoryId": "it-equipment",
+        "buildingId": "b-001",
+        "floorId": "b-001-eg",
+        "roomId": "b-001-eg-EG02",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2021-09-01",
+        "acquisitionCost": 520,
+        "centroid": [
+          7.44719,
+          46.947985
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447187,
+              46.947984
+            ],
+            [
+              7.447193,
+              46.947984
+            ],
+            [
+              7.447193,
+              46.947986
+            ],
+            [
+              7.447187,
+              46.947986
+            ],
+            [
+              7.447187,
+              46.947984
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2018-000320",
+      "properties": {
+        "assetId": "INV-2018-000320",
+        "name": "USM Haller Regal 2×3",
+        "inventoryNumber": "INV-2018-000320",
+        "brand": "USM",
+        "categoryId": "usm-haller",
+        "buildingId": "b-001",
+        "floorId": "b-001-eg",
+        "roomId": "b-001-eg-EG08",
+        "status": "Aktiv",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2018-01-20",
+        "acquisitionCost": 2450,
+        "centroid": [
+          7.446956,
+          46.948057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446946,
+              46.948055
+            ],
+            [
+              7.446966,
+              46.948055
+            ],
+            [
+              7.446966,
+              46.948058
+            ],
+            [
+              7.446946,
+              46.948058
+            ],
+            [
+              7.446946,
+              46.948055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000410",
+      "properties": {
+        "assetId": "INV-2022-000410",
+        "name": "Jura E8 Kaffeemaschine",
+        "inventoryNumber": "INV-2022-000410",
+        "brand": "Jura",
+        "categoryId": "kueche",
+        "buildingId": "b-001",
+        "floorId": "b-001-eg",
+        "roomId": "b-001-eg-EG15",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2022-04-01",
+        "acquisitionCost": 1890,
+        "centroid": [
+          7.447514,
+          46.948056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.44751,
+              46.948054
+            ],
+            [
+              7.447518,
+              46.948054
+            ],
+            [
+              7.447518,
+              46.948058
+            ],
+            [
+              7.44751,
+              46.948058
+            ],
+            [
+              7.44751,
+              46.948054
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000501",
+      "properties": {
+        "assetId": "INV-2023-000501",
+        "name": "Samsung Flip WM85B Whiteboard",
+        "inventoryNumber": "INV-2023-000501",
+        "brand": "Samsung",
+        "categoryId": "medientechnik",
+        "buildingId": "b-001",
+        "floorId": "b-001-eg",
+        "roomId": "b-001-eg-EG09",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2023-02-15",
+        "acquisitionCost": 3200,
+        "centroid": [
+          7.447428,
+          46.947985
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447422,
+              46.947983
+            ],
+            [
+              7.447433,
+              46.947983
+            ],
+            [
+              7.447433,
+              46.947986
+            ],
+            [
+              7.447422,
+              46.947986
+            ],
+            [
+              7.447422,
+              46.947983
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000114",
+      "properties": {
+        "assetId": "INV-2020-000114",
+        "name": "Giroflex Bürostuhl 64",
+        "inventoryNumber": "INV-2020-000114",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-001",
+        "floorId": "b-001-1",
+        "roomId": "b-001-1-101",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-03-10",
+        "acquisitionCost": 890,
+        "centroid": [
+          7.447166,
+          46.947984
+        ],
+        "productId": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447162,
+              46.947981
+            ],
+            [
+              7.44717,
+              46.947981
+            ],
+            [
+              7.44717,
+              46.947986
+            ],
+            [
+              7.447162,
+              46.947986
+            ],
+            [
+              7.447162,
+              46.947981
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000046",
+      "properties": {
+        "assetId": "INV-2019-000046",
+        "name": "Lista Office Schreibtisch 140×70",
+        "inventoryNumber": "INV-2019-000046",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-001",
+        "floorId": "b-001-1",
+        "roomId": "b-001-1-101",
+        "status": "Aktiv",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2019-06-15",
+        "acquisitionCost": 1100,
+        "centroid": [
+          7.447185,
+          46.947982
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447174,
+              46.947979
+            ],
+            [
+              7.447195,
+              46.947979
+            ],
+            [
+              7.447195,
+              46.947986
+            ],
+            [
+              7.447174,
+              46.947986
+            ],
+            [
+              7.447174,
+              46.947979
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000502",
+      "properties": {
+        "assetId": "INV-2023-000502",
+        "name": "HP LaserJet Pro MFP",
+        "inventoryNumber": "INV-2023-000502",
+        "brand": "HP",
+        "categoryId": "it-equipment",
+        "buildingId": "b-001",
+        "floorId": "b-001-1",
+        "roomId": "b-001-1-110",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2023-08-20",
+        "acquisitionCost": 680,
+        "centroid": [
+          7.44695,
+          46.948057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446946,
+              46.948056
+            ],
+            [
+              7.446953,
+              46.948056
+            ],
+            [
+              7.446953,
+              46.948058
+            ],
+            [
+              7.446946,
+              46.948058
+            ],
+            [
+              7.446946,
+              46.948056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000205",
+      "properties": {
+        "assetId": "INV-2021-000205",
+        "name": "Artemide Tolomeo Schreibtischleuchte",
+        "inventoryNumber": "INV-2021-000205",
+        "brand": "Artemide",
+        "categoryId": "schreibtischlampen",
+        "buildingId": "b-001",
+        "floorId": "b-001-1",
+        "roomId": "b-001-1-103",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2021-11-05",
+        "acquisitionCost": 380,
+        "centroid": [
+          7.447124,
+          46.948058
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447122,
+              46.948057
+            ],
+            [
+              7.447125,
+              46.948057
+            ],
+            [
+              7.447125,
+              46.948058
+            ],
+            [
+              7.447122,
+              46.948058
+            ],
+            [
+              7.447122,
+              46.948057
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2017-000088",
+      "properties": {
+        "assetId": "INV-2017-000088",
+        "name": "Vitra Besucherstuhl .03",
+        "inventoryNumber": "INV-2017-000088",
+        "brand": "Vitra",
+        "categoryId": "besucherstuhl",
+        "buildingId": "b-001",
+        "floorId": "b-001-1",
+        "roomId": "b-001-1-108",
+        "status": "Zur Abgabe",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2017-05-12",
+        "acquisitionCost": 320,
+        "centroid": [
+          7.447085,
+          46.947984
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447081,
+              46.947982
+            ],
+            [
+              7.447088,
+              46.947982
+            ],
+            [
+              7.447088,
+              46.947986
+            ],
+            [
+              7.447081,
+              46.947986
+            ],
+            [
+              7.447081,
+              46.947982
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000415",
+      "properties": {
+        "assetId": "INV-2022-000415",
+        "name": "Sedus Konferenzstuhl on spot",
+        "inventoryNumber": "INV-2022-000415",
+        "brand": "Sedus",
+        "categoryId": "konferenzstuehle",
+        "buildingId": "b-002",
+        "floorId": "b-002-eg",
+        "roomId": "b-002-eg-EG03",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2022-06-14",
+        "acquisitionCost": 450,
+        "centroid": [
+          7.44384,
+          46.946856
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443836,
+              46.946854
+            ],
+            [
+              7.443843,
+              46.946854
+            ],
+            [
+              7.443843,
+              46.946858
+            ],
+            [
+              7.443836,
+              46.946858
+            ],
+            [
+              7.443836,
+              46.946854
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000416",
+      "properties": {
+        "assetId": "INV-2022-000416",
+        "name": "Sedus Konferenzstuhl on spot",
+        "inventoryNumber": "INV-2022-000416",
+        "brand": "Sedus",
+        "categoryId": "konferenzstuehle",
+        "buildingId": "b-002",
+        "floorId": "b-002-eg",
+        "roomId": "b-002-eg-EG03",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2022-06-14",
+        "acquisitionCost": 450,
+        "centroid": [
+          7.44385,
+          46.946856
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443847,
+              46.946854
+            ],
+            [
+              7.443853,
+              46.946854
+            ],
+            [
+              7.443853,
+              46.946858
+            ],
+            [
+              7.443847,
+              46.946858
+            ],
+            [
+              7.443847,
+              46.946854
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000150",
+      "properties": {
+        "assetId": "INV-2020-000150",
+        "name": "USM Inos Rollkorpus",
+        "inventoryNumber": "INV-2020-000150",
+        "brand": "USM",
+        "categoryId": "rollkorpus",
+        "buildingId": "b-002",
+        "floorId": "b-002-eg",
+        "roomId": "b-002-eg-EG05",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-11-30",
+        "acquisitionCost": 680,
+        "centroid": [
+          7.443783,
+          46.946856
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.44378,
+              46.946853
+            ],
+            [
+              7.443785,
+              46.946853
+            ],
+            [
+              7.443785,
+              46.946858
+            ],
+            [
+              7.44378,
+              46.946858
+            ],
+            [
+              7.44378,
+              46.946853
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000510",
+      "properties": {
+        "assetId": "INV-2023-000510",
+        "name": "Logitech Rally Konferenzsystem",
+        "inventoryNumber": "INV-2023-000510",
+        "brand": "Logitech",
+        "categoryId": "medientechnik",
+        "buildingId": "b-002",
+        "floorId": "b-002-1",
+        "roomId": "b-002-1-109",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2023-03-10",
+        "acquisitionCost": 4500,
+        "centroid": [
+          7.44387,
+          46.946785
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443864,
+              46.946783
+            ],
+            [
+              7.443875,
+              46.946783
+            ],
+            [
+              7.443875,
+              46.946786
+            ],
+            [
+              7.443864,
+              46.946786
+            ],
+            [
+              7.443864,
+              46.946783
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000060",
+      "properties": {
+        "assetId": "INV-2019-000060",
+        "name": "Lista Office Schreibtisch 180×80",
+        "inventoryNumber": "INV-2019-000060",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-010",
+        "floorId": "b-010-eg",
+        "roomId": "b-010-eg-EG02",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2019-09-05",
+        "acquisitionCost": 1350,
+        "centroid": [
+          8.527732,
+          47.344055
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527721,
+              47.344051
+            ],
+            [
+              8.527742,
+              47.344051
+            ],
+            [
+              8.527742,
+              47.344058
+            ],
+            [
+              8.527721,
+              47.344058
+            ],
+            [
+              8.527721,
+              47.344051
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000210",
+      "properties": {
+        "assetId": "INV-2021-000210",
+        "name": "Dell UltraSharp U2722D Monitor",
+        "inventoryNumber": "INV-2021-000210",
+        "brand": "Dell",
+        "categoryId": "it-equipment",
+        "buildingId": "b-010",
+        "floorId": "b-010-eg",
+        "roomId": "b-010-eg-EG02",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2021-09-01",
+        "acquisitionCost": 520,
+        "centroid": [
+          8.52775,
+          47.344057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527746,
+              47.344056
+            ],
+            [
+              8.527753,
+              47.344056
+            ],
+            [
+              8.527753,
+              47.344058
+            ],
+            [
+              8.527746,
+              47.344058
+            ],
+            [
+              8.527746,
+              47.344056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2024-000601",
+      "properties": {
+        "assetId": "INV-2024-000601",
+        "name": "Dyson Pure Cool Luftreiniger",
+        "inventoryNumber": "INV-2024-000601",
+        "brand": "Dyson",
+        "categoryId": "raumklima",
+        "buildingId": "b-010",
+        "floorId": "b-010-1",
+        "roomId": "b-010-1-105",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2024-01-15",
+        "acquisitionCost": 650,
+        "centroid": [
+          8.527719,
+          47.344057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527717,
+              47.344056
+            ],
+            [
+              8.527721,
+              47.344056
+            ],
+            [
+              8.527721,
+              47.344058
+            ],
+            [
+              8.527717,
+              47.344058
+            ],
+            [
+              8.527717,
+              47.344056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2016-000032",
+      "properties": {
+        "assetId": "INV-2016-000032",
+        "name": "Giroflex Bürostuhl 353",
+        "inventoryNumber": "INV-2016-000032",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-010",
+        "floorId": "b-010-1",
+        "roomId": "b-010-1-103",
+        "status": "Zur Abgabe",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2016-04-22",
+        "acquisitionCost": 780,
+        "centroid": [
+          8.52765,
+          47.344055
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527646,
+              47.344053
+            ],
+            [
+              8.527654,
+              47.344053
+            ],
+            [
+              8.527654,
+              47.344058
+            ],
+            [
+              8.527646,
+              47.344058
+            ],
+            [
+              8.527646,
+              47.344053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-002456",
+      "properties": {
+        "assetId": "INV-2021-002456",
+        "name": "Lista Office Schreibtisch",
+        "inventoryNumber": "INV-2021-002456",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-010",
+        "floorId": "b-010-1",
+        "roomId": "b-010-1-103",
+        "status": "Zur Abgabe",
+        "condition": "Gut",
+        "acquisitionDate": "2017-09-05",
+        "acquisitionCost": 1200,
+        "centroid": [
+          8.527669,
+          47.344055
+        ],
+        "price": 120,
+        "currency": "CHF",
+        "description": "140×70 cm, höhenverstellbar (mechanisch), Tischplatte Eiche natur. Guter Zustand, minimale Kratzer.",
+        "organizationId": "org-bazg",
+        "qrCode": "https://bbl.admin.ch/inv/INV-2021-002456",
+        "photo": "photo-1518455027359-f3f8164ba6bd",
+        "photos": [
+          "photo-1518455027359-f3f8164ba6bd",
+          "photo-1593642632559-0c6d3fc62b89",
+          "photo-1611269154421-4e27233ac5c7"
+        ],
+        "listedAt": "2025-09-15",
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527658,
+              47.344051
+            ],
+            [
+              8.527679,
+              47.344051
+            ],
+            [
+              8.527679,
+              47.344058
+            ],
+            [
+              8.527658,
+              47.344058
+            ],
+            [
+              8.527658,
+              47.344051
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000420",
+      "properties": {
+        "assetId": "INV-2022-000420",
+        "name": "Franke A400 Kaffeemaschine",
+        "inventoryNumber": "INV-2022-000420",
+        "brand": "Franke",
+        "categoryId": "kueche",
+        "buildingId": "b-020",
+        "floorId": "b-020-eg",
+        "roomId": "b-020-eg-EG10",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2022-07-01",
+        "acquisitionCost": 3200,
+        "centroid": [
+          7.588532,
+          47.549984
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588528,
+              47.549982
+            ],
+            [
+              7.588536,
+              47.549982
+            ],
+            [
+              7.588536,
+              47.549986
+            ],
+            [
+              7.588528,
+              47.549986
+            ],
+            [
+              7.588528,
+              47.549982
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000160",
+      "properties": {
+        "assetId": "INV-2020-000160",
+        "name": "USM Haller Sideboard 2×1",
+        "inventoryNumber": "INV-2020-000160",
+        "brand": "USM",
+        "categoryId": "usm-haller",
+        "buildingId": "b-020",
+        "floorId": "b-020-1",
+        "roomId": "b-020-1-105",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-02-18",
+        "acquisitionCost": 1850,
+        "centroid": [
+          7.588373,
+          47.549984
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588363,
+              47.549983
+            ],
+            [
+              7.588383,
+              47.549983
+            ],
+            [
+              7.588383,
+              47.549986
+            ],
+            [
+              7.588363,
+              47.549986
+            ],
+            [
+              7.588363,
+              47.549983
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000520",
+      "properties": {
+        "assetId": "INV-2023-000520",
+        "name": "Epson EB-L200SW Projektor",
+        "inventoryNumber": "INV-2023-000520",
+        "brand": "Epson",
+        "categoryId": "medientechnik",
+        "buildingId": "b-020",
+        "floorId": "b-020-1",
+        "roomId": "b-020-1-108",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2023-05-20",
+        "acquisitionCost": 2800,
+        "centroid": [
+          7.588232,
+          47.550057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588226,
+              47.550055
+            ],
+            [
+              7.588237,
+              47.550055
+            ],
+            [
+              7.588237,
+              47.550058
+            ],
+            [
+              7.588226,
+              47.550058
+            ],
+            [
+              7.588226,
+              47.550055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-003501",
+      "properties": {
+        "assetId": "INV-2022-003501",
+        "name": "Sedus Konferenzstuhl on spot",
+        "inventoryNumber": "INV-2022-003501",
+        "brand": "Sedus",
+        "categoryId": "konferenzstuehle",
+        "buildingId": "b-020",
+        "floorId": "b-020-1",
+        "roomId": "b-020-1-108",
+        "status": "Zur Abgabe",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2021-06-14",
+        "acquisitionCost": 450,
+        "centroid": [
+          7.588244,
+          47.550056
+        ],
+        "price": 25,
+        "currency": "CHF",
+        "description": "Stoff blau, kaum Gebrauchsspuren. 4 Stück verfügbar, stapelbar.",
+        "organizationId": "org-bazg",
+        "qrCode": "https://bbl.admin.ch/inv/INV-2022-003501",
+        "photo": "photo-1581539250439-c96689b516dd",
+        "photos": [
+          "photo-1581539250439-c96689b516dd",
+          "photo-1592078615290-033ee584e267",
+          "photo-1567538096630-e0c55bd6374c"
+        ],
+        "listedAt": "2025-10-05",
+        "quantity": 4,
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.58824,
+              47.550054
+            ],
+            [
+              7.588247,
+              47.550054
+            ],
+            [
+              7.588247,
+              47.550058
+            ],
+            [
+              7.58824,
+              47.550058
+            ],
+            [
+              7.58824,
+              47.550054
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2018-000340",
+      "properties": {
+        "assetId": "INV-2018-000340",
+        "name": "Giroflex Bürostuhl 64",
+        "inventoryNumber": "INV-2018-000340",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-030",
+        "floorId": "b-030-eg",
+        "roomId": "b-030-eg-EG04",
+        "status": "Aktiv",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2018-10-08",
+        "acquisitionCost": 890,
+        "centroid": [
+          8.308983,
+          47.050184
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308979,
+              47.050181
+            ],
+            [
+              8.308987,
+              47.050181
+            ],
+            [
+              8.308987,
+              47.050186
+            ],
+            [
+              8.308979,
+              47.050186
+            ],
+            [
+              8.308979,
+              47.050181
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000215",
+      "properties": {
+        "assetId": "INV-2021-000215",
+        "name": "Lenovo ThinkVision T27h Monitor",
+        "inventoryNumber": "INV-2021-000215",
+        "brand": "Lenovo",
+        "categoryId": "it-equipment",
+        "buildingId": "b-030",
+        "floorId": "b-030-eg",
+        "roomId": "b-030-eg-EG04",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2021-12-10",
+        "acquisitionCost": 480,
+        "centroid": [
+          8.308994,
+          47.050185
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308991,
+              47.050184
+            ],
+            [
+              8.308997,
+              47.050184
+            ],
+            [
+              8.308997,
+              47.050186
+            ],
+            [
+              8.308991,
+              47.050186
+            ],
+            [
+              8.308991,
+              47.050184
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000070",
+      "properties": {
+        "assetId": "INV-2019-000070",
+        "name": "Lista Office Steh-Sitz-Tisch",
+        "inventoryNumber": "INV-2019-000070",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-030",
+        "floorId": "b-030-2",
+        "roomId": "b-030-2-201",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2019-03-25",
+        "acquisitionCost": 1600,
+        "centroid": [
+          8.308989,
+          47.050183
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308979,
+              47.050179
+            ],
+            [
+              8.309,
+              47.050179
+            ],
+            [
+              8.309,
+              47.050186
+            ],
+            [
+              8.308979,
+              47.050186
+            ],
+            [
+              8.308979,
+              47.050179
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-004102",
+      "properties": {
+        "assetId": "INV-2023-004102",
+        "name": "USM Inos Rollkorpus",
+        "inventoryNumber": "INV-2023-004102",
+        "brand": "USM",
+        "categoryId": "rollkorpus",
+        "buildingId": "b-030",
+        "floorId": "b-030-2",
+        "roomId": "b-030-2-201",
+        "status": "Zur Abgabe",
+        "condition": "Gut",
+        "acquisitionDate": "2019-11-30",
+        "acquisitionCost": 680,
+        "centroid": [
+          8.309006,
+          47.050184
+        ],
+        "price": 190,
+        "currency": "CHF",
+        "description": "3 Schubladen, reinweiss, Rollen einwandfrei. Leichte Kratzer an der Oberseite.",
+        "organizationId": "org-bbl",
+        "qrCode": "https://bbl.admin.ch/inv/INV-2023-004102",
+        "photo": "photo-1555041469-a586c61ea9bc",
+        "photos": [
+          "photo-1555041469-a586c61ea9bc",
+          "photo-1493663284031-b7e3aefcae8e"
+        ],
+        "listedAt": "2025-12-10",
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.309004,
+              47.050181
+            ],
+            [
+              8.309009,
+              47.050181
+            ],
+            [
+              8.309009,
+              47.050186
+            ],
+            [
+              8.309004,
+              47.050186
+            ],
+            [
+              8.309004,
+              47.050181
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2015-000015",
+      "properties": {
+        "assetId": "INV-2015-000015",
+        "name": "Koenig+Neurath Bürostuhl",
+        "inventoryNumber": "INV-2015-000015",
+        "brand": "Koenig+Neurath",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-030",
+        "floorId": "b-030-2",
+        "roomId": "b-030-2-205",
+        "status": "Zur Abgabe",
+        "condition": "Reparaturbedürftig",
+        "acquisitionDate": "2015-08-14",
+        "acquisitionCost": 720,
+        "centroid": [
+          8.308983,
+          47.050256
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308979,
+              47.050253
+            ],
+            [
+              8.308987,
+              47.050253
+            ],
+            [
+              8.308987,
+              47.050258
+            ],
+            [
+              8.308979,
+              47.050258
+            ],
+            [
+              8.308979,
+              47.050253
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2024-000610",
+      "properties": {
+        "assetId": "INV-2024-000610",
+        "name": "Fellowes Aktenvernichter 225Mi",
+        "inventoryNumber": "INV-2024-000610",
+        "brand": "Fellowes",
+        "categoryId": "buerogeraete",
+        "buildingId": "b-001",
+        "floorId": "b-001-2",
+        "roomId": "b-001-2-210",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2024-02-28",
+        "acquisitionCost": 450,
+        "centroid": [
+          7.446948,
+          46.947985
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446946,
+              46.947983
+            ],
+            [
+              7.446951,
+              46.947983
+            ],
+            [
+              7.446951,
+              46.947986
+            ],
+            [
+              7.446946,
+              46.947986
+            ],
+            [
+              7.446946,
+              46.947983
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000530",
+      "properties": {
+        "assetId": "INV-2023-000530",
+        "name": "Vitra ID Mesh Bürostuhl",
+        "inventoryNumber": "INV-2023-000530",
+        "brand": "Vitra",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-001",
+        "floorId": "b-001-2",
+        "roomId": "b-001-2-205",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2023-07-10",
+        "acquisitionCost": 1150,
+        "centroid": [
+          7.447382,
+          46.948056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447378,
+              46.948053
+            ],
+            [
+              7.447386,
+              46.948053
+            ],
+            [
+              7.447386,
+              46.948058
+            ],
+            [
+              7.447378,
+              46.948058
+            ],
+            [
+              7.447378,
+              46.948053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-004521",
+      "properties": {
+        "assetId": "INV-2023-004521",
+        "name": "Giroflex Bürostuhl 64",
+        "inventoryNumber": "INV-2023-004521",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-001",
+        "floorId": "b-001-2",
+        "roomId": "b-001-2-205",
+        "status": "Zur Abgabe",
+        "condition": "Gut",
+        "acquisitionDate": "2019-03-15",
+        "acquisitionCost": 890,
+        "centroid": [
+          7.447394,
+          46.948056
+        ],
+        "price": 45,
+        "currency": "CHF",
+        "description": "Modell 64, guter Zustand, gereinigt. Armlehnen höhenverstellbar, Lordosenstütze intakt.",
+        "organizationId": "org-bbl",
+        "qrCode": "https://bbl.admin.ch/inv/INV-2023-004521",
+        "photo": "photo-1580480055273-228ff5388ef8",
+        "photos": [
+          "photo-1580480055273-228ff5388ef8",
+          "photo-1598300042247-d088f8ab3a91",
+          "photo-1616627547584-bf28cee262db"
+        ],
+        "listedAt": "2025-11-10",
+        "productId": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.44739,
+              46.948053
+            ],
+            [
+              7.447398,
+              46.948053
+            ],
+            [
+              7.447398,
+              46.948058
+            ],
+            [
+              7.44739,
+              46.948058
+            ],
+            [
+              7.44739,
+              46.948053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000170",
+      "properties": {
+        "assetId": "INV-2020-000170",
+        "name": "Steelcase Flex Whiteboard",
+        "inventoryNumber": "INV-2020-000170",
+        "brand": "Steelcase",
+        "categoryId": "medientechnik",
+        "buildingId": "b-011",
+        "floorId": "b-011-eg",
+        "roomId": "b-011-eg-EG05",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-08-12",
+        "acquisitionCost": 890,
+        "centroid": [
+          8.516621,
+          47.388985
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.516615,
+              47.388983
+            ],
+            [
+              8.516626,
+              47.388983
+            ],
+            [
+              8.516626,
+              47.388986
+            ],
+            [
+              8.516615,
+              47.388986
+            ],
+            [
+              8.516615,
+              47.388983
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000425",
+      "properties": {
+        "assetId": "INV-2022-000425",
+        "name": "Jura WE8 Kaffeemaschine",
+        "inventoryNumber": "INV-2022-000425",
+        "brand": "Jura",
+        "categoryId": "kueche",
+        "buildingId": "b-011",
+        "floorId": "b-011-eg",
+        "roomId": "b-011-eg-EG08",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2022-09-15",
+        "acquisitionCost": 1490,
+        "centroid": [
+          8.516779,
+          47.389056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.516775,
+              47.389054
+            ],
+            [
+              8.516783,
+              47.389054
+            ],
+            [
+              8.516783,
+              47.389058
+            ],
+            [
+              8.516775,
+              47.389058
+            ],
+            [
+              8.516775,
+              47.389054
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000080",
+      "properties": {
+        "assetId": "INV-2019-000080",
+        "name": "USM Haller Regal 1×2",
+        "inventoryNumber": "INV-2019-000080",
+        "brand": "USM",
+        "categoryId": "usm-haller",
+        "buildingId": "b-001",
+        "floorId": "b-001-ug",
+        "roomId": "b-001-ug-UG03",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2019-02-10",
+        "acquisitionCost": 1850,
+        "centroid": [
+          7.447107,
+          46.948057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447097,
+              46.948055
+            ],
+            [
+              7.447117,
+              46.948055
+            ],
+            [
+              7.447117,
+              46.948058
+            ],
+            [
+              7.447097,
+              46.948058
+            ],
+            [
+              7.447097,
+              46.948055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000180",
+      "properties": {
+        "assetId": "INV-2020-000180",
+        "name": "Fellowes Aktenvernichter 125Ci",
+        "inventoryNumber": "INV-2020-000180",
+        "brand": "Fellowes",
+        "categoryId": "buerogeraete",
+        "buildingId": "b-001",
+        "floorId": "b-001-ug",
+        "roomId": "b-001-ug-UG05",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-05-18",
+        "acquisitionCost": 380,
+        "centroid": [
+          7.446981,
+          46.948057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446978,
+              46.948055
+            ],
+            [
+              7.446983,
+              46.948055
+            ],
+            [
+              7.446983,
+              46.948058
+            ],
+            [
+              7.446978,
+              46.948058
+            ],
+            [
+              7.446978,
+              46.948055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000220",
+      "properties": {
+        "assetId": "INV-2021-000220",
+        "name": "Giroflex Bürostuhl 353",
+        "inventoryNumber": "INV-2021-000220",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-002",
+        "floorId": "b-002-2",
+        "roomId": "b-002-2-208",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2021-03-15",
+        "acquisitionCost": 780,
+        "centroid": [
+          7.443582,
+          46.946856
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443578,
+              46.946853
+            ],
+            [
+              7.443586,
+              46.946853
+            ],
+            [
+              7.443586,
+              46.946858
+            ],
+            [
+              7.443578,
+              46.946858
+            ],
+            [
+              7.443578,
+              46.946853
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000085",
+      "properties": {
+        "assetId": "INV-2019-000085",
+        "name": "Lista Office Schreibtisch 160×80",
+        "inventoryNumber": "INV-2019-000085",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-002",
+        "floorId": "b-002-2",
+        "roomId": "b-002-2-208",
+        "status": "Aktiv",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2019-07-22",
+        "acquisitionCost": 1200,
+        "centroid": [
+          7.443601,
+          46.946855
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.44359,
+              46.946851
+            ],
+            [
+              7.443611,
+              46.946851
+            ],
+            [
+              7.443611,
+              46.946858
+            ],
+            [
+              7.44359,
+              46.946858
+            ],
+            [
+              7.44359,
+              46.946851
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000430",
+      "properties": {
+        "assetId": "INV-2022-000430",
+        "name": "Dell UltraSharp U2723QE Monitor",
+        "inventoryNumber": "INV-2022-000430",
+        "brand": "Dell",
+        "categoryId": "it-equipment",
+        "buildingId": "b-002",
+        "floorId": "b-002-2",
+        "roomId": "b-002-2-219",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2022-11-05",
+        "acquisitionCost": 620,
+        "centroid": [
+          7.443729,
+          46.946857
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443725,
+              46.946856
+            ],
+            [
+              7.443732,
+              46.946856
+            ],
+            [
+              7.443732,
+              46.946858
+            ],
+            [
+              7.443725,
+              46.946858
+            ],
+            [
+              7.443725,
+              46.946856
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2018-000350",
+      "properties": {
+        "assetId": "INV-2018-000350",
+        "name": "Koenig+Neurath Bürostuhl",
+        "inventoryNumber": "INV-2018-000350",
+        "brand": "Koenig+Neurath",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-003",
+        "floorId": "b-003-ug",
+        "roomId": "b-003-ug-UG03",
+        "status": "Aktiv",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2018-06-20",
+        "acquisitionCost": 720,
+        "centroid": [
+          7.450621,
+          46.944056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450617,
+              46.944053
+            ],
+            [
+              7.450625,
+              46.944053
+            ],
+            [
+              7.450625,
+              46.944058
+            ],
+            [
+              7.450617,
+              46.944058
+            ],
+            [
+              7.450617,
+              46.944053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000185",
+      "properties": {
+        "assetId": "INV-2020-000185",
+        "name": "USM Inos Rollkorpus",
+        "inventoryNumber": "INV-2020-000185",
+        "brand": "USM",
+        "categoryId": "rollkorpus",
+        "buildingId": "b-003",
+        "floorId": "b-003-ug",
+        "roomId": "b-003-ug-UG05",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-09-10",
+        "acquisitionCost": 680,
+        "centroid": [
+          7.450728,
+          46.944056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450725,
+              46.944053
+            ],
+            [
+              7.45073,
+              46.944053
+            ],
+            [
+              7.45073,
+              46.944058
+            ],
+            [
+              7.450725,
+              46.944058
+            ],
+            [
+              7.450725,
+              46.944053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000540",
+      "properties": {
+        "assetId": "INV-2023-000540",
+        "name": "Vitra ID Mesh Bürostuhl",
+        "inventoryNumber": "INV-2023-000540",
+        "brand": "Vitra",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-003",
+        "floorId": "b-003-1",
+        "roomId": "b-003-1-108",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2023-04-18",
+        "acquisitionCost": 1150,
+        "centroid": [
+          7.450593,
+          46.944056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450589,
+              46.944053
+            ],
+            [
+              7.450597,
+              46.944053
+            ],
+            [
+              7.450597,
+              46.944058
+            ],
+            [
+              7.450589,
+              46.944058
+            ],
+            [
+              7.450589,
+              46.944053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000090",
+      "properties": {
+        "assetId": "INV-2019-000090",
+        "name": "Lista Office Schreibtisch 140×70",
+        "inventoryNumber": "INV-2019-000090",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-003",
+        "floorId": "b-003-1",
+        "roomId": "b-003-1-105",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2019-11-28",
+        "acquisitionCost": 1100,
+        "centroid": [
+          7.450767,
+          46.944055
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450756,
+              46.944051
+            ],
+            [
+              7.450777,
+              46.944051
+            ],
+            [
+              7.450777,
+              46.944058
+            ],
+            [
+              7.450756,
+              46.944058
+            ],
+            [
+              7.450756,
+              46.944051
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000225",
+      "properties": {
+        "assetId": "INV-2021-000225",
+        "name": "Artemide Tolomeo Schreibtischleuchte",
+        "inventoryNumber": "INV-2021-000225",
+        "brand": "Artemide",
+        "categoryId": "schreibtischlampen",
+        "buildingId": "b-003",
+        "floorId": "b-003-1",
+        "roomId": "b-003-1-102",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2021-06-10",
+        "acquisitionCost": 380,
+        "centroid": [
+          7.450824,
+          46.944058
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450822,
+              46.944057
+            ],
+            [
+              7.450825,
+              46.944057
+            ],
+            [
+              7.450825,
+              46.944058
+            ],
+            [
+              7.450822,
+              46.944058
+            ],
+            [
+              7.450822,
+              46.944057
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000190",
+      "properties": {
+        "assetId": "INV-2020-000190",
+        "name": "Sedus Konferenzstuhl on spot",
+        "inventoryNumber": "INV-2020-000190",
+        "brand": "Sedus",
+        "categoryId": "konferenzstuehle",
+        "buildingId": "b-003",
+        "floorId": "b-003-2",
+        "roomId": "b-003-2-208",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-04-22",
+        "acquisitionCost": 450,
+        "centroid": [
+          7.450593,
+          46.944056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450589,
+              46.944054
+            ],
+            [
+              7.450596,
+              46.944054
+            ],
+            [
+              7.450596,
+              46.944058
+            ],
+            [
+              7.450589,
+              46.944058
+            ],
+            [
+              7.450589,
+              46.944054
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000435",
+      "properties": {
+        "assetId": "INV-2022-000435",
+        "name": "HP LaserJet Pro MFP",
+        "inventoryNumber": "INV-2022-000435",
+        "brand": "HP",
+        "categoryId": "it-equipment",
+        "buildingId": "b-003",
+        "floorId": "b-003-2",
+        "roomId": "b-003-2-205",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2022-08-14",
+        "acquisitionCost": 680,
+        "centroid": [
+          7.450752,
+          46.944057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450748,
+              46.944056
+            ],
+            [
+              7.450755,
+              46.944056
+            ],
+            [
+              7.450755,
+              46.944058
+            ],
+            [
+              7.450748,
+              46.944058
+            ],
+            [
+              7.450748,
+              46.944056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000545",
+      "properties": {
+        "assetId": "INV-2023-000545",
+        "name": "Giroflex Bürostuhl 64",
+        "inventoryNumber": "INV-2023-000545",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-010",
+        "floorId": "b-010-2",
+        "roomId": "b-010-2-207",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2023-01-20",
+        "acquisitionCost": 890,
+        "centroid": [
+          8.52765,
+          47.344055
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527646,
+              47.344053
+            ],
+            [
+              8.527654,
+              47.344053
+            ],
+            [
+              8.527654,
+              47.344058
+            ],
+            [
+              8.527646,
+              47.344058
+            ],
+            [
+              8.527646,
+              47.344053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000095",
+      "properties": {
+        "assetId": "INV-2019-000095",
+        "name": "USM Haller Sideboard 2×1",
+        "inventoryNumber": "INV-2019-000095",
+        "brand": "USM",
+        "categoryId": "usm-haller",
+        "buildingId": "b-010",
+        "floorId": "b-010-2",
+        "roomId": "b-010-2-205",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2019-12-05",
+        "acquisitionCost": 1850,
+        "centroid": [
+          8.527727,
+          47.344056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527717,
+              47.344055
+            ],
+            [
+              8.527737,
+              47.344055
+            ],
+            [
+              8.527737,
+              47.344058
+            ],
+            [
+              8.527717,
+              47.344058
+            ],
+            [
+              8.527717,
+              47.344055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000230",
+      "properties": {
+        "assetId": "INV-2021-000230",
+        "name": "Lenovo ThinkVision T27h Monitor",
+        "inventoryNumber": "INV-2021-000230",
+        "brand": "Lenovo",
+        "categoryId": "it-equipment",
+        "buildingId": "b-010",
+        "floorId": "b-010-2",
+        "roomId": "b-010-2-213",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2021-10-18",
+        "acquisitionCost": 480,
+        "centroid": [
+          8.527777,
+          47.344057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527773,
+              47.344056
+            ],
+            [
+              8.52778,
+              47.344056
+            ],
+            [
+              8.52778,
+              47.344058
+            ],
+            [
+              8.527773,
+              47.344058
+            ],
+            [
+              8.527773,
+              47.344056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000440",
+      "properties": {
+        "assetId": "INV-2022-000440",
+        "name": "Steelcase Flex Whiteboard",
+        "inventoryNumber": "INV-2022-000440",
+        "brand": "Steelcase",
+        "categoryId": "medientechnik",
+        "buildingId": "b-011",
+        "floorId": "b-011-1",
+        "roomId": "b-011-1-105",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2022-03-28",
+        "acquisitionCost": 890,
+        "centroid": [
+          8.516669,
+          47.389056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.516663,
+              47.389055
+            ],
+            [
+              8.516674,
+              47.389055
+            ],
+            [
+              8.516674,
+              47.389058
+            ],
+            [
+              8.516663,
+              47.389058
+            ],
+            [
+              8.516663,
+              47.389055
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000195",
+      "properties": {
+        "assetId": "INV-2020-000195",
+        "name": "Giroflex Bürostuhl 64",
+        "inventoryNumber": "INV-2020-000195",
+        "brand": "Giroflex",
+        "categoryId": "buerostuehle",
+        "buildingId": "b-011",
+        "floorId": "b-011-1",
+        "roomId": "b-011-1-101",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-07-14",
+        "acquisitionCost": 890,
+        "centroid": [
+          8.516496,
+          47.389056
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.516492,
+              47.389053
+            ],
+            [
+              8.5165,
+              47.389053
+            ],
+            [
+              8.5165,
+              47.389058
+            ],
+            [
+              8.516492,
+              47.389058
+            ],
+            [
+              8.516492,
+              47.389053
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000550",
+      "properties": {
+        "assetId": "INV-2023-000550",
+        "name": "Lista Office Steh-Sitz-Tisch",
+        "inventoryNumber": "INV-2023-000550",
+        "brand": "Lista Office",
+        "categoryId": "schreibtische",
+        "buildingId": "b-020",
+        "floorId": "b-020-2",
+        "roomId": "b-020-2-207",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2023-06-10",
+        "acquisitionCost": 1600,
+        "centroid": [
+          7.588237,
+          47.550055
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588226,
+              47.550051
+            ],
+            [
+              7.588247,
+              47.550051
+            ],
+            [
+              7.588247,
+              47.550058
+            ],
+            [
+              7.588226,
+              47.550058
+            ],
+            [
+              7.588226,
+              47.550051
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2021-000235",
+      "properties": {
+        "assetId": "INV-2021-000235",
+        "name": "Dell UltraSharp U2722D Monitor",
+        "inventoryNumber": "INV-2021-000235",
+        "brand": "Dell",
+        "categoryId": "it-equipment",
+        "buildingId": "b-020",
+        "floorId": "b-020-2",
+        "roomId": "b-020-2-201",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2021-11-22",
+        "acquisitionCost": 520,
+        "centroid": [
+          7.588349,
+          47.550057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588345,
+              47.550056
+            ],
+            [
+              7.588352,
+              47.550056
+            ],
+            [
+              7.588352,
+              47.550058
+            ],
+            [
+              7.588345,
+              47.550058
+            ],
+            [
+              7.588345,
+              47.550056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2020-000200",
+      "properties": {
+        "assetId": "INV-2020-000200",
+        "name": "Dyson Pure Cool Luftreiniger",
+        "inventoryNumber": "INV-2020-000200",
+        "brand": "Dyson",
+        "categoryId": "raumklima",
+        "buildingId": "b-020",
+        "floorId": "b-020-2",
+        "roomId": "b-020-2-202",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2020-12-05",
+        "acquisitionCost": 650,
+        "centroid": [
+          7.588408,
+          47.550057
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588406,
+              47.550056
+            ],
+            [
+              7.58841,
+              47.550056
+            ],
+            [
+              7.58841,
+              47.550058
+            ],
+            [
+              7.588406,
+              47.550058
+            ],
+            [
+              7.588406,
+              47.550056
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-000445",
+      "properties": {
+        "assetId": "INV-2022-000445",
+        "name": "Sedus Konferenzstuhl on spot",
+        "inventoryNumber": "INV-2022-000445",
+        "brand": "Sedus",
+        "categoryId": "konferenzstuehle",
+        "buildingId": "b-030",
+        "floorId": "b-030-1",
+        "roomId": "b-030-1-105",
+        "status": "Aktiv",
+        "condition": "Sehr gut",
+        "acquisitionDate": "2022-05-30",
+        "acquisitionCost": 450,
+        "centroid": [
+          8.308983,
+          47.050256
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308979,
+              47.050254
+            ],
+            [
+              8.308986,
+              47.050254
+            ],
+            [
+              8.308986,
+              47.050258
+            ],
+            [
+              8.308979,
+              47.050258
+            ],
+            [
+              8.308979,
+              47.050254
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2019-000100",
+      "properties": {
+        "assetId": "INV-2019-000100",
+        "name": "USM Inos Rollkorpus",
+        "inventoryNumber": "INV-2019-000100",
+        "brand": "USM",
+        "categoryId": "rollkorpus",
+        "buildingId": "b-030",
+        "floorId": "b-030-1",
+        "roomId": "b-030-1-102",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2019-08-15",
+        "acquisitionCost": 680,
+        "centroid": [
+          8.309047,
+          47.050256
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.309045,
+              47.050253
+            ],
+            [
+              8.30905,
+              47.050253
+            ],
+            [
+              8.30905,
+              47.050258
+            ],
+            [
+              8.309045,
+              47.050258
+            ],
+            [
+              8.309045,
+              47.050253
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-000555",
+      "properties": {
+        "assetId": "INV-2023-000555",
+        "name": "Franke A300 Kaffeemaschine",
+        "inventoryNumber": "INV-2023-000555",
+        "brand": "Franke",
+        "categoryId": "kueche",
+        "buildingId": "b-030",
+        "floorId": "b-030-1",
+        "roomId": "b-030-1-107",
+        "status": "Aktiv",
+        "condition": "Gut",
+        "acquisitionDate": "2023-09-12",
+        "acquisitionCost": 2800,
+        "centroid": [
+          8.309101,
+          47.050256
+        ],
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.309097,
+              47.050254
+            ],
+            [
+              8.309105,
+              47.050254
+            ],
+            [
+              8.309105,
+              47.050258
+            ],
+            [
+              8.309097,
+              47.050258
+            ],
+            [
+              8.309097,
+              47.050254
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2022-003187",
+      "properties": {
+        "assetId": "INV-2022-003187",
+        "name": "USM Haller Regal",
+        "inventoryNumber": "INV-2022-003187",
+        "brand": "USM",
+        "categoryId": "usm-haller",
+        "buildingId": "b-002",
+        "floorId": "b-002-1",
+        "roomId": "b-002-1-112",
+        "status": "Zur Abgabe",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2016-07-22",
+        "acquisitionCost": 2450,
+        "centroid": [
+          7.44381,
+          46.946785
+        ],
+        "price": 380,
+        "currency": "CHF",
+        "description": "2 Felder, 3 Reihen, lichtgrau. Leichte Gebrauchsspuren an den Kanten, Struktur einwandfrei.",
+        "organizationId": "org-bbl",
+        "qrCode": "https://bbl.admin.ch/inv/INV-2022-003187",
+        "photo": "photo-1555041469-a586c61ea9bc",
+        "photos": [
+          "photo-1555041469-a586c61ea9bc",
+          "photo-1595428774223-ef52624120d2",
+          "photo-1493663284031-b7e3aefcae8e"
+        ],
+        "listedAt": "2025-10-28",
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.4438,
+              46.946783
+            ],
+            [
+              7.44382,
+              46.946783
+            ],
+            [
+              7.44382,
+              46.946786
+            ],
+            [
+              7.4438,
+              46.946786
+            ],
+            [
+              7.4438,
+              46.946783
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2024-005890",
+      "properties": {
+        "assetId": "INV-2024-005890",
+        "name": "Vitra Besucherstuhl .03",
+        "inventoryNumber": "INV-2024-005890",
+        "brand": "Vitra",
+        "categoryId": "besucherstuhl",
+        "buildingId": "b-003",
+        "floorId": "b-003-eg",
+        "roomId": "b-003-eg-EG08",
+        "status": "Zur Abgabe",
+        "condition": "Gut",
+        "acquisitionDate": "2020-01-10",
+        "acquisitionCost": 320,
+        "centroid": [
+          7.450865,
+          46.943984
+        ],
+        "price": 35,
+        "currency": "CHF",
+        "description": "Stoff grau, leichte Abnutzung an der Sitzfläche. Stapelbar, 4 Stück verfügbar.",
+        "organizationId": "org-bbl",
+        "qrCode": "https://bbl.admin.ch/inv/INV-2024-005890",
+        "photo": "photo-1506439773649-6e0eb8cfb237",
+        "photos": [
+          "photo-1506439773649-6e0eb8cfb237",
+          "photo-1561677978-583a8c7a4b43"
+        ],
+        "listedAt": "2025-12-01",
+        "quantity": 4,
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450861,
+              46.943982
+            ],
+            [
+              7.450868,
+              46.943982
+            ],
+            [
+              7.450868,
+              46.943986
+            ],
+            [
+              7.450861,
+              46.943986
+            ],
+            [
+              7.450861,
+              46.943982
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INV-2023-004890",
+      "properties": {
+        "assetId": "INV-2023-004890",
+        "name": "Artemide Tolomeo Schreibtischleuchte",
+        "inventoryNumber": "INV-2023-004890",
+        "brand": "Artemide",
+        "categoryId": "schreibtischlampen",
+        "buildingId": "b-001",
+        "floorId": "b-001-3",
+        "roomId": "b-001-3-302",
+        "status": "Zur Abgabe",
+        "condition": "Akzeptabel",
+        "acquisitionDate": "2018-04-20",
+        "acquisitionCost": 380,
+        "centroid": [
+          7.447095,
+          46.948058
+        ],
+        "price": 80,
+        "currency": "CHF",
+        "description": "Funktionstüchtig, leichte Kratzer am Fuss. Leuchtmittel (E27) nicht inbegriffen.",
+        "organizationId": "org-bbl",
+        "qrCode": "https://bbl.admin.ch/inv/INV-2023-004890",
+        "photo": "photo-1573164713988-8665fc963095",
+        "photos": [
+          "photo-1573164713988-8665fc963095",
+          "photo-1513506003901-1e6a229e2d15"
+        ],
+        "listedAt": "2025-11-22",
+        "productId": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.447093,
+              46.948057
+            ],
+            [
+              7.447096,
+              46.948057
+            ],
+            [
+              7.447096,
+              46.948058
+            ],
+            [
+              7.447093,
+              46.948058
+            ],
+            [
+              7.447093,
+              46.948057
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -29,7 +29,9 @@
       "WebFetch(domain:docs.geo.admin.ch)",
       "WebFetch(domain:carto.com)",
       "WebFetch(domain:docs.carto.com)",
-      "WebFetch(domain:unpkg.com)"
+      "WebFetch(domain:unpkg.com)",
+      "Bash(ls:*)",
+      "Bash(python3:*)"
     ]
   }
 }

@@ -50,8 +50,8 @@ js/
 data/
   products.json     Furniture catalog
   buildings.json    Building metadata (coords used for map)
-  inventory.json    Inventory items per building/floor (Ausstattung)
-  inventory-circular.json  Circular economy listings (reuse)
+  assets.geojson    Inventory items as GeoJSON (positioned in rooms)
+  assets-circular.json  Circular economy listings (reuse)
   sites.json        Site/canton groupings
   floors.json       Floor details with room lists
   style-worlds.json   Style world inspirations

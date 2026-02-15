@@ -13,14 +13,14 @@
 | Entity             | Description                                   | DE Term                      | Data Source (Prototype)      | IFC 4.3 Equivalent     |
 |--------------------|-----------------------------------------------|------------------------------|------------------------------|------------------------|
 | **Site**           | Location / campus area                        | Standort / Areal             | `data/sites.json`            | IfcSite                |
-| **Building**       | Building / property                           | Gebäude / Liegenschaft       | `data/buildings.json`        | IfcBuilding            |
-| **Floor**          | Storey / level                                | Geschoss / Stockwerk         | `data/floors.json`           | IfcBuildingStorey      |
-| **Room**           | Room (smallest spatial unit)                  | Raum                         | Embedded in floors.json      | IfcSpace               |
+| **Building**       | Building / property                           | Gebäude / Liegenschaft       | `data/buildings.geojson`     | IfcBuilding            |
+| **Floor**          | Storey / level                                | Geschoss / Stockwerk         | `data/floors.geojson`        | IfcBuildingStorey      |
+| **Room**           | Room (smallest spatial unit)                  | Raum                         | `data/rooms.geojson`         | IfcSpace               |
 | **Workspace**      | Workspace within a room                       | Arbeitsplatz                 | Counter only (`workspaces`)  | —                      |
 | **ProductCategory**| Hierarchical product category                 | Produktkategorie             | `data/categories.json`       | IfcClassificationRef   |
 | **Product**        | Catalog item (orderable)                      | Katalogartikel               | `data/products.json`         | IfcFurnitureType       |
-| **InventoryItem**  | Tracked physical object (any type)            | Inventarobjekt               | `data/inventory.json`        | IfcFurniture           |
-| **CircularListing**| Circular economy listing (reuse)              | Kreislauf-Angebot            | `data/inventory-circular.json`| —                     |
+| **InventoryItem**  | Tracked physical object (any type)            | Inventarobjekt               | `data/assets.geojson`        | IfcFurniture           |
+| **CircularListing**| Circular economy listing (reuse)              | Kreislauf-Angebot            | `data/assets-circular.json`  | —                     |
 | **Organization**   | Federal agency / organizational unit          | Bundesstelle                 | Free text in checkout        | —                      |
 | **Order**          | Order from the catalog                        | Bestellung                   | `state.cart` + checkout      | —                      |
 | **OrderItem**      | Single order line item                        | Bestellposition              | `state.cart[]`               | —                      |
@@ -110,7 +110,8 @@ year of construction.
 | `name`           | string     | ✓        | Display name (e.g. `"Bundeshaus Ost"`)            | Bezeichnung            | IFC `Name`             |
 | `objectCode`     | string     | ✓        | BBL object code (e.g. `"1502.AB"`)                | Objekt-Nr.             | BBL-specific           |
 | `address`        | Address    | ✓        | Full postal address                               | Postadresse            | —                      |
-| `coords`         | [lat, lng] |          | WGS84 coordinates (building centroid)             | Koordinaten            | —                      |
+| `centroid`       | [lng, lat] |          | WGS84 centroid in GeoJSON order [lng, lat]        | Zentroid               | —                      |
+| `geometry`       | GeoJSON    |          | Building footprint polygon (GeoJSON Polygon)      | Gebäudeumriss          | ArcGIS `FACILITY_AREA` |
 | `yearBuilt`      | string     |          | Year / period of construction (e.g. `"1892"`)     | Baujahr / Bauperiode   | BBL `Bauperiode`       |
 | `status`         | enum       | ✓        | Building status                                   | Gebäudestatus          | BBL-specific           |
 | `category`       | enum       | ✓        | Building category                                 | Gebäudekategorie       | BBL-specific           |
@@ -149,7 +150,10 @@ year of construction.
 The Wirtschaftseinheit is a BBL-internal economic unit identifier, the letters
 uniquely identify each building within that unit.
 
-**Prototype mapping:** Direct 1:1 correspondence to the Building nodes in `LOCATIONS`.
+**Prototype mapping:** Stored as GeoJSON FeatureCollection in `data/buildings.geojson`.
+Each feature has a Polygon geometry (building footprint) and a `centroid` property
+in `[lng, lat]` format for point marker placement. Direct 1:1 correspondence to
+the Building nodes in `LOCATIONS`.
 
 ---
 
@@ -170,7 +174,7 @@ Follows the IFC principle of `IfcBuildingStorey` with explicit storey ordering.
 | `heightRelative` | number     |          | Storey height in m (e.g. `3.50`)                  | Geschosshöhe           | ArcGIS/IFC             |
 | `workspaceCount` | integer    |          | Number of workspaces (derived or stored)          | Anzahl Arbeitsplätze   | Prototype              |
 | `roomCount`      | integer    |          | Number of rooms (derived or stored)               | Anzahl Räume           | Prototype              |
-| `rooms`          | Room[]     |          | Array of rooms on this floor                      | Räume                  | Prototype              |
+| `geometry`       | GeoJSON    |          | Floor outline polygon (GeoJSON Polygon)           | Geschossumriss         | ArcGIS `LEVEL_AREA`    |
 | `floorPlanUrl`   | string     |          | URL to 2D floor plan image (SVG/PNG)              | Grundriss-URL          | Archilogic Export      |
 | `floorPlanGeojson`| string    |          | URL to GeoJSON room layout                        | Grundriss-GeoJSON      | Archilogic GeoJSON     |
 | `bimModelUrl`    | string     |          | URL to IFC/glTF 3D model                          | BIM-Modell-URL         | Archilogic Export      |
@@ -192,8 +196,11 @@ UG/EG/OG designations (basement/ground/upper), this separation is useful:
 | 2. OG  | 2. Obergeschoss     | 2             | 2               |
 | 3. OG  | 3. Obergeschoss     | 3             | 3               |
 
-**Prototype mapping:** Direct 1:1 correspondence to Floor nodes in `LOCATIONS`.
-Rooms are embedded as an array within each floor record in `data/floors.json`.
+**Prototype mapping:** Stored as GeoJSON FeatureCollection in `data/floors.geojson`.
+Each feature has a Polygon geometry (floor outline, inset from the building footprint
+by a wall margin representing the structural envelope). Rooms are stored separately
+in `data/rooms.geojson` and joined at runtime via `floorId`. Direct 1:1
+correspondence to Floor nodes in `LOCATIONS`.
 
 **Floor plan note:** The prototype shows a map placeholder in the "Karte" tab.
 In the target architecture, this would reference either a static SVG (`floorPlanUrl`),
@@ -256,10 +263,16 @@ Corresponds to `IfcSpace` / ArcGIS `Units` / Archilogic `Space`.
 | Blocked            | Gesperrt             |
 | Under renovation   | Sanierung            |
 
-**Prototype mapping:** Rooms are stored as embedded arrays in `data/floors.json`.
-Each room has `nr` (room number), `type` (use type), `area` (m²), and
-`workspaces` (workspace count). In the target architecture, rooms would be
-persisted as independent entities with full geometry.
+**Prototype mapping:** Rooms are stored as standalone GeoJSON features in
+`data/rooms.geojson`. Each feature has a `roomId` (`{floorId}-{nr}`), `floorId`,
+`buildingId`, `nr` (room number), `type` (use type), `area` (m²), `workspaces`
+(workspace count), and a Polygon geometry. Rooms are arranged in a double-loaded
+corridor layout within each floor footprint: a central E-W corridor (2.5 m wide)
+divides rooms into north and south wings (5.5 m room depth). Room widths are
+proportional to their area. Room types are color-coded on the map (Büro = blue,
+Sitzungszimmer = orange, Open Space = green, Empfang = purple, etc.).
+At runtime, rooms are reconstructed as arrays per floor for backward compatibility
+with the location tree.
 
 ---
 
@@ -417,9 +430,12 @@ appliances, and any other physical item. Corresponds to the IFC concept
 | Needs repair       | Reparaturbedürftig   |
 | Defective          | Defekt               |
 
-**Prototype mapping:** Direct 1:1 correspondence to `data/inventory.json`.
-Used in the "Ausstattung" tab per building/floor. Items are linked to their
-spatial location via `buildingId`, `floorId`, and `roomId`.
+**Prototype mapping:** Active inventory items are stored as GeoJSON features in
+`data/assets.geojson` with Polygon geometry (small rectangles positioned within the
+assigned room). `data/assets.geojson` is the single source of truth for all inventory
+items (61 items). Each asset feature includes a `centroid` property `[lng, lat]` for
+future drag-to-reposition editing. Assets are displayed on the map at zoom >= 18.
+Items are linked to their spatial location via `buildingId`, `floorId`, and `roomId`.
 
 ---
 
@@ -451,9 +467,10 @@ comparable to a posting in an internal marketplace.
 | Expired            | Abgelaufen           |
 | Withdrawn          | Zurückgezogen        |
 
-**Prototype mapping:** Direct 1:1 correspondence to `data/inventory-circular.json`.
-In the target architecture, a CircularListing would be a separate entity
-referencing a specific InventoryItem.
+**Prototype mapping:** Direct 1:1 correspondence to `data/assets-circular.json`
+These items are also included in
+`data/assets.geojson` for map display. In the target architecture, a CircularListing
+would be a separate entity referencing a specific InventoryItem.
 
 ---
 
@@ -618,14 +635,14 @@ the key mapping decisions:
 | Entity           | Prototype Source                       | Target System (Example)       |
 |------------------|----------------------------------------|-------------------------------|
 | Site             | `LOCATIONS` canton nodes               | SAP RE-FX / Real Estate Master|
-| Building         | `LOCATIONS` building nodes             | SAP RE-FX / Real Estate Master|
-| Floor            | `LOCATIONS` floor nodes                | SAP RE-FX + CAD/BIM           |
-| Room             | Embedded in `data/floors.json`         | SAP RE-FX + BIM (IFC)         |
+| Building         | `data/buildings.geojson`               | SAP RE-FX / Real Estate Master|
+| Floor            | `data/floors.geojson`                  | SAP RE-FX + CAD/BIM           |
+| Room             | `data/rooms.geojson`                   | SAP RE-FX + BIM (IFC)         |
 | Workspace        | Counter only (`workspaces`)            | CAFM system / Booking tool    |
 | Product          | `data/products.json`                   | SAP MM / Catalog API           |
 | ProductCategory  | `data/categories.json`                 | SAP MM / Catalog API           |
-| InventoryItem    | `data/inventory.json`                  | SAP PM / CAFM system           |
-| CircularListing  | `data/inventory-circular.json`         | Circular marketplace service   |
+| InventoryItem    | `data/assets.geojson`                  | SAP PM / CAFM system   |
+| CircularListing  | `data/assets-circular.json`            | Circular marketplace service   |
 | Organization     | Free text in checkout form             | LDAP / Admin Directory         |
 | Order            | `state.cart` + checkout                | SAP MM / Order portal          |
 | OrderItem        | `state.cart[]` entries                 | SAP MM / Order portal          |

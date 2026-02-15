@@ -1,0 +1,971 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "b-001-ug",
+      "properties": {
+        "floorId": "b-001-ug",
+        "buildingId": "b-001",
+        "name": "UG",
+        "nameShort": "UG",
+        "levelNumber": -1,
+        "verticalOrder": -1,
+        "areaGross": 1820,
+        "workspaceCount": 0,
+        "roomCount": 14
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446942,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.947845
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-001-eg",
+      "properties": {
+        "floorId": "b-001-eg",
+        "buildingId": "b-001",
+        "name": "EG",
+        "nameShort": "EG",
+        "levelNumber": 0,
+        "verticalOrder": 0,
+        "areaGross": 2650,
+        "workspaceCount": 42,
+        "roomCount": 22
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446942,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.947845
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-001-1",
+      "properties": {
+        "floorId": "b-001-1",
+        "buildingId": "b-001",
+        "name": "1. OG",
+        "nameShort": "1",
+        "levelNumber": 1,
+        "verticalOrder": 1,
+        "areaGross": 2650,
+        "workspaceCount": 58,
+        "roomCount": 24
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446942,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.947845
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-001-2",
+      "properties": {
+        "floorId": "b-001-2",
+        "buildingId": "b-001",
+        "name": "2. OG",
+        "nameShort": "2",
+        "levelNumber": 2,
+        "verticalOrder": 2,
+        "areaGross": 2650,
+        "workspaceCount": 56,
+        "roomCount": 23
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446942,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.947845
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-001-3",
+      "properties": {
+        "floorId": "b-001-3",
+        "buildingId": "b-001",
+        "name": "3. OG",
+        "nameShort": "3",
+        "levelNumber": 3,
+        "verticalOrder": 3,
+        "areaGross": 1680,
+        "workspaceCount": 34,
+        "roomCount": 18
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.446942,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.947845
+            ],
+            [
+              7.447858,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.948155
+            ],
+            [
+              7.446942,
+              46.947845
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-002-eg",
+      "properties": {
+        "floorId": "b-002-eg",
+        "buildingId": "b-002",
+        "name": "EG",
+        "nameShort": "EG",
+        "levelNumber": 0,
+        "verticalOrder": 0,
+        "areaGross": 2100,
+        "workspaceCount": 30,
+        "roomCount": 18
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443574,
+              46.946622
+            ],
+            [
+              7.444626,
+              46.946622
+            ],
+            [
+              7.444626,
+              46.946978
+            ],
+            [
+              7.443574,
+              46.946978
+            ],
+            [
+              7.443574,
+              46.946622
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-002-1",
+      "properties": {
+        "floorId": "b-002-1",
+        "buildingId": "b-002",
+        "name": "1. OG",
+        "nameShort": "1",
+        "levelNumber": 1,
+        "verticalOrder": 1,
+        "areaGross": 2100,
+        "workspaceCount": 44,
+        "roomCount": 20
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443574,
+              46.946622
+            ],
+            [
+              7.444626,
+              46.946622
+            ],
+            [
+              7.444626,
+              46.946978
+            ],
+            [
+              7.443574,
+              46.946978
+            ],
+            [
+              7.443574,
+              46.946622
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-002-2",
+      "properties": {
+        "floorId": "b-002-2",
+        "buildingId": "b-002",
+        "name": "2. OG",
+        "nameShort": "2",
+        "levelNumber": 2,
+        "verticalOrder": 2,
+        "areaGross": 2100,
+        "workspaceCount": 40,
+        "roomCount": 19
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.443574,
+              46.946622
+            ],
+            [
+              7.444626,
+              46.946622
+            ],
+            [
+              7.444626,
+              46.946978
+            ],
+            [
+              7.443574,
+              46.946978
+            ],
+            [
+              7.443574,
+              46.946622
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-003-ug",
+      "properties": {
+        "floorId": "b-003-ug",
+        "buildingId": "b-003",
+        "name": "UG",
+        "nameShort": "UG",
+        "levelNumber": -1,
+        "verticalOrder": -1,
+        "areaGross": 1200,
+        "workspaceCount": 0,
+        "roomCount": 8
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450585,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94386
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-003-eg",
+      "properties": {
+        "floorId": "b-003-eg",
+        "buildingId": "b-003",
+        "name": "EG",
+        "nameShort": "EG",
+        "levelNumber": 0,
+        "verticalOrder": 0,
+        "areaGross": 1750,
+        "workspaceCount": 28,
+        "roomCount": 16
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450585,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94386
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-003-1",
+      "properties": {
+        "floorId": "b-003-1",
+        "buildingId": "b-003",
+        "name": "1. OG",
+        "nameShort": "1",
+        "levelNumber": 1,
+        "verticalOrder": 1,
+        "areaGross": 1750,
+        "workspaceCount": 48,
+        "roomCount": 20
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450585,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94386
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-003-2",
+      "properties": {
+        "floorId": "b-003-2",
+        "buildingId": "b-003",
+        "name": "2. OG",
+        "nameShort": "2",
+        "levelNumber": 2,
+        "verticalOrder": 2,
+        "areaGross": 1750,
+        "workspaceCount": 46,
+        "roomCount": 19
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.450585,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94386
+            ],
+            [
+              7.451415,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94414
+            ],
+            [
+              7.450585,
+              46.94386
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-010-eg",
+      "properties": {
+        "floorId": "b-010-eg",
+        "buildingId": "b-010",
+        "name": "EG",
+        "nameShort": "EG",
+        "levelNumber": 0,
+        "verticalOrder": 0,
+        "areaGross": 1150,
+        "workspaceCount": 18,
+        "roomCount": 12
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527642,
+              47.34388
+            ],
+            [
+              8.528358,
+              47.34388
+            ],
+            [
+              8.528358,
+              47.34412
+            ],
+            [
+              8.527642,
+              47.34412
+            ],
+            [
+              8.527642,
+              47.34388
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-010-1",
+      "properties": {
+        "floorId": "b-010-1",
+        "buildingId": "b-010",
+        "name": "1. OG",
+        "nameShort": "1",
+        "levelNumber": 1,
+        "verticalOrder": 1,
+        "areaGross": 1150,
+        "workspaceCount": 24,
+        "roomCount": 14
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527642,
+              47.34388
+            ],
+            [
+              8.528358,
+              47.34388
+            ],
+            [
+              8.528358,
+              47.34412
+            ],
+            [
+              8.527642,
+              47.34412
+            ],
+            [
+              8.527642,
+              47.34388
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-010-2",
+      "properties": {
+        "floorId": "b-010-2",
+        "buildingId": "b-010",
+        "name": "2. OG",
+        "nameShort": "2",
+        "levelNumber": 2,
+        "verticalOrder": 2,
+        "areaGross": 1150,
+        "workspaceCount": 22,
+        "roomCount": 13
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.527642,
+              47.34388
+            ],
+            [
+              8.528358,
+              47.34388
+            ],
+            [
+              8.528358,
+              47.34412
+            ],
+            [
+              8.527642,
+              47.34412
+            ],
+            [
+              8.527642,
+              47.34388
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-011-eg",
+      "properties": {
+        "floorId": "b-011-eg",
+        "buildingId": "b-011",
+        "name": "EG",
+        "nameShort": "EG",
+        "levelNumber": 0,
+        "verticalOrder": 0,
+        "areaGross": 2100,
+        "workspaceCount": 10,
+        "roomCount": 8
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.516488,
+              47.388827
+            ],
+            [
+              8.517512,
+              47.388827
+            ],
+            [
+              8.517512,
+              47.389173
+            ],
+            [
+              8.516488,
+              47.389173
+            ],
+            [
+              8.516488,
+              47.388827
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-011-1",
+      "properties": {
+        "floorId": "b-011-1",
+        "buildingId": "b-011",
+        "name": "1. OG",
+        "nameShort": "1",
+        "levelNumber": 1,
+        "verticalOrder": 1,
+        "areaGross": 2050,
+        "workspaceCount": 12,
+        "roomCount": 10
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.516488,
+              47.388827
+            ],
+            [
+              8.517512,
+              47.388827
+            ],
+            [
+              8.517512,
+              47.389173
+            ],
+            [
+              8.516488,
+              47.389173
+            ],
+            [
+              8.516488,
+              47.388827
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-020-eg",
+      "properties": {
+        "floorId": "b-020-eg",
+        "buildingId": "b-020",
+        "name": "EG",
+        "nameShort": "EG",
+        "levelNumber": 0,
+        "verticalOrder": 0,
+        "areaGross": 1275,
+        "workspaceCount": 20,
+        "roomCount": 14
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588222,
+              47.549873
+            ],
+            [
+              7.588978,
+              47.549873
+            ],
+            [
+              7.588978,
+              47.550127
+            ],
+            [
+              7.588222,
+              47.550127
+            ],
+            [
+              7.588222,
+              47.549873
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-020-1",
+      "properties": {
+        "floorId": "b-020-1",
+        "buildingId": "b-020",
+        "name": "1. OG",
+        "nameShort": "1",
+        "levelNumber": 1,
+        "verticalOrder": 1,
+        "areaGross": 1275,
+        "workspaceCount": 28,
+        "roomCount": 16
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588222,
+              47.549873
+            ],
+            [
+              7.588978,
+              47.549873
+            ],
+            [
+              7.588978,
+              47.550127
+            ],
+            [
+              7.588222,
+              47.550127
+            ],
+            [
+              7.588222,
+              47.549873
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-020-2",
+      "properties": {
+        "floorId": "b-020-2",
+        "buildingId": "b-020",
+        "name": "2. OG",
+        "nameShort": "2",
+        "levelNumber": 2,
+        "verticalOrder": 2,
+        "areaGross": 1275,
+        "workspaceCount": 26,
+        "roomCount": 15
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.588222,
+              47.549873
+            ],
+            [
+              7.588978,
+              47.549873
+            ],
+            [
+              7.588978,
+              47.550127
+            ],
+            [
+              7.588222,
+              47.550127
+            ],
+            [
+              7.588222,
+              47.549873
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-030-eg",
+      "properties": {
+        "floorId": "b-030-eg",
+        "buildingId": "b-030",
+        "name": "EG",
+        "nameShort": "EG",
+        "levelNumber": 0,
+        "verticalOrder": 0,
+        "areaGross": 950,
+        "workspaceCount": 14,
+        "roomCount": 10
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308975,
+              47.050091
+            ],
+            [
+              8.309625,
+              47.050091
+            ],
+            [
+              8.309625,
+              47.050309
+            ],
+            [
+              8.308975,
+              47.050309
+            ],
+            [
+              8.308975,
+              47.050091
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-030-1",
+      "properties": {
+        "floorId": "b-030-1",
+        "buildingId": "b-030",
+        "name": "1. OG",
+        "nameShort": "1",
+        "levelNumber": 1,
+        "verticalOrder": 1,
+        "areaGross": 950,
+        "workspaceCount": 20,
+        "roomCount": 12
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308975,
+              47.050091
+            ],
+            [
+              8.309625,
+              47.050091
+            ],
+            [
+              8.309625,
+              47.050309
+            ],
+            [
+              8.308975,
+              47.050309
+            ],
+            [
+              8.308975,
+              47.050091
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b-030-2",
+      "properties": {
+        "floorId": "b-030-2",
+        "buildingId": "b-030",
+        "name": "2. OG",
+        "nameShort": "2",
+        "levelNumber": 2,
+        "verticalOrder": 2,
+        "areaGross": 950,
+        "workspaceCount": 18,
+        "roomCount": 11
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.308975,
+              47.050091
+            ],
+            [
+              8.309625,
+              47.050091
+            ],
+            [
+              8.309625,
+              47.050309
+            ],
+            [
+              8.308975,
+              47.050309
+            ],
+            [
+              8.308975,
+              47.050091
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -3029,15 +3029,181 @@ ul, ol { list-style: none; }
   box-shadow: var(--shadow-lg);
 }
 
-.rp-mapbox .maplibregl-popup-content strong {
+/* Click popup styles */
+.rp-map-popup__title {
   display: block;
   font-size: var(--text-body-sm);
+  font-weight: 600;
   margin-bottom: 2px;
 }
-
-.rp-mapbox .maplibregl-popup-content span {
+.rp-map-popup__code {
   font-size: var(--text-caption);
   color: var(--color-gray-500);
+  margin-bottom: var(--space-xs);
+}
+.rp-map-popup__row {
+  font-size: var(--text-caption);
+  color: var(--color-gray-600);
+  line-height: 1.4;
+}
+.rp-map-popup__link {
+  display: inline-block;
+  margin-top: var(--space-xs);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+.rp-map-popup__link:hover {
+  text-decoration: underline;
+}
+
+/* Hover tooltip — minimal style */
+.rp-map-hover .maplibregl-popup-content {
+  padding: var(--space-xs) var(--space-sm);
+}
+.rp-map-hover .maplibregl-popup-content strong {
+  font-size: var(--text-caption);
+  white-space: nowrap;
+}
+
+/* Room type legend overlay */
+/* Legend accordion widget */
+.rp-legend {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  background: var(--color-white, #fff);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  width: 240px;
+  overflow: hidden;
+  font-size: 12px;
+}
+.rp-legend__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--color-white, #fff);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  transition: background 0.15s ease;
+}
+.rp-legend__header:hover {
+  background: var(--color-gray-50);
+}
+.rp-legend__icon {
+  flex-shrink: 0;
+}
+.rp-legend__title {
+  flex: 1;
+  text-align: left;
+}
+.rp-legend__chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.rp-legend.expanded .rp-legend__chevron {
+  transform: rotate(0deg);
+}
+.rp-legend:not(.expanded) .rp-legend__chevron {
+  transform: rotate(-90deg);
+}
+.rp-legend__content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease-out;
+  border-top: 1px solid var(--color-gray-200);
+}
+.rp-legend.expanded .rp-legend__content {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Legend sections */
+.rp-legend__section {
+  border-bottom: 1px solid var(--color-gray-100);
+}
+.rp-legend__section:last-child {
+  border-bottom: none;
+}
+.rp-legend__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+}
+.rp-legend__section-title {
+  font-weight: 600;
+  color: var(--color-gray-700);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Eye toggle button */
+.rp-legend__eye {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  color: var(--color-gray-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.rp-legend__eye:hover {
+  background: var(--color-gray-100);
+  color: var(--color-gray-800);
+}
+.rp-legend__eye-open,
+.rp-legend__eye-closed {
+  display: none;
+}
+.rp-legend__eye.active .rp-legend__eye-open {
+  display: block;
+}
+.rp-legend__eye:not(.active) .rp-legend__eye-closed {
+  display: block;
+  opacity: 0.5;
+}
+
+/* Legend items (swatches) */
+.rp-legend__items {
+  padding: 2px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: opacity 0.15s ease;
+}
+.rp-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--color-gray-600);
+  line-height: 1.3;
+}
+.rp-legend__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Dimmed when layer is hidden */
+.rp-legend__section--hidden .rp-legend__items {
+  opacity: 0.35;
 }
 
 .rp-map-placeholder {
