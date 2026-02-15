@@ -26,7 +26,10 @@
       "WebFetch(domain:pro.arcgis.com)",
       "WebFetch(domain:developers.onbuildingminds.com)",
       "WebFetch(domain:images.unsplash.com)",
-      "WebFetch(domain:docs.geo.admin.ch)"
+      "WebFetch(domain:docs.geo.admin.ch)",
+      "WebFetch(domain:carto.com)",
+      "WebFetch(domain:docs.carto.com)",
+      "WebFetch(domain:unpkg.com)"
     ]
   }
 }

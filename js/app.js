@@ -146,14 +146,13 @@ let state = {
   occSelectedId: null,
   occExpandedIds: new Set(['ch']),
   occTab: 'map',
-  occMapStyle: 'light-v11'
+  occMapStyle: 'positron'
 };
 
 const MAP_STYLES = {
-  'light-v11': { name: 'Light', url: 'mapbox://styles/mapbox/light-v11' },
-  'streets-v12': { name: 'Standard', url: 'mapbox://styles/mapbox/streets-v12' },
-  'satellite-v9': { name: 'Luftbild', url: 'mapbox://styles/mapbox/satellite-v9' },
-  'satellite-streets-v12': { name: 'Hybrid', url: 'mapbox://styles/mapbox/satellite-streets-v12' }
+  'positron': { name: 'Light', url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', swatch: '#e8e8e8' },
+  'voyager': { name: 'Standard', url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json', swatch: '#d4c4a8' },
+  'dark-matter': { name: 'Dunkel', url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json', swatch: '#2b2b2b' }
 };
 
 // Helper: find a node + its parent chain by id
@@ -263,6 +262,139 @@ function getProductImage(product) {
     return `<img src="https://images.unsplash.com/${photoId}?w=600&h=400&fit=crop&auto=format&q=80" srcset="https://images.unsplash.com/${photoId}?w=400&h=267&fit=crop&auto=format&q=80 400w, https://images.unsplash.com/${photoId}?w=600&h=400&fit=crop&auto=format&q=80 600w, https://images.unsplash.com/${photoId}?w=800&h=533&fit=crop&auto=format&q=80 800w" sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 280px" alt="${product.name}" loading="lazy">`;
   }
   return getProductIcon(product);
+}
+
+// ---- SHARED DETAIL COMPONENTS ----
+function getItemPhotos(item) {
+  const photos = item.photos || (item.photo ? [item.photo] : []);
+  return photos;
+}
+
+function renderShareBar() {
+  return `
+    <div class="share-bar">
+      <button class="btn btn--bare share-bar__btn" aria-label="Drucken" onclick="window.print()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      </button>
+      <button class="btn btn--bare share-bar__btn share-bar__share-button" aria-label="Teilen" onclick="handleShareClick()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+    </div>
+  `;
+}
+
+function renderDetailToolbar() {
+  return `
+    <div class="detail-toolbar">
+      <button class="btn btn--outline btn--sm detail-toolbar__back" onclick="history.back()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+        Zurück
+      </button>
+      ${renderShareBar()}
+    </div>
+  `;
+}
+
+function renderCarousel(photos, altText, badgeHtml) {
+  if (!photos || photos.length === 0) {
+    return `
+      <div class="carousel">
+        <div class="carousel__slide carousel__slide--active">
+          <div class="carousel__placeholder">${ICONS.placeholder}</div>
+        </div>
+        ${badgeHtml || ''}
+      </div>
+    `;
+  }
+  if (photos.length === 1) {
+    return `
+      <div class="carousel">
+        <div class="carousel__viewport">
+          <div class="carousel__track">
+            <div class="carousel__slide carousel__slide--active">
+              <img src="https://images.unsplash.com/${photos[0]}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(altText)}" loading="lazy">
+            </div>
+          </div>
+        </div>
+        ${badgeHtml || ''}
+      </div>
+    `;
+  }
+  const slides = photos.map((photo, i) => `
+    <div class="carousel__slide${i === 0 ? ' carousel__slide--active' : ''}" data-index="${i}">
+      <img src="https://images.unsplash.com/${photo}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(altText)} – Bild ${i + 1}" loading="lazy">
+    </div>
+  `).join('');
+  const bullets = photos.map((_, i) => `
+    <button class="carousel__bullet${i === 0 ? ' carousel__bullet--active' : ''}" data-index="${i}" aria-label="Bild ${i + 1}"></button>
+  `).join('');
+  return `
+    <div class="carousel" data-carousel>
+      <div class="carousel__viewport">
+        <div class="carousel__track" style="transform:translateX(0%)">
+          ${slides}
+        </div>
+      </div>
+      ${badgeHtml || ''}
+      <div class="carousel__fonctions">
+        <button class="carousel__prev" aria-label="Vorheriges Bild">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <div class="carousel__pagination">
+          ${bullets}
+        </div>
+        <button class="carousel__next" aria-label="Nächstes Bild">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,18 15,12 9,6"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function handleShareClick() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: document.title, url: url });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Link in die Zwischenablage kopiert');
+    });
+  }
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('toast--visible');
+  setTimeout(() => toast.classList.remove('toast--visible'), 2500);
+}
+
+function attachCarouselEvents() {
+  document.querySelectorAll('[data-carousel]').forEach(carousel => {
+    const track = carousel.querySelector('.carousel__track');
+    const slides = carousel.querySelectorAll('.carousel__slide');
+    const bullets = carousel.querySelectorAll('.carousel__bullet');
+    const prevBtn = carousel.querySelector('.carousel__prev');
+    const nextBtn = carousel.querySelector('.carousel__next');
+    if (!track || slides.length < 2) return;
+    let current = 0;
+    const total = slides.length;
+    function goTo(index) {
+      current = ((index % total) + total) % total;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      slides.forEach((s, i) => s.classList.toggle('carousel__slide--active', i === current));
+      bullets.forEach((b, i) => b.classList.toggle('carousel__bullet--active', i === current));
+    }
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    bullets.forEach(b => b.addEventListener('click', () => goTo(Number(b.dataset.index))));
+  });
 }
 
 function getProductIcon(product) {
@@ -487,8 +619,8 @@ function render() {
   switch (state.page) {
     case 'home': app.innerHTML = renderHome(); break;
     case 'shop': app.innerHTML = renderShop(); attachShopEvents(); break;
-    case 'product': app.innerHTML = renderProductDetail(state.productId); attachProductDetailEvents(); break;
-    case 'item': app.innerHTML = renderFurnitureDetail(state.subPage); break;
+    case 'product': app.innerHTML = renderProductDetail(state.productId); attachProductDetailEvents(); attachCarouselEvents(); break;
+    case 'item': app.innerHTML = renderFurnitureDetail(state.subPage); attachCarouselEvents(); break;
     case 'planning': app.innerHTML = renderPlanning(); break;
     case 'occupancy': app.innerHTML = renderOccupancy(); attachOccupancyEvents(); break;
     case 'circular': app.innerHTML = renderCircular(); attachShopEvents(); break;
@@ -661,7 +793,7 @@ function renderProductDetail(id) {
   if (!p) {
     return `
       ${renderBreadcrumb(['Produktkatalog', "navigateTo('shop')"], ['Nicht gefunden'])}
-      <div class="container container--with-top-pad" id="mainContent">
+      <div class="container container--detail" id="mainContent">
         <div class="no-results">
           <div class="no-results__icon">${ICONS.placeholder}</div>
           <p class="no-results__text">Produkt nicht gefunden.</p>
@@ -686,27 +818,16 @@ function renderProductDetail(id) {
 
   const articleNr = 'ART-' + String(p.id).padStart(5, '0');
 
+  const photos = getItemPhotos(p);
+  const badgeHtml = p.isNew ? '<span class="badge badge--new carousel__badge">Neu</span>' : '';
+
   return `
     ${renderBreadcrumb(...bcItems)}
-    <div class="container container--with-top-pad" id="mainContent">
-      <div class="detail-toolbar">
-        <button class="btn btn--outline btn--sm detail-toolbar__back" onclick="history.back()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
-          Zur\u00fcck
-        </button>
-        <div class="detail-toolbar__actions">
-          <button class="detail-toolbar__icon" aria-label="Drucken" onclick="window.print()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          </button>
-          <button class="detail-toolbar__icon" aria-label="Teilen">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          </button>
-        </div>
-      </div>
+    <div class="container container--detail" id="mainContent">
+      ${renderDetailToolbar()}
       <div class="product-detail">
         <div class="product-detail__image">
-          ${getProductImage(p)}
-          ${p.isNew ? '<span class="badge badge--new">Neu</span>' : ''}
+          ${renderCarousel(photos, p.name, badgeHtml)}
         </div>
         <div class="product-detail__info">
           <h1 class="product-detail__title">${escapeHtml(p.name)}</h1>
@@ -761,7 +882,7 @@ function renderFurnitureDetail(itemId) {
   if (!f) {
     return `
       ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Nicht gefunden'])}
-      <div class="container container--with-top-pad" id="mainContent">
+      <div class="container container--detail" id="mainContent">
         <div class="no-results">
           <div class="no-results__icon">${ICONS.placeholder}</div>
           <p class="no-results__text">Objekt nicht gefunden.</p>
@@ -783,19 +904,16 @@ function renderFurnitureDetail(itemId) {
   if (parentCat) bcItems.push([parentCat.label]);
   bcItems.push([escapeHtml(f.name)]);
 
+  const photos = getItemPhotos(f);
+  const badgeHtml = '<span class="badge badge--circular carousel__badge">Gebraucht</span>';
+
   return `
     ${renderBreadcrumb(...bcItems)}
-    <div class="container container--with-top-pad" id="mainContent">
-      <div class="detail-toolbar">
-        <button class="btn btn--outline btn--sm detail-toolbar__back" onclick="history.back()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
-          Zur\u00fcck
-        </button>
-      </div>
+    <div class="container container--detail" id="mainContent">
+      ${renderDetailToolbar()}
       <div class="product-detail">
         <div class="product-detail__image">
-          ${f.photo ? `<img src="https://images.unsplash.com/${f.photo}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(f.name)}" loading="lazy">` : ICONS.placeholder}
-          <span class="badge badge--circular">Gebraucht</span>
+          ${renderCarousel(photos, f.name, badgeHtml)}
         </div>
         <div class="product-detail__info">
           <h1 class="product-detail__title">${escapeHtml(f.name)}</h1>
@@ -1291,23 +1409,21 @@ function occInitMap() {
     _occMap = null;
   }
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRyYXNuZXI1IiwiYSI6ImNtMm5yamVkdjA5MDcycXMyZ2I2MHRhamgifQ.m651j7WIX7MyxNh8KIQ1Gg';
-
-  _occMap = new mapboxgl.Map({
+  _occMap = new maplibregl.Map({
     container: 'rp-mapbox',
-    style: MAP_STYLES[state.occMapStyle] ? MAP_STYLES[state.occMapStyle].url : MAP_STYLES['light-v11'].url,
+    style: MAP_STYLES[state.occMapStyle] ? MAP_STYLES[state.occMapStyle].url : MAP_STYLES['positron'].url,
     center: [7.9, 47.1],
     zoom: 7.2
   });
 
   // Navigation controls — right, vertically centered via CSS
-  _occMap.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  _occMap.addControl(new maplibregl.NavigationControl(), 'top-right');
 
   // Home button — zoom to full extent
   const homeCtrl = {
     onAdd(map) {
       const div = document.createElement('div');
-      div.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+      div.className = 'maplibregl-ctrl maplibregl-ctrl-group';
       div.innerHTML = '<button class="rp-map-btn rp-map-btn--home" type="button" title="Gesamtansicht" aria-label="Gesamtansicht"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L10 4l7 6.5"/><path d="M5 9v6.5a.5.5 0 00.5.5H8v-4h4v4h2.5a.5.5 0 00.5-.5V9"/></svg></button>';
       div.querySelector('button').addEventListener('click', () => {
         map.flyTo({ center: [7.9, 47.1], zoom: 7.2, pitch: 0, bearing: 0 });
@@ -1324,7 +1440,7 @@ function occInitMap() {
   const toggle3dCtrl = {
     onAdd(map) {
       const div = document.createElement('div');
-      div.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+      div.className = 'maplibregl-ctrl maplibregl-ctrl-group';
       div.innerHTML = '<button class="rp-map-btn rp-map-btn--3d" type="button" title="3D-Ansicht umschalten" aria-label="3D-Ansicht umschalten"><span>3D</span></button>';
       const btn = div.querySelector('button');
       btn.addEventListener('click', () => {
@@ -1412,7 +1528,7 @@ function occInitMap() {
             const r = data.results[i];
             const lngLat = [r.attrs.lon, r.attrs.lat];
             if (_searchMarker) _searchMarker.remove();
-            _searchMarker = new mapboxgl.Marker({ color: '#0066cc' }).setLngLat(lngLat).addTo(_occMap);
+            _searchMarker = new maplibregl.Marker({ color: '#0066cc' }).setLngLat(lngLat).addTo(_occMap);
             _occMap.flyTo({ center: lngLat, zoom: 17, speed: 1.4 });
             searchEl.classList.remove('rp-map-search--open');
             searchInput.value = '';
@@ -1426,11 +1542,13 @@ function occInitMap() {
   });
 
   // Scale bar — bottom-left
-  _occMap.addControl(new mapboxgl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
+  _occMap.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
 
   // Background map style switcher — bottom-right
-  function getStyleThumbnail(styleId, w, h) {
-    return `https://api.mapbox.com/styles/v1/mapbox/${styleId}/static/7.45,46.95,13,0/${w}x${h}@2x?access_token=${mapboxgl.accessToken}&attribution=false&logo=false`;
+  function getStyleSwatch(styleId, w, h) {
+    const s = MAP_STYLES[styleId];
+    const color = s ? s.swatch : '#e8e8e8';
+    return `<span class="rp-style-swatch" style="width:${w}px;height:${h}px;background:${color};display:block;border-radius:3px;"></span>`;
   }
 
   const styleSwitcher = document.createElement('div');
@@ -1439,12 +1557,12 @@ function occInitMap() {
     <div class="rp-style-switcher__panel" id="rp-style-panel">
       ${Object.entries(MAP_STYLES).map(([id, s]) => `
         <button class="rp-style-option${id === state.occMapStyle ? ' rp-style-option--active' : ''}" data-style="${id}" title="${s.name}">
-          <img src="${getStyleThumbnail(id, 70, 50)}" alt="${s.name}">
+          ${getStyleSwatch(id, 70, 50)}
           <span>${s.name}</span>
         </button>`).join('')}
     </div>
     <button class="rp-style-switcher__btn" id="rp-style-btn" title="Hintergrund wechseln">
-      <img src="${getStyleThumbnail(state.occMapStyle, 80, 60)}" alt="Aktueller Stil">
+      ${getStyleSwatch(state.occMapStyle, 80, 60)}
       <span>Hintergrund</span>
     </button>`;
   container.appendChild(styleSwitcher);
@@ -1473,8 +1591,9 @@ function occInitMap() {
       // Update active state
       styleSwitcher.querySelectorAll('.rp-style-option').forEach(o => o.classList.remove('rp-style-option--active'));
       opt.classList.add('rp-style-option--active');
-      // Update main button thumbnail
-      styleBtn.querySelector('img').src = getStyleThumbnail(styleId, 80, 60);
+      // Update main button swatch
+      const oldSwatch = styleBtn.querySelector('.rp-style-swatch');
+      if (oldSwatch) oldSwatch.style.background = MAP_STYLES[styleId].swatch;
       // Change map style
       _occMap.setStyle(MAP_STYLES[styleId].url);
       // Persist in URL
@@ -1510,7 +1629,7 @@ function occInitMap() {
     }
     _occMap.addSource('buildings', { type: 'geojson', data: filteredGeo });
     _occMap.addLayer({ id: 'building-points', type: 'circle', source: 'buildings', paint: { 'circle-radius': 8, 'circle-color': '#d73027', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' } });
-    _occMap.addLayer({ id: 'building-labels', type: 'symbol', source: 'buildings', minzoom: 14, layout: { 'text-field': ['get', 'objectCode'], 'text-size': 12, 'text-anchor': 'bottom', 'text-offset': [0, -1.2], 'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 } });
+    _occMap.addLayer({ id: 'building-labels', type: 'symbol', source: 'buildings', minzoom: 14, layout: { 'text-field': ['get', 'objectCode'], 'text-size': 12, 'text-anchor': 'bottom', 'text-offset': [0, -1.2], 'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 } });
   });
 
   _occMap.on('load', () => {
@@ -1570,7 +1689,7 @@ function occInitMap() {
         'text-size': 12,
         'text-anchor': 'bottom',
         'text-offset': [0, -1.2],
-        'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+        'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
         'text-allow-overlap': true
       },
       paint: {
@@ -1588,7 +1707,7 @@ function occInitMap() {
         _occMap.jumpTo({ center: coords, zoom: 17 });
       } else {
         // Multiple buildings — fit bounds
-        const bounds = new mapboxgl.LngLatBounds();
+        const bounds = new maplibregl.LngLatBounds();
         filteredGeo.features.forEach(f => bounds.extend(f.geometry.coordinates));
         _occMap.fitBounds(bounds, { padding: 80, maxZoom: 15 });
       }
@@ -1622,7 +1741,7 @@ function occInitMap() {
     });
 
     // Popup on hover (show building name)
-    const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 12 });
+    const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 12 });
     const showPopup = (e) => {
       const f = e.features[0];
       popup.setLngLat(f.geometry.coordinates)
@@ -1738,7 +1857,7 @@ function occUpdateMap() {
       _occMap.flyTo({ center: coords, zoom: 17, speed: 1.4 });
     } else {
       // Multiple buildings in kanton — fit bounds
-      const bounds = new mapboxgl.LngLatBounds();
+      const bounds = new maplibregl.LngLatBounds();
       filteredGeo.features.forEach(f => bounds.extend(f.geometry.coordinates));
       _occMap.fitBounds(bounds, { padding: 80, maxZoom: 15 });
     }

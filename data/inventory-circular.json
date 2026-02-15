@@ -19,6 +19,7 @@
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2023-004521",
     "photo": "photo-1580480055273-228ff5388ef8",
+    "photos": ["photo-1580480055273-228ff5388ef8", "photo-1598300042247-d088f8ab3a91", "photo-1616627547584-bf28cee262db"],
     "listedAt": "2025-11-10"
   },
   {
@@ -41,6 +42,7 @@
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2022-003187",
     "photo": "photo-1555041469-a586c61ea9bc",
+    "photos": ["photo-1555041469-a586c61ea9bc", "photo-1595428774223-ef52624120d2", "photo-1493663284031-b7e3aefcae8e"],
     "listedAt": "2025-10-28"
   },
   {
@@ -64,6 +66,7 @@
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2024-005890",
     "photo": "photo-1506439773649-6e0eb8cfb237",
+    "photos": ["photo-1506439773649-6e0eb8cfb237", "photo-1561677978-583a8c7a4b43"],
     "listedAt": "2025-12-01"
   },
   {
@@ -86,6 +89,7 @@
     "organizationId": "org-bazg",
     "qrCode": "https://bbl.admin.ch/inv/INV-2021-002456",
     "photo": "photo-1518455027359-f3f8164ba6bd",
+    "photos": ["photo-1518455027359-f3f8164ba6bd", "photo-1593642632559-0c6d3fc62b89", "photo-1611269154421-4e27233ac5c7"],
     "listedAt": "2025-09-15"
   },
   {
@@ -108,6 +112,7 @@
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2023-004890",
     "photo": "photo-1573164713988-8665fc963095",
+    "photos": ["photo-1573164713988-8665fc963095", "photo-1513506003901-1e6a229e2d15"],
     "listedAt": "2025-11-22"
   },
   {
@@ -131,6 +136,7 @@
     "organizationId": "org-bazg",
     "qrCode": "https://bbl.admin.ch/inv/INV-2022-003501",
     "photo": "photo-1581539250439-c96689b516dd",
+    "photos": ["photo-1581539250439-c96689b516dd", "photo-1592078615290-033ee584e267", "photo-1567538096630-e0c55bd6374c"],
     "listedAt": "2025-10-05"
   },
   {
@@ -153,6 +159,7 @@
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2023-004102",
     "photo": "photo-1555041469-a586c61ea9bc",
+    "photos": ["photo-1555041469-a586c61ea9bc", "photo-1493663284031-b7e3aefcae8e"],
     "listedAt": "2025-12-10"
   }
 ]
