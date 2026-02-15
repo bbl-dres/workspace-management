@@ -7,6 +7,7 @@ let SITES = [];
 let BUILDINGS = [];
 let FLOORS = [];
 let BUILDINGS_GEO = null;
+let FLOORS_GEO = null;
 let ROOMS_GEO = null;
 let ASSETS_GEO = null;
 let FURNITURE_ITEMS = [];
@@ -33,7 +34,7 @@ async function loadData() {
   PRODUCTS = await prodRes.json();
   SITES = await siteRes.json();
   BUILDINGS_GEO = await bldRes.json();
-  const floorsGeo = await flrRes.json();
+  FLOORS_GEO = await flrRes.json();
   ROOMS_GEO = await roomRes.json();
   ASSETS_GEO = await assetsRes.json();
   FURNITURE_ITEMS = await furnRes.json();
@@ -60,7 +61,7 @@ async function loadData() {
     });
   }
 
-  FLOORS = floorsGeo.features.map(f => ({
+  FLOORS = FLOORS_GEO.features.map(f => ({
     ...f.properties,
     rooms: roomsByFloor[f.properties.floorId] || []
   }));

@@ -144,12 +144,20 @@ function occRenderBuilding(b, path) {
   }
 
   if (tab === 'equipment') {
+    const assets = ASSETS_GEO ? ASSETS_GEO.features.filter(f => f.properties.buildingId === b.id).map(f => f.properties) : [];
+    const totalValue = assets.reduce((s, a) => s + (a.acquisitionCost || 0), 0);
     return `
       <div class="rp-detail">
         <h2 class="rp-detail__title">${escapeHtml(b.label)}</h2>
         <p class="rp-detail__subtitle">${b.address}</p>
-        <div class="rp-detail__section-title">Ausstattung</div>
-        <div class="rp-detail__empty">Keine Ausstattungsdaten vorhanden.</div>
+        <div class="rp-detail__section-title">Inventar (${assets.length} Objekte${totalValue ? ' \u00b7 ' + totalValue.toLocaleString('de-CH') + ' CHF' : ''})</div>
+        ${assets.length ? `
+        <table class="rp-table">
+          <thead><tr><th>Name</th><th>Marke</th><th>Zustand</th><th>Status</th><th>Wert</th></tr></thead>
+          <tbody>
+            ${assets.map(a => `<tr><td>${escapeHtml(a.name || '')}</td><td>${escapeHtml(a.brand || '\u2013')}</td><td>${escapeHtml(a.condition || '\u2013')}</td><td>${escapeHtml(a.status || '\u2013')}</td><td>${a.acquisitionCost ? a.acquisitionCost.toLocaleString('de-CH') + ' CHF' : '\u2013'}</td></tr>`).join('')}
+          </tbody>
+        </table>` : '<div class="rp-detail__empty">Keine Ausstattungsdaten vorhanden.</div>'}
       </div>`;
   }
 
@@ -234,12 +242,24 @@ function occRenderFloor(floor, path) {
   }
 
   if (tab === 'equipment') {
+    const assets = ASSETS_GEO ? ASSETS_GEO.features.filter(f => f.properties.floorId === floor.id).map(f => f.properties) : [];
+    const totalValue = assets.reduce((s, a) => s + (a.acquisitionCost || 0), 0);
     return `
       <div class="rp-detail">
         <h2 class="rp-detail__title">${floor.label} \u2013 ${escapeHtml(bLabel)}</h2>
         <p class="rp-detail__subtitle">${floor.flaeche} &middot; ${floor.plaetze} Arbeitspl\u00e4tze &middot; ${floor.raeume} R\u00e4ume</p>
-        <div class="rp-detail__section-title">Ausstattung</div>
-        <div class="rp-detail__empty">Keine Ausstattungsdaten vorhanden.</div>
+        <div class="rp-detail__section-title">Inventar (${assets.length} Objekte${totalValue ? ' \u00b7 ' + totalValue.toLocaleString('de-CH') + ' CHF' : ''})</div>
+        ${assets.length ? `
+        <table class="rp-table">
+          <thead><tr><th>Name</th><th>Raum</th><th>Marke</th><th>Zustand</th><th>Status</th><th>Wert</th></tr></thead>
+          <tbody>
+            ${assets.map(a => {
+              const room = (floor.rooms || []).find(r => r.id === a.roomId);
+              const roomLabel = room ? room.nr : '\u2013';
+              return `<tr><td>${escapeHtml(a.name || '')}</td><td>${escapeHtml(roomLabel)}</td><td>${escapeHtml(a.brand || '\u2013')}</td><td>${escapeHtml(a.condition || '\u2013')}</td><td>${escapeHtml(a.status || '\u2013')}</td><td>${a.acquisitionCost ? a.acquisitionCost.toLocaleString('de-CH') + ' CHF' : '\u2013'}</td></tr>`;
+            }).join('')}
+          </tbody>
+        </table>` : '<div class="rp-detail__empty">Keine Ausstattungsdaten vorhanden.</div>'}
       </div>`;
   }
 
@@ -336,6 +356,11 @@ function renderOccupancy() {
 let _occMap = null;
 let _searchMarker = null;
 let _is3D = false;
+let _3dTransitioning = false;
+let _editMode = false;
+let _activeEditTool = null;
+let _editSelectedInfo = null; // { source, featureIndex, feature, geo }
+let _editDragging = false;
 
 // Derive a Point FeatureCollection from BUILDINGS_GEO centroids (for markers/labels)
 function buildingPointsFromGeo(geo) {
@@ -353,6 +378,86 @@ function buildingPointsFromGeo(geo) {
   };
 }
 
+// Get filtered floor features based on current selection
+function getFilteredFloors() {
+  if (!FLOORS_GEO) return { type: 'FeatureCollection', features: [] };
+  const selId = state.occSelectedId;
+  if (!selId || selId === 'ch') return { type: 'FeatureCollection', features: [] };
+
+  const found = occFindNode(selId);
+  if (!found) return { type: 'FeatureCollection', features: [] };
+
+  const node = found.node;
+  let features;
+  if (node.type === 'floor') {
+    features = FLOORS_GEO.features.filter(f => f.properties.floorId === selId);
+  } else {
+    features = [];
+  }
+  return { type: 'FeatureCollection', features };
+}
+
+// Add floor polygon sources and layers to the map
+function addFloorLayers() {
+  const floorData = getFilteredFloors();
+
+  _occMap.addSource('floors', { type: 'geojson', data: floorData });
+
+  _occMap.addLayer(_is3D ? {
+    id: 'floor-fills',
+    type: 'fill-extrusion',
+    source: 'floors',
+    minzoom: 15,
+    paint: {
+      'fill-extrusion-color': '#e8e4df',
+      'fill-extrusion-opacity': 0.4,
+      'fill-extrusion-base': ['get', 'baseHeight'],
+      'fill-extrusion-height': ['+', ['get', 'baseHeight'], 0.1]
+    }
+  } : {
+    id: 'floor-fills',
+    type: 'fill',
+    source: 'floors',
+    minzoom: 15,
+    paint: {
+      'fill-color': '#e8e4df',
+      'fill-opacity': 0.4
+    }
+  });
+
+  _occMap.addLayer({
+    id: 'floor-outlines',
+    type: 'line',
+    source: 'floors',
+    minzoom: 15,
+    layout: { visibility: _is3D ? 'none' : 'visible' },
+    paint: {
+      'line-color': '#999999',
+      'line-width': 1.5
+    }
+  });
+
+  _occMap.addLayer({
+    id: 'floor-labels',
+    type: 'symbol',
+    source: 'floors',
+    minzoom: 16,
+    layout: {
+      'text-field': ['get', 'nameShort'],
+      'text-size': 12,
+      'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
+      'text-allow-overlap': true,
+      'text-anchor': 'center',
+      ...(_is3D ? { 'symbol-z-offset': ['get', 'baseHeight'] } : {})
+    },
+    paint: {
+      'text-color': '#666666',
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1
+    }
+  });
+}
+
 // Get filtered room features based on current selection
 function getFilteredRooms() {
   if (!ROOMS_GEO) return { type: 'FeatureCollection', features: [] };
@@ -366,11 +471,6 @@ function getFilteredRooms() {
   let features;
   if (node.type === 'floor') {
     features = ROOMS_GEO.features.filter(f => f.properties.floorId === selId);
-  } else if (node.type === 'building') {
-    features = ROOMS_GEO.features.filter(f => f.properties.buildingId === selId);
-  } else if (node.type === 'kanton') {
-    const buildingIds = (node.children || []).map(b => b.id);
-    features = ROOMS_GEO.features.filter(f => buildingIds.includes(f.properties.buildingId));
   } else {
     features = [];
   }
@@ -383,7 +483,7 @@ function addRoomLayers() {
 
   _occMap.addSource('rooms', { type: 'geojson', data: roomData });
 
-  _occMap.addLayer({
+  _occMap.addLayer(_is3D ? {
     id: 'room-fills',
     type: 'fill-extrusion',
     source: 'rooms',
@@ -391,8 +491,17 @@ function addRoomLayers() {
     paint: {
       'fill-extrusion-color': ROOM_COLOR_MATCH,
       'fill-extrusion-opacity': 0.6,
-      'fill-extrusion-base': _is3D ? ['get', 'baseHeight'] : 0,
-      'fill-extrusion-height': _is3D ? ['get', 'topHeight'] : 0
+      'fill-extrusion-base': ['get', 'baseHeight'],
+      'fill-extrusion-height': ['+', ['get', 'baseHeight'], 0.1]
+    }
+  } : {
+    id: 'room-fills',
+    type: 'fill',
+    source: 'rooms',
+    minzoom: 16,
+    paint: {
+      'fill-color': ROOM_COLOR_MATCH,
+      'fill-opacity': 0.6
     }
   });
 
@@ -401,6 +510,7 @@ function addRoomLayers() {
     type: 'line',
     source: 'rooms',
     minzoom: 16,
+    layout: { visibility: _is3D ? 'none' : 'visible' },
     paint: {
       'line-color': '#444444',
       'line-width': 1
@@ -417,7 +527,8 @@ function addRoomLayers() {
       'text-size': 11,
       'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
       'text-allow-overlap': false,
-      'text-anchor': 'center'
+      'text-anchor': 'center',
+      ...(_is3D ? { 'symbol-z-offset': ['get', 'baseHeight'] } : {})
     },
     paint: {
       'text-color': '#1a1a1a',
@@ -440,11 +551,6 @@ function getFilteredAssets() {
   let features;
   if (node.type === 'floor') {
     features = ASSETS_GEO.features.filter(f => f.properties.floorId === selId);
-  } else if (node.type === 'building') {
-    features = ASSETS_GEO.features.filter(f => f.properties.buildingId === selId);
-  } else if (node.type === 'kanton') {
-    const buildingIds = (node.children || []).map(b => b.id);
-    features = ASSETS_GEO.features.filter(f => buildingIds.includes(f.properties.buildingId));
   } else {
     features = [];
   }
@@ -457,7 +563,7 @@ function addAssetLayers() {
 
   _occMap.addSource('assets', { type: 'geojson', data: assetData });
 
-  _occMap.addLayer({
+  _occMap.addLayer(_is3D ? {
     id: 'asset-fills',
     type: 'fill-extrusion',
     source: 'assets',
@@ -465,8 +571,17 @@ function addAssetLayers() {
     paint: {
       'fill-extrusion-color': '#6B7B8D',
       'fill-extrusion-opacity': 0.6,
-      'fill-extrusion-base': _is3D ? ['get', 'baseHeight'] : 0,
-      'fill-extrusion-height': _is3D ? ['get', 'topHeight'] : 0
+      'fill-extrusion-base': ['get', 'baseHeight'],
+      'fill-extrusion-height': ['+', ['get', 'baseHeight'], 0.1]
+    }
+  } : {
+    id: 'asset-fills',
+    type: 'fill',
+    source: 'assets',
+    minzoom: 18,
+    paint: {
+      'fill-color': '#6B7B8D',
+      'fill-opacity': 0.6
     }
   });
 
@@ -475,11 +590,511 @@ function addAssetLayers() {
     type: 'line',
     source: 'assets',
     minzoom: 18,
+    layout: { visibility: _is3D ? 'none' : 'visible' },
     paint: {
       'line-color': '#333333',
       'line-width': 0.8
     }
   });
+}
+
+// Swap fill ↔ fill-extrusion layers at runtime (sources remain unchanged)
+function swapFillLayers(to3D) {
+  const configs = [
+    { id: 'floor-fills', source: 'floors', minzoom: 15,
+      paint2D: { 'fill-color': '#e8e4df', 'fill-opacity': 0.4 },
+      paint3D: { 'fill-extrusion-color': '#e8e4df', 'fill-extrusion-opacity': 0.4, 'fill-extrusion-base': ['get', 'baseHeight'], 'fill-extrusion-height': ['+', ['get', 'baseHeight'], 0.1] } },
+    { id: 'room-fills', source: 'rooms', minzoom: 16,
+      paint2D: { 'fill-color': ROOM_COLOR_MATCH, 'fill-opacity': 0.6 },
+      paint3D: { 'fill-extrusion-color': ROOM_COLOR_MATCH, 'fill-extrusion-opacity': 0.6, 'fill-extrusion-base': ['get', 'baseHeight'], 'fill-extrusion-height': ['+', ['get', 'baseHeight'], 0.1] } },
+    { id: 'asset-fills', source: 'assets', minzoom: 18,
+      paint2D: { 'fill-color': '#6B7B8D', 'fill-opacity': 0.6 },
+      paint3D: { 'fill-extrusion-color': '#6B7B8D', 'fill-extrusion-opacity': 0.6, 'fill-extrusion-base': ['get', 'baseHeight'], 'fill-extrusion-height': ['+', ['get', 'baseHeight'], 0.1] } }
+  ];
+  for (const cfg of configs) {
+    if (!_occMap.getSource(cfg.source)) continue;
+    if (_occMap.getLayer(cfg.id)) _occMap.removeLayer(cfg.id);
+    _occMap.addLayer({
+      id: cfg.id,
+      type: to3D ? 'fill-extrusion' : 'fill',
+      source: cfg.source,
+      minzoom: cfg.minzoom,
+      paint: to3D ? cfg.paint3D : cfg.paint2D
+    });
+  }
+
+  // Toggle outline layers (line layers can't render at height, so hide in 3D)
+  const outlineVisibility = to3D ? 'none' : 'visible';
+  ['floor-outlines', 'room-outlines', 'asset-outlines'].forEach(id => {
+    if (_occMap.getLayer(id)) _occMap.setLayoutProperty(id, 'visibility', outlineVisibility);
+  });
+
+  // Swap label layers to add/remove symbol-z-offset (layout props can't be updated dynamically)
+  const labelConfigs = [
+    { id: 'floor-labels', source: 'floors', minzoom: 16,
+      layout: { 'text-field': ['get', 'nameShort'], 'text-size': 12, 'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'], 'text-allow-overlap': true, 'text-anchor': 'center' },
+      paint: { 'text-color': '#666666', 'text-halo-color': '#ffffff', 'text-halo-width': 1 } },
+    { id: 'room-labels', source: 'rooms', minzoom: 17,
+      layout: { 'text-field': ['concat', ['get', 'nr'], '\n', ['get', 'type']], 'text-size': 11, 'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'], 'text-allow-overlap': false, 'text-anchor': 'center' },
+      paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1 } }
+  ];
+  for (const cfg of labelConfigs) {
+    if (!_occMap.getSource(cfg.source)) continue;
+    if (_occMap.getLayer(cfg.id)) _occMap.removeLayer(cfg.id);
+    const layout = { ...cfg.layout };
+    if (to3D) layout['symbol-z-offset'] = ['get', 'baseHeight'];
+    _occMap.addLayer({ id: cfg.id, type: 'symbol', source: cfg.source, minzoom: cfg.minzoom, layout, paint: cfg.paint });
+  }
+
+  ensureLayerOrder();
+}
+
+// Animated 3D transition (1000ms, ease-out cubic, synchronized terrain + pitch)
+function animate3DTransition(entering) {
+  if (_3dTransitioning || !_occMap) return;
+  _3dTransitioning = true;
+
+  const container = _occMap.getContainer();
+  const btn = container.querySelector('.rp-map-btn--3d');
+  if (btn) btn.disabled = true;
+
+  const duration = 1000;
+  const startTime = performance.now();
+  const startPitch = _occMap.getPitch();
+  const startBearing = _occMap.getBearing();
+  const targetPitch = entering ? 60 : 0;
+  const targetBearing = entering ? -20 : 0;
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+  if (entering) {
+    _is3D = true;
+    swapFillLayers(true);
+    if (_occMap.getSource('terrain-dem')) {
+      _occMap.setTerrain({ source: 'terrain-dem', exaggeration: 0 });
+    }
+  }
+
+  function tick(now) {
+    if (!_occMap) { _3dTransitioning = false; return; }
+
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    const eased = easeOutCubic(t);
+
+    // Terrain exaggeration
+    const exagg = entering ? eased : 1.0 - eased;
+    if (_occMap.getSource('terrain-dem')) {
+      _occMap.setTerrain({ source: 'terrain-dem', exaggeration: Math.max(0, exagg) });
+    }
+
+    // Camera pitch & bearing
+    _occMap.jumpTo({
+      pitch: startPitch + (targetPitch - startPitch) * eased,
+      bearing: startBearing + (targetBearing - startBearing) * eased
+    });
+
+    if (t < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      if (!entering) {
+        _is3D = false;
+        _occMap.setTerrain(null);
+        swapFillLayers(false);
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.querySelector('span').textContent = entering ? '2D' : '3D';
+      }
+      _3dTransitioning = false;
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+
+// --- Print preview helpers ---
+let _printOverlay = null;
+
+function getPrintDimensions(key) {
+  const dims = {
+    'landscape-a4': { w: 297, h: 210 },
+    'portrait-a4':  { w: 210, h: 297 },
+    'landscape-a3': { w: 420, h: 297 },
+    'portrait-a3':  { w: 297, h: 420 }
+  };
+  return dims[key] || dims['landscape-a4'];
+}
+
+function getMapScale() {
+  if (!_occMap) return 25000;
+  const center = _occMap.getCenter();
+  const zoom = _occMap.getZoom();
+  const metersPerPixel = 156543.03392 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, zoom);
+  const pixelsPerMeter = 96 / 0.0254;
+  return Math.round(metersPerPixel * pixelsPerMeter);
+}
+
+function showPrintPreview() {
+  if (_printOverlay) {
+    _printOverlay.classList.add('active');
+    updatePrintPreview();
+  }
+}
+
+function hidePrintPreview() {
+  if (_printOverlay) _printOverlay.classList.remove('active');
+}
+
+function updatePrintPreview() {
+  if (!_printOverlay || !_occMap) return;
+  const select = document.getElementById('rpPrintOrientation');
+  if (!select) return;
+
+  const orientation = select.value;
+  const printDims = getPrintDimensions(orientation);
+  const aspectRatio = printDims.w / printDims.h;
+
+  const viewRect = _occMap.getContainer().getBoundingClientRect();
+  const viewWidth = viewRect.width;
+  const viewHeight = viewRect.height;
+
+  const padding = 60;
+  const maxWidth = viewWidth - padding * 2;
+  const maxHeight = viewHeight - padding * 2;
+
+  let cropWidth, cropHeight;
+  if (maxWidth / aspectRatio <= maxHeight) {
+    cropWidth = maxWidth;
+    cropHeight = maxWidth / aspectRatio;
+  } else {
+    cropHeight = maxHeight;
+    cropWidth = maxHeight * aspectRatio;
+  }
+
+  const cropX = (viewWidth - cropWidth) / 2;
+  const cropY = (viewHeight - cropHeight) / 2;
+
+  // Update SVG mask rectangle
+  const maskRect = _printOverlay.querySelector('#rp-print-crop-mask');
+  if (maskRect) {
+    maskRect.setAttribute('x', cropX);
+    maskRect.setAttribute('y', cropY);
+    maskRect.setAttribute('width', cropWidth);
+    maskRect.setAttribute('height', cropHeight);
+  }
+
+  // Update crop border
+  const cropBorder = _printOverlay.querySelector('.rp-print-crop');
+  if (cropBorder) {
+    cropBorder.style.left = cropX + 'px';
+    cropBorder.style.top = cropY + 'px';
+    cropBorder.style.width = cropWidth + 'px';
+    cropBorder.style.height = cropHeight + 'px';
+  }
+
+  // Update label
+  const label = _printOverlay.querySelector('.rp-print-crop-label');
+  if (label) {
+    const formatLabel = orientation.includes('a3') ? 'A3' : 'A4';
+    const orientLabel = orientation.includes('landscape') ? 'Querformat' : 'Hochformat';
+    label.textContent = formatLabel + ' ' + orientLabel;
+  }
+}
+
+// --- Measure helpers ---
+let _measureState = {
+  active: false,
+  points: [],       // [[lng, lat], ...]
+  markers: [],      // maplibregl.Marker[]
+  labelMarkers: [], // maplibregl.Marker[] for distance labels
+  isClosed: false,
+  lineSourceId: 'measure-line-source',
+  lineLayerId: 'measure-line'
+};
+let _measureDisplay = null;
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function calculatePolygonArea(points) {
+  if (points.length < 3) return 0;
+  const n = points.length;
+  const avgLat = points.reduce((s, p) => s + p[1], 0) / n;
+  const latScale = 111320;
+  const lonScale = 111320 * Math.cos(avgLat * Math.PI / 180);
+  let area = 0;
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    area += points[i][0] * lonScale * points[j][1] * latScale;
+    area -= points[j][0] * lonScale * points[i][1] * latScale;
+  }
+  return Math.abs(area / 2);
+}
+
+function formatDistance(meters) {
+  return meters >= 1000 ? (meters / 1000).toFixed(2) + ' km' : Math.round(meters) + ' m';
+}
+
+function formatArea(sqm) {
+  if (sqm >= 1000000) return (sqm / 1000000).toFixed(2) + ' km\u00b2';
+  if (sqm >= 10000) return (sqm / 10000).toFixed(2) + ' ha';
+  return Math.round(sqm) + ' m\u00b2';
+}
+
+function updateMeasureLine() {
+  if (!_occMap) return;
+  const coords = _measureState.points.slice();
+  if (_measureState.isClosed && coords.length >= 3) coords.push(coords[0]);
+  const data = { type: 'Feature', geometry: { type: 'LineString', coordinates: coords } };
+  if (_occMap.getSource(_measureState.lineSourceId)) {
+    _occMap.getSource(_measureState.lineSourceId).setData(data);
+  } else {
+    _occMap.addSource(_measureState.lineSourceId, { type: 'geojson', data });
+    _occMap.addLayer({
+      id: _measureState.lineLayerId,
+      type: 'line',
+      source: _measureState.lineSourceId,
+      paint: { 'line-color': '#000', 'line-width': 2, 'line-dasharray': [4, 3] }
+    });
+  }
+}
+
+function updateMeasureLabels() {
+  _measureState.labelMarkers.forEach(m => m.remove());
+  _measureState.labelMarkers = [];
+  const pts = _measureState.points;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const d = haversineDistance(pts[i][1], pts[i][0], pts[i + 1][1], pts[i + 1][0]);
+    const mid = [(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2];
+    const el = document.createElement('div');
+    el.className = 'rp-measure-label';
+    el.textContent = formatDistance(d);
+    const m = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(mid).addTo(_occMap);
+    _measureState.labelMarkers.push(m);
+  }
+  if (_measureState.isClosed && pts.length >= 3) {
+    const last = pts[pts.length - 1], first = pts[0];
+    const d = haversineDistance(last[1], last[0], first[1], first[0]);
+    const mid = [(last[0] + first[0]) / 2, (last[1] + first[1]) / 2];
+    const el = document.createElement('div');
+    el.className = 'rp-measure-label';
+    el.textContent = formatDistance(d);
+    const m = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(mid).addTo(_occMap);
+    _measureState.labelMarkers.push(m);
+  }
+}
+
+function updateMeasureDisplay() {
+  if (!_measureDisplay) return;
+  const pts = _measureState.points;
+  let total = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    total += haversineDistance(pts[i][1], pts[i][0], pts[i + 1][1], pts[i + 1][0]);
+  }
+  if (_measureState.isClosed && pts.length >= 3) {
+    total += haversineDistance(pts[pts.length - 1][1], pts[pts.length - 1][0], pts[0][1], pts[0][0]);
+  }
+  _measureDisplay.querySelector('#rpMeasureTotalDistance').textContent = formatDistance(total);
+  const areaRow = _measureDisplay.querySelector('#rpMeasureAreaRow');
+  if (_measureState.isClosed && pts.length >= 3) {
+    const area = calculatePolygonArea(pts);
+    areaRow.style.display = 'flex';
+    _measureDisplay.querySelector('#rpMeasureTotalArea').textContent = formatArea(area);
+  } else {
+    areaRow.style.display = 'none';
+  }
+}
+
+function addMeasurePoint(lngLat) {
+  const pt = [lngLat.lng, lngLat.lat];
+  const idx = _measureState.points.length;
+  _measureState.points.push(pt);
+
+  const el = document.createElement('div');
+  el.className = 'rp-measure-marker';
+  const marker = new maplibregl.Marker({ element: el, draggable: true, anchor: 'center' })
+    .setLngLat(pt).addTo(_occMap);
+  marker._measureIndex = idx;
+
+  marker.on('drag', () => {
+    const pos = marker.getLngLat();
+    _measureState.points[marker._measureIndex] = [pos.lng, pos.lat];
+    updateMeasureLine();
+    updateMeasureLabels();
+    updateMeasureDisplay();
+  });
+
+  el.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const ci = marker._measureIndex;
+    if (ci === 0 && _measureState.points.length >= 3 && !_measureState.isClosed) {
+      _measureState.isClosed = true;
+      updateMeasureLine();
+      updateMeasureLabels();
+      updateMeasureDisplay();
+      return;
+    }
+    removeMeasurePoint(ci);
+  });
+
+  _measureState.markers.push(marker);
+  updateMeasureLine();
+  updateMeasureLabels();
+  updateMeasureDisplay();
+}
+
+function removeMeasurePoint(idx) {
+  if (idx < 0 || idx >= _measureState.points.length) return;
+  _measureState.points.splice(idx, 1);
+  _measureState.markers[idx].remove();
+  _measureState.markers.splice(idx, 1);
+  _measureState.markers.forEach((m, i) => { m._measureIndex = i; });
+  if (_measureState.points.length < 3) _measureState.isClosed = false;
+  updateMeasureLine();
+  updateMeasureLabels();
+  updateMeasureDisplay();
+}
+
+function isNearFirstPoint(lngLat) {
+  if (_measureState.points.length < 3) return false;
+  const first = _measureState.points[0];
+  const p1 = _occMap.project(lngLat);
+  const p2 = _occMap.project({ lng: first[0], lat: first[1] });
+  return Math.hypot(p1.x - p2.x, p1.y - p2.y) < 15;
+}
+
+function startMeasurement() {
+  _measureState.active = true;
+  _measureState.points = [];
+  _measureState.markers = [];
+  _measureState.labelMarkers = [];
+  _measureState.isClosed = false;
+  if (_measureDisplay) {
+    _measureDisplay.classList.add('show');
+    _measureDisplay.querySelector('#rpMeasureTotalDistance').textContent = '0 m';
+    _measureDisplay.querySelector('#rpMeasureAreaRow').style.display = 'none';
+  }
+  if (_occMap) _occMap.getCanvas().style.cursor = 'crosshair';
+}
+
+function clearMeasurement() {
+  _measureState.active = false;
+  _measureState.isClosed = false;
+  _measureState.markers.forEach(m => m.remove());
+  _measureState.labelMarkers.forEach(m => m.remove());
+  _measureState.points = [];
+  _measureState.markers = [];
+  _measureState.labelMarkers = [];
+  if (_occMap) {
+    if (_occMap.getLayer(_measureState.lineLayerId)) _occMap.removeLayer(_measureState.lineLayerId);
+    if (_occMap.getSource(_measureState.lineSourceId)) _occMap.removeSource(_measureState.lineSourceId);
+    _occMap.getCanvas().style.cursor = '';
+  }
+  if (_measureDisplay) _measureDisplay.classList.remove('show');
+}
+
+// --- Edit mode geometry helpers ---
+function editGetCentroid(coordinates) {
+  const ring = Array.isArray(coordinates[0][0]) ? coordinates[0] : coordinates;
+  let sumLng = 0, sumLat = 0, n = 0;
+  for (const pt of ring) {
+    sumLng += pt[0]; sumLat += pt[1]; n++;
+  }
+  return n ? [sumLng / n, sumLat / n] : [0, 0];
+}
+
+function editTranslateCoords(geometry, dLng, dLat) {
+  const g = JSON.parse(JSON.stringify(geometry));
+  function walk(coords) {
+    if (typeof coords[0] === 'number') { coords[0] += dLng; coords[1] += dLat; }
+    else coords.forEach(walk);
+  }
+  walk(g.coordinates);
+  return g;
+}
+
+function editRotateCoords(geometry, cx, cy, angleDeg) {
+  const g = JSON.parse(JSON.stringify(geometry));
+  const rad = angleDeg * Math.PI / 180;
+  const cos = Math.cos(rad), sin = Math.sin(rad);
+  function walk(coords) {
+    if (typeof coords[0] === 'number') {
+      const dx = coords[0] - cx, dy = coords[1] - cy;
+      coords[0] = cx + dx * cos - dy * sin;
+      coords[1] = cy + dx * sin + dy * cos;
+    } else coords.forEach(walk);
+  }
+  walk(g.coordinates);
+  return g;
+}
+
+function editSetHighlight(feature) {
+  if (!_occMap) return;
+  const src = _occMap.getSource('edit-selection');
+  if (!src) return;
+  src.setData({ type: 'FeatureCollection', features: feature ? [feature] : [] });
+}
+
+function editClearSelection() {
+  _editSelectedInfo = null;
+  editSetHighlight(null);
+}
+
+function editFindFeature(point) {
+  const layers = ['asset-fills', 'room-fills', 'floor-fills'];
+  const sourceMap = { 'asset-fills': 'assets', 'room-fills': 'rooms', 'floor-fills': 'floors' };
+  const geoMap = { 'assets': typeof ASSETS_GEO !== 'undefined' ? ASSETS_GEO : null, 'rooms': typeof ROOMS_GEO !== 'undefined' ? ROOMS_GEO : null, 'floors': typeof FLOORS_GEO !== 'undefined' ? FLOORS_GEO : null };
+
+  for (const layerId of layers) {
+    if (!_occMap.getLayer(layerId)) continue;
+    const features = _occMap.queryRenderedFeatures(point, { layers: [layerId] });
+    if (features.length === 0) continue;
+    const f = features[0];
+    const sourceName = sourceMap[layerId];
+    const geo = geoMap[sourceName];
+    if (!geo) continue;
+    const props = f.properties;
+    let featureIndex = -1;
+    for (let i = 0; i < geo.features.length; i++) {
+      const gf = geo.features[i];
+      if (sourceName === 'rooms' && gf.properties.nr === props.nr && gf.properties.floorId === props.floorId) { featureIndex = i; break; }
+      if (sourceName === 'assets' && gf.properties.assetId === props.assetId) { featureIndex = i; break; }
+      if (sourceName === 'floors' && gf.properties.floorId === props.floorId) { featureIndex = i; break; }
+    }
+    if (featureIndex >= 0) {
+      return { source: sourceName, featureIndex, feature: geo.features[featureIndex], geo };
+    }
+  }
+  return null;
+}
+
+// Ensure correct layer z-order: fills/outlines at bottom, labels above, markers on top
+function ensureLayerOrder() {
+  if (!_occMap) return;
+  // Move layers to top in bottom→top order (last moveLayer call ends up on top)
+  const orderedTop = [
+    'floor-labels', 'room-labels',
+    'building-points', 'building-labels',
+    'edit-selection-outline'
+  ];
+  for (const id of orderedTop) {
+    if (_occMap.getLayer(id)) _occMap.moveLayer(id);
+  }
+}
+
+function editRefreshSource(sourceName) {
+  const src = _occMap.getSource(sourceName);
+  if (!src) return;
+  const filterMap = { 'rooms': getFilteredRooms, 'floors': getFilteredFloors, 'assets': getFilteredAssets };
+  const filterFn = filterMap[sourceName];
+  if (filterFn) src.setData(filterFn());
 }
 
 function occInitMap() {
@@ -493,6 +1108,12 @@ function occInitMap() {
     _occMap = null;
   }
   _is3D = false;
+  _3dTransitioning = false;
+  _editMode = false;
+  _activeEditTool = null;
+  _printOverlay = null;
+  clearMeasurement();
+  _measureDisplay = null;
 
   _occMap = new maplibregl.Map({
     container: 'rp-mapbox',
@@ -542,23 +1163,16 @@ function occInitMap() {
       div.className = 'maplibregl-ctrl maplibregl-ctrl-group';
       div.innerHTML = '<button class="rp-map-btn rp-map-btn--home" type="button" title="Gesamtansicht" aria-label="Gesamtansicht"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L10 4l7 6.5"/><path d="M5 9v6.5a.5.5 0 00.5.5H8v-4h4v4h2.5a.5.5 0 00.5-.5V9"/></svg></button>';
       div.querySelector('button').addEventListener('click', () => {
-        // Reset 3D state
-        _is3D = false;
-        map.setTerrain(null);
+        if (_3dTransitioning) return;
+        // Reset 3D state immediately
+        if (_is3D) {
+          _is3D = false;
+          map.setTerrain(null);
+          swapFillLayers(false);
+          const btn3d = container.querySelector('.rp-map-btn--3d span');
+          if (btn3d) btn3d.textContent = '3D';
+        }
         map.flyTo({ center: [7.9, 47.1], zoom: 7.2, pitch: 0, bearing: 0 });
-        // Flatten extrusions
-        if (map.getLayer('room-fills')) {
-          map.setPaintProperty('room-fills', 'fill-extrusion-base', 0);
-          map.setPaintProperty('room-fills', 'fill-extrusion-height', 0);
-        }
-        if (map.getLayer('asset-fills')) {
-          map.setPaintProperty('asset-fills', 'fill-extrusion-base', 0);
-          map.setPaintProperty('asset-fills', 'fill-extrusion-height', 0);
-        }
-        if (map.getLayer('room-outlines')) map.setLayoutProperty('room-outlines', 'visibility', 'visible');
-        if (map.getLayer('asset-outlines')) map.setLayoutProperty('asset-outlines', 'visibility', 'visible');
-        const btn3d = container.querySelector('.rp-map-btn--3d span');
-        if (btn3d) btn3d.textContent = '3D';
       });
       return div;
     },
@@ -574,44 +1188,7 @@ function occInitMap() {
       div.innerHTML = '<button class="rp-map-btn rp-map-btn--3d" type="button" title="3D-Ansicht umschalten" aria-label="3D-Ansicht umschalten"><span>3D</span></button>';
       const btn = div.querySelector('button');
       btn.addEventListener('click', () => {
-        _is3D = !_is3D;
-        if (_is3D) {
-          // Enable terrain + extrusion heights
-          if (map.getSource('terrain-dem')) {
-            map.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
-          }
-          map.easeTo({ pitch: 60, bearing: -20, duration: 600 });
-          btn.querySelector('span').textContent = '2D';
-          // Switch to extruded heights
-          if (map.getLayer('room-fills')) {
-            map.setPaintProperty('room-fills', 'fill-extrusion-base', ['get', 'baseHeight']);
-            map.setPaintProperty('room-fills', 'fill-extrusion-height', ['get', 'topHeight']);
-          }
-          if (map.getLayer('asset-fills')) {
-            map.setPaintProperty('asset-fills', 'fill-extrusion-base', ['get', 'baseHeight']);
-            map.setPaintProperty('asset-fills', 'fill-extrusion-height', ['get', 'topHeight']);
-          }
-          // Hide flat outlines in 3D (they render at z=0)
-          if (map.getLayer('room-outlines')) map.setLayoutProperty('room-outlines', 'visibility', 'none');
-          if (map.getLayer('asset-outlines')) map.setLayoutProperty('asset-outlines', 'visibility', 'none');
-        } else {
-          // Disable terrain + flatten extrusions
-          map.setTerrain(null);
-          map.easeTo({ pitch: 0, bearing: 0, duration: 600 });
-          btn.querySelector('span').textContent = '3D';
-          // Flatten to 2D
-          if (map.getLayer('room-fills')) {
-            map.setPaintProperty('room-fills', 'fill-extrusion-base', 0);
-            map.setPaintProperty('room-fills', 'fill-extrusion-height', 0);
-          }
-          if (map.getLayer('asset-fills')) {
-            map.setPaintProperty('asset-fills', 'fill-extrusion-base', 0);
-            map.setPaintProperty('asset-fills', 'fill-extrusion-height', 0);
-          }
-          // Show outlines again
-          if (map.getLayer('room-outlines')) map.setLayoutProperty('room-outlines', 'visibility', 'visible');
-          if (map.getLayer('asset-outlines')) map.setLayoutProperty('asset-outlines', 'visibility', 'visible');
-        }
+        animate3DTransition(!_is3D);
       });
       return div;
     },
@@ -652,20 +1229,42 @@ function occInitMap() {
           <input class="rp-accordion__input" type="text" placeholder="Kartentitel\u2026" id="rpPrintTitle">
         </div>
         <div class="rp-accordion__form-row">
-          <label>Format</label>
-          <div class="rp-accordion__radio-group">
-            <label><input type="radio" name="rpPrintFormat" value="a4" checked> A4</label>
-            <label><input type="radio" name="rpPrintFormat" value="a3"> A3</label>
-          </div>
+          <label>Orientierung</label>
+          <select class="rp-accordion__select" id="rpPrintOrientation">
+            <option value="landscape-a4">A4 Querformat</option>
+            <option value="portrait-a4">A4 Hochformat</option>
+            <option value="landscape-a3">A3 Querformat</option>
+            <option value="portrait-a3">A3 Hochformat</option>
+          </select>
         </div>
         <div class="rp-accordion__form-row">
-          <label>Ausrichtung</label>
-          <div class="rp-accordion__radio-group">
-            <label><input type="radio" name="rpPrintOrient" value="landscape" checked> Querformat</label>
-            <label><input type="radio" name="rpPrintOrient" value="portrait"> Hochformat</label>
-          </div>
+          <label>Massstab</label>
+          <select class="rp-accordion__select" id="rpPrintScale">
+            <option value="auto">Automatisch</option>
+            <option value="500">1:500</option>
+            <option value="1000">1:1'000</option>
+            <option value="2500">1:2'500</option>
+            <option value="5000">1:5'000</option>
+            <option value="10000">1:10'000</option>
+            <option value="25000">1:25'000</option>
+            <option value="50000">1:50'000</option>
+            <option value="100000">1:100'000</option>
+          </select>
         </div>
         <button class="rp-accordion__action-btn" id="rpPrintBtn" type="button">Drucken</button>
+      </div>
+    </div>
+
+    <!-- Messen -->
+    <div class="rp-accordion__section" data-section="messen">
+      <button class="rp-accordion__toggle" type="button">
+        <span>Messen</span>
+        <svg class="rp-accordion__chevron" viewBox="0 0 12 12" width="12" height="12"><polyline points="4,2 8,6 4,10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="rp-accordion__body">
+        <p class="rp-accordion__hint">Klicken Sie auf die Karte, um einen Messpfad zu zeichnen. Klicken Sie auf den ersten Punkt, um die Fl\u00e4che zu schliessen.</p>
+        <button class="rp-accordion__action-btn" id="rpMeasureStartBtn" type="button">Messung starten</button>
+        <button class="rp-accordion__action-btn rp-accordion__action-btn--secondary" id="rpMeasureClearBtn" type="button" style="display:none">Messung l\u00f6schen</button>
       </div>
     </div>
 
@@ -686,31 +1285,6 @@ function occInitMap() {
       </div>
     </div>
 
-    <!-- Bearbeiten -->
-    <div class="rp-accordion__section" data-section="bearbeiten">
-      <button class="rp-accordion__toggle" type="button">
-        <span>Bearbeiten</span>
-        <svg class="rp-accordion__chevron" viewBox="0 0 12 12" width="12" height="12"><polyline points="4,2 8,6 4,10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="rp-accordion__body">
-        <div class="rp-accordion__btn-grid">
-          <button class="rp-accordion__action-btn" id="rpExportGeoJSON" type="button">Export GeoJSON</button>
-          <button class="rp-accordion__action-btn" id="rpExportCSV" type="button">Export CSV</button>
-        </div>
-        <div class="rp-accordion__form-row">
-          <label>Import</label>
-          <input class="rp-accordion__file-input" type="file" accept=".geojson,.json,.csv" id="rpImportFile">
-        </div>
-        <div class="rp-accordion__form-row">
-          <label class="rp-accordion__switch-label">
-            <input type="checkbox" id="rpEditMode">
-            <span>Live-Bearbeitung</span>
-          </label>
-          <span class="rp-accordion__hint">Objekte per Drag & Drop verschieben</span>
-        </div>
-      </div>
-    </div>
-
     <!-- Ebenen -->
     <div class="rp-accordion__section" data-section="ebenen">
       <button class="rp-accordion__toggle" type="button">
@@ -718,16 +1292,16 @@ function occInitMap() {
         <svg class="rp-accordion__chevron" viewBox="0 0 12 12" width="12" height="12"><polyline points="4,2 8,6 4,10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="rp-accordion__body">
-        <div class="rp-accordion__layer-section" data-layer="buildings">
+        <div class="rp-accordion__layer-section" data-layer="assets">
           <div class="rp-accordion__layer-header">
-            <span class="rp-accordion__layer-title">Geb\u00e4ude</span>
-            <button class="rp-accordion__eye active" data-layer="buildings" title="Layer ein/ausblenden">
+            <span class="rp-accordion__layer-title">Inventar</span>
+            <button class="rp-accordion__eye active" data-layer="assets" title="Layer ein/ausblenden">
               <svg class="rp-accordion__eye-open" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/></svg>
               <svg class="rp-accordion__eye-closed" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><line x1="3" y1="3" x2="17" y2="17"/></svg>
             </button>
           </div>
           <div class="rp-accordion__layer-items">
-            <div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:#d73027"></span><span>Geb\u00e4ude</span></div>
+            <div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:#6B7B8D"></span><span>Inventarobjekt</span></div>
           </div>
         </div>
         <div class="rp-accordion__layer-section" data-layer="rooms">
@@ -744,16 +1318,28 @@ function occInitMap() {
               .map(([type, color]) => `<div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:${color}"></span><span>${type}</span></div>`).join('')}
           </div>
         </div>
-        <div class="rp-accordion__layer-section" data-layer="assets">
+        <div class="rp-accordion__layer-section" data-layer="floors">
           <div class="rp-accordion__layer-header">
-            <span class="rp-accordion__layer-title">Inventar</span>
-            <button class="rp-accordion__eye active" data-layer="assets" title="Layer ein/ausblenden">
+            <span class="rp-accordion__layer-title">Geschosse</span>
+            <button class="rp-accordion__eye active" data-layer="floors" title="Layer ein/ausblenden">
               <svg class="rp-accordion__eye-open" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/></svg>
               <svg class="rp-accordion__eye-closed" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><line x1="3" y1="3" x2="17" y2="17"/></svg>
             </button>
           </div>
           <div class="rp-accordion__layer-items">
-            <div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:#6B7B8D"></span><span>Inventarobjekt</span></div>
+            <div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:#e8e4df"></span><span>Geschoss</span></div>
+          </div>
+        </div>
+        <div class="rp-accordion__layer-section" data-layer="buildings">
+          <div class="rp-accordion__layer-header">
+            <span class="rp-accordion__layer-title">Geb\u00e4ude</span>
+            <button class="rp-accordion__eye active" data-layer="buildings" title="Layer ein/ausblenden">
+              <svg class="rp-accordion__eye-open" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/></svg>
+              <svg class="rp-accordion__eye-closed" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><line x1="3" y1="3" x2="17" y2="17"/></svg>
+            </button>
+          </div>
+          <div class="rp-accordion__layer-items">
+            <div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:#d73027"></span><span>Geb\u00e4ude</span></div>
           </div>
         </div>
       </div>
@@ -770,6 +1356,167 @@ function occInitMap() {
   accordionWrap.appendChild(accordionToggle);
   container.appendChild(accordionWrap);
 
+  // ---- Print preview overlay ----
+  _printOverlay = document.createElement('div');
+  _printOverlay.className = 'rp-print-overlay';
+  _printOverlay.innerHTML = `
+    <svg><defs><mask id="rp-print-mask">
+      <rect width="100%" height="100%" fill="white"/>
+      <rect id="rp-print-crop-mask" fill="black"/>
+    </mask></defs>
+    <rect width="100%" height="100%" fill="rgba(0,0,0,0.45)" mask="url(#rp-print-mask)"/>
+    </svg>
+    <div class="rp-print-crop">
+      <div class="rp-print-crop-label"></div>
+    </div>`;
+  container.appendChild(_printOverlay);
+
+  // ---- Measure distance display panel ----
+  _measureDisplay = document.createElement('div');
+  _measureDisplay.className = 'rp-measure-display';
+  _measureDisplay.innerHTML = `
+    <div class="rp-measure-display__header">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="18" x2="18" y2="2"/><line x1="2" y1="18" x2="2" y2="14"/><line x1="2" y1="18" x2="6" y2="18"/><line x1="18" y1="2" x2="18" y2="6"/><line x1="18" y1="2" x2="14" y2="2"/></svg>
+      <span>Distanz messen</span>
+      <button class="rp-measure-display__close" id="rpMeasureDisplayClose" type="button" title="Schliessen">&times;</button>
+    </div>
+    <div class="rp-measure-display__info">Klicken Sie auf die Karte, um einen Pfad zu zeichnen.</div>
+    <div class="rp-measure-display__result">
+      <div class="rp-measure-display__row">
+        <span class="rp-measure-display__label">Gesamtdistanz:</span>
+        <span class="rp-measure-display__value" id="rpMeasureTotalDistance">0 m</span>
+      </div>
+      <div class="rp-measure-display__row" id="rpMeasureAreaRow" style="display:none">
+        <span class="rp-measure-display__label">Fl\u00e4che:</span>
+        <span class="rp-measure-display__value" id="rpMeasureTotalArea">0 m\u00b2</span>
+      </div>
+    </div>`;
+  container.appendChild(_measureDisplay);
+
+  _measureDisplay.querySelector('#rpMeasureDisplayClose').addEventListener('click', () => {
+    clearMeasurement();
+    const clearBtn = accordion.querySelector('#rpMeasureClearBtn');
+    const startBtn = accordion.querySelector('#rpMeasureStartBtn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    if (startBtn) startBtn.textContent = 'Messung starten';
+  });
+
+  // ---- Right-click context menu ----
+  const ctxMenu = document.createElement('div');
+  ctxMenu.className = 'rp-context-menu';
+  ctxMenu.innerHTML = `
+    <div class="rp-context-menu__item rp-context-menu__coords" id="rpCtxCoords" title="Klicken zum Kopieren">
+      <span id="rpCtxCoordsText">47.00000, 7.00000</span>
+    </div>
+    <div class="rp-context-menu__item" id="rpCtxMeasure">
+      <span id="rpCtxMeasureText">Distanz messen</span>
+    </div>
+    <div class="rp-context-menu__item" id="rpCtxPrint">
+      <span>Drucken</span>
+    </div>
+    <div class="rp-context-menu__item" id="rpCtxShare">
+      <span>Teilen</span>
+    </div>`;
+  container.appendChild(ctxMenu);
+
+  let _ctxLngLat = null;
+
+  function hideContextMenu() {
+    ctxMenu.classList.remove('show');
+  }
+
+  _occMap.on('contextmenu', (e) => {
+    e.preventDefault();
+    _ctxLngLat = e.lngLat;
+    ctxMenu.querySelector('#rpCtxCoordsText').textContent =
+      e.lngLat.lat.toFixed(5) + ', ' + e.lngLat.lng.toFixed(5);
+    ctxMenu.querySelector('#rpCtxCoords').classList.remove('copied');
+
+    const measureText = ctxMenu.querySelector('#rpCtxMeasureText');
+    measureText.textContent = _measureState.active ? 'Messung l\u00f6schen' : 'Distanz messen';
+
+    const mapRect = container.getBoundingClientRect();
+    const menuW = 200, menuH = 160;
+    const flipH = (e.point.x + menuW) > mapRect.width;
+    const flipV = (e.point.y + menuH) > mapRect.height;
+
+    ctxMenu.style.left = e.point.x + 'px';
+    ctxMenu.style.top = e.point.y + 'px';
+    ctxMenu.classList.toggle('flip-horizontal', flipH);
+    ctxMenu.classList.toggle('flip-vertical', flipV);
+    ctxMenu.classList.add('show');
+  });
+
+  // Hide context menu on any map click or Escape
+  _occMap.on('click', () => hideContextMenu());
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      hideContextMenu();
+      if (_measureState.active) {
+        clearMeasurement();
+        const clearBtn = accordion.querySelector('#rpMeasureClearBtn');
+        const startBtn = accordion.querySelector('#rpMeasureStartBtn');
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (startBtn) startBtn.textContent = 'Messung starten';
+      }
+    }
+  });
+
+  // Context menu: copy coordinates
+  ctxMenu.querySelector('#rpCtxCoords').addEventListener('click', () => {
+    const text = ctxMenu.querySelector('#rpCtxCoordsText').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      ctxMenu.querySelector('#rpCtxCoords').classList.add('copied');
+      setTimeout(hideContextMenu, 300);
+    });
+  });
+
+  // Context menu: measure
+  ctxMenu.querySelector('#rpCtxMeasure').addEventListener('click', () => {
+    hideContextMenu();
+    const startBtn = accordion.querySelector('#rpMeasureStartBtn');
+    const clearBtn = accordion.querySelector('#rpMeasureClearBtn');
+    if (_measureState.active) {
+      clearMeasurement();
+      if (startBtn) startBtn.textContent = 'Messung starten';
+      if (clearBtn) clearBtn.style.display = 'none';
+    } else {
+      startMeasurement();
+      if (startBtn) startBtn.textContent = 'Messung beenden';
+      if (clearBtn) clearBtn.style.display = '';
+      // Open the Messen accordion section
+      accordion.querySelectorAll('.rp-accordion__section').forEach(s => s.classList.remove('rp-accordion__section--open'));
+      const messenSection = accordion.querySelector('[data-section="messen"]');
+      if (messenSection) messenSection.classList.add('rp-accordion__section--open');
+      hidePrintPreview();
+    }
+  });
+
+  // Context menu: print (open Drucken accordion)
+  ctxMenu.querySelector('#rpCtxPrint').addEventListener('click', () => {
+    hideContextMenu();
+    accordion.querySelectorAll('.rp-accordion__section').forEach(s => s.classList.remove('rp-accordion__section--open'));
+    const druckenSection = accordion.querySelector('[data-section="drucken"]');
+    if (druckenSection) druckenSection.classList.add('rp-accordion__section--open');
+    showPrintPreview();
+    if (_measureState.active) {
+      clearMeasurement();
+      const startBtn = accordion.querySelector('#rpMeasureStartBtn');
+      const clearBtn = accordion.querySelector('#rpMeasureClearBtn');
+      if (startBtn) startBtn.textContent = 'Messung starten';
+      if (clearBtn) clearBtn.style.display = 'none';
+    }
+  });
+
+  // Context menu: share (open Teilen accordion)
+  ctxMenu.querySelector('#rpCtxShare').addEventListener('click', () => {
+    hideContextMenu();
+    accordion.querySelectorAll('.rp-accordion__section').forEach(s => s.classList.remove('rp-accordion__section--open'));
+    const teilenSection = accordion.querySelector('[data-section="teilen"]');
+    if (teilenSection) teilenSection.classList.add('rp-accordion__section--open');
+    hidePrintPreview();
+  });
+
   accordionToggle.addEventListener('click', () => {
     const isCollapsing = !accordion.classList.contains('rp-accordion--collapsed');
     accordion.classList.toggle('rp-accordion--collapsed');
@@ -777,9 +1524,11 @@ function occInitMap() {
     const label = isCollapsing ? 'Menu einblenden' : 'Menu ausblenden';
     accordionToggle.querySelector('span').textContent = label;
     accordionToggle.title = label;
+    // Hide print preview when collapsing accordion
+    if (isCollapsing) hidePrintPreview();
   });
 
-  // Single-open accordion behavior
+  // Single-open accordion behavior + print preview toggle
   accordion.querySelectorAll('.rp-accordion__toggle').forEach(btn => {
     btn.addEventListener('click', () => {
       const section = btn.closest('.rp-accordion__section');
@@ -788,6 +1537,21 @@ function occInitMap() {
       accordion.querySelectorAll('.rp-accordion__section').forEach(s => s.classList.remove('rp-accordion__section--open'));
       // Open clicked section (unless it was already open)
       if (!wasOpen) section.classList.add('rp-accordion__section--open');
+
+      // Show/hide print preview based on whether Drucken section is now open
+      const druckenOpen = !wasOpen && section.dataset.section === 'drucken';
+      if (druckenOpen) showPrintPreview();
+      else hidePrintPreview();
+
+      // Clear measurement when leaving Messen section
+      const messenOpen = !wasOpen && section.dataset.section === 'messen';
+      if (!messenOpen && _measureState.active) {
+        clearMeasurement();
+        const clearBtn = accordion.querySelector('#rpMeasureClearBtn');
+        const startBtn = accordion.querySelector('#rpMeasureStartBtn');
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (startBtn) startBtn.textContent = 'Messung starten';
+      }
     });
   });
 
@@ -831,15 +1595,88 @@ function occInitMap() {
   });
 
   // ---- Drucken ----
+  // Update preview when orientation changes
+  const printOrientSelect = accordion.querySelector('#rpPrintOrientation');
+  if (printOrientSelect) {
+    printOrientSelect.addEventListener('change', updatePrintPreview);
+  }
+  // Update preview on window resize
+  window.addEventListener('resize', () => {
+    if (_printOverlay && _printOverlay.classList.contains('active')) updatePrintPreview();
+  });
+
   accordion.querySelector('#rpPrintBtn').addEventListener('click', () => {
     const title = accordion.querySelector('#rpPrintTitle').value || 'Karte';
-    const canvas = _occMap.getCanvas();
-    const dataUrl = canvas.toDataURL('image/png');
-    const win = window.open('', '_blank');
-    if (win) {
-      win.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{@page{margin:1cm}body{margin:0}img{max-width:100%;height:auto}h1{font:16px/1.3 sans-serif;margin:0 0 8px}}</style></head><body><h1>${title}</h1><img src="${dataUrl}"><script>window.onload=function(){window.print()}<\/script></body></html>`);
-      win.document.close();
+    const orientation = accordion.querySelector('#rpPrintOrientation').value;
+    const printDims = getPrintDimensions(orientation);
+    const btn = accordion.querySelector('#rpPrintBtn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Wird erstellt\u2026';
+    btn.disabled = true;
+
+    // Create off-screen print container
+    const printContainer = document.createElement('div');
+    printContainer.id = 'rp-print-container';
+    printContainer.style.cssText = `position:fixed;top:0;left:0;width:${printDims.w}mm;height:${printDims.h}mm;background:white;z-index:10000;padding:10mm;box-sizing:border-box;`;
+
+    // Header
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:5mm;padding-bottom:3mm;border-bottom:1px solid #ccc;';
+    header.innerHTML = `<div style="font-size:14pt;font-weight:bold;">${title}</div><div style="font-size:10pt;color:#666;">${new Date().toLocaleDateString('de-CH')}</div>`;
+    printContainer.appendChild(header);
+
+    // Map canvas clone
+    const mapContainer = document.createElement('div');
+    mapContainer.style.cssText = `width:100%;height:calc(100% - 20mm);border:1px solid #ccc;position:relative;overflow:hidden;`;
+    if (_occMap) {
+      const mapCanvas = _occMap.getCanvas();
+      const cloned = document.createElement('canvas');
+      cloned.width = mapCanvas.width;
+      cloned.height = mapCanvas.height;
+      cloned.getContext('2d').drawImage(mapCanvas, 0, 0);
+      cloned.style.cssText = 'width:100%;height:100%;object-fit:contain;';
+      mapContainer.appendChild(cloned);
+
+      // Scale bar text
+      const scaleBar = document.createElement('div');
+      scaleBar.style.cssText = 'position:absolute;bottom:5mm;left:5mm;background:rgba(255,255,255,0.9);padding:2mm 3mm;border-radius:2px;font-size:8pt;';
+      const scaleVal = accordion.querySelector('#rpPrintScale').value;
+      const currentScale = scaleVal === 'auto' ? Math.round(getMapScale()) : parseInt(scaleVal);
+      scaleBar.textContent = 'Massstab 1:' + currentScale.toLocaleString('de-CH');
+      mapContainer.appendChild(scaleBar);
+
+      // North arrow
+      const northArrow = document.createElement('div');
+      northArrow.style.cssText = 'position:absolute;top:5mm;right:5mm;background:rgba(255,255,255,0.9);padding:2mm;border-radius:2px;text-align:center;';
+      northArrow.innerHTML = '<div style="font-size:16pt;">\u2191</div><div style="font-size:8pt;">N</div>';
+      mapContainer.appendChild(northArrow);
     }
+    printContainer.appendChild(mapContainer);
+
+    // Footer
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top:3mm;padding-top:3mm;border-top:1px solid #ccc;font-size:8pt;color:#666;display:flex;justify-content:space-between;';
+    footer.innerHTML = `<span>Quelle: Belegungsplanung</span><span>\u00a9 ${new Date().getFullYear()} BBL</span>`;
+    printContainer.appendChild(footer);
+
+    document.body.appendChild(printContainer);
+
+    // Inject print-specific styles
+    const printStyles = document.createElement('style');
+    printStyles.id = 'rp-print-styles';
+    const pageSize = orientation.includes('landscape') ? 'landscape' : 'portrait';
+    printStyles.textContent = `@media print { body > *:not(#rp-print-container) { display: none !important; } #rp-print-container { position: static !important; } @page { size: ${pageSize}; margin: 0; } }`;
+    document.head.appendChild(printStyles);
+
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        document.body.removeChild(printContainer);
+        document.head.removeChild(printStyles);
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }, 500);
+    }, 100);
   });
 
   // ---- Teilen ----
@@ -861,85 +1698,26 @@ function occInitMap() {
     setTimeout(updateShareUrl, 50);
   });
 
-  // ---- Bearbeiten ----
-  accordion.querySelector('#rpExportGeoJSON').addEventListener('click', () => {
-    const rooms = getFilteredRooms();
-    const blob = new Blob([JSON.stringify(rooms, null, 2)], { type: 'application/geo+json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'rooms.geojson';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
+  // ---- Messen (measure) buttons ----
+  const measureStartBtn = accordion.querySelector('#rpMeasureStartBtn');
+  const measureClearBtn = accordion.querySelector('#rpMeasureClearBtn');
 
-  accordion.querySelector('#rpExportCSV').addEventListener('click', () => {
-    const rooms = getFilteredRooms();
-    if (!rooms.features.length) return;
-    const keys = Object.keys(rooms.features[0].properties);
-    const header = keys.join(';');
-    const rows = rooms.features.map(f => keys.map(k => {
-      const v = f.properties[k];
-      return typeof v === 'string' && v.includes(';') ? `"${v}"` : (v ?? '');
-    }).join(';'));
-    const csv = [header, ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'rooms.csv';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
-  accordion.querySelector('#rpImportFile').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const data = JSON.parse(reader.result);
-        if (data.type === 'FeatureCollection') {
-          const roomSource = _occMap.getSource('rooms');
-          if (roomSource) roomSource.setData(data);
-        }
-      } catch (err) {
-        console.warn('Import error:', err);
-      }
-    };
-    reader.readAsText(file);
-  });
-
-  // Live edit mode (drag features)
-  let _editMode = false;
-  let _dragFeature = null;
-  accordion.querySelector('#rpEditMode').addEventListener('change', (e) => {
-    _editMode = e.target.checked;
-    _occMap.getCanvas().style.cursor = _editMode ? 'grab' : '';
-    if (!_editMode) {
-      _dragFeature = null;
+  measureStartBtn.addEventListener('click', () => {
+    if (_measureState.active) {
+      clearMeasurement();
+      measureStartBtn.textContent = 'Messung starten';
+      measureClearBtn.style.display = 'none';
+    } else {
+      startMeasurement();
+      measureStartBtn.textContent = 'Messung beenden';
+      measureClearBtn.style.display = '';
     }
   });
-  _occMap.on('mousedown', 'room-fills', (e) => {
-    if (!_editMode) return;
-    e.preventDefault();
-    _dragFeature = e.features[0];
-    _occMap.getCanvas().style.cursor = 'grabbing';
-    _occMap.once('mouseup', () => {
-      _dragFeature = null;
-      _occMap.getCanvas().style.cursor = 'grab';
-    });
-  });
-  _occMap.on('mousemove', (e) => {
-    if (!_editMode || !_dragFeature) return;
-    // Move the feature to the new position by updating the source
-    const roomSource = _occMap.getSource('rooms');
-    if (!roomSource) return;
-    const data = getFilteredRooms();
-    const feat = data.features.find(f => f.properties.roomId === _dragFeature.properties.roomId);
-    if (!feat) return;
-    const dx = e.lngLat.lng - feat.geometry.coordinates[0][0][0];
-    const dy = e.lngLat.lat - feat.geometry.coordinates[0][0][1];
-    feat.geometry.coordinates[0] = feat.geometry.coordinates[0].map(c => [c[0] + dx, c[1] + dy]);
-    roomSource.setData(data);
+
+  measureClearBtn.addEventListener('click', () => {
+    clearMeasurement();
+    measureStartBtn.textContent = 'Messung starten';
+    measureClearBtn.style.display = 'none';
   });
 
   // Scale bar
@@ -1008,6 +1786,7 @@ function occInitMap() {
   // Layer visibility map: layer name → MapLibre layer IDs
   const LAYER_MAP = {
     'buildings': ['building-points', 'building-labels', 'building-footprints-fill', 'building-footprints-outline'],
+    'floors': ['floor-fills', 'floor-outlines', 'floor-labels'],
     'rooms': ['room-fills', 'room-outlines', 'room-labels'],
     'assets': ['asset-fills', 'asset-outlines']
   };
@@ -1031,6 +1810,108 @@ function occInitMap() {
       const layer = btn.dataset.layer;
       const isActive = btn.classList.toggle('active');
       setLayerVisibility(layer, isActive);
+    });
+  });
+
+  // ---- Edit mode: toggle button, banner, toolbar ----
+  _editMode = false;
+  _activeEditTool = null;
+
+  // Edit toggle button (top-center, shown in normal mode)
+  const editToggle = document.createElement('button');
+  editToggle.className = 'rp-edit-toggle';
+  editToggle.type = 'button';
+  editToggle.innerHTML = '<svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 3.5l5 5L7 18H2v-5L11.5 3.5z"/><path d="M10 5l5 5"/></svg><span>Inhalt Bearbeiten</span>';
+  container.appendChild(editToggle);
+
+  // Edit banner (top-center, shown in edit mode)
+  const editBanner = document.createElement('div');
+  editBanner.className = 'rp-edit-banner';
+  editBanner.innerHTML = `
+    <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 3.5l5 5L7 18H2v-5L11.5 3.5z"/><path d="M10 5l5 5"/></svg>
+    <span class="rp-edit-banner__label">Grundriss bearbeiten</span>
+    <div class="rp-edit-banner__actions">
+      <button class="rp-edit-banner__btn rp-edit-banner__btn--cancel" type="button">Abbrechen</button>
+      <button class="rp-edit-banner__btn rp-edit-banner__btn--save" type="button">Speichern</button>
+    </div>`;
+  container.appendChild(editBanner);
+
+  // Edit toolbar (bottom-center, shown in edit mode)
+  const editToolbar = document.createElement('div');
+  editToolbar.className = 'rp-edit-toolbar';
+  editToolbar.innerHTML = `
+    <div class="rp-edit-toolbar__tools">
+      <div class="rp-edit-toolbar__group">
+        <button class="rp-edit-tool" data-tool="move" type="button" title="Verschieben">
+          <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v16M2 10h16M10 2l-3 3M10 2l3 3M10 18l-3-3M10 18l3-3M2 10l3-3M2 10l3 3M18 10l-3-3M18 10l-3 3"/></svg>
+          <span class="rp-edit-tool__label">Verschieben</span>
+        </button>
+        <button class="rp-edit-tool" data-tool="rotate" type="button" title="Drehen">
+          <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 10a7 7 0 11-2-5"/><path d="M17 2v5h-5"/></svg>
+          <span class="rp-edit-tool__label">Drehen</span>
+        </button>
+      </div>
+      <div class="rp-edit-toolbar__divider"></div>
+      <div class="rp-edit-toolbar__group">
+        <button class="rp-edit-tool" data-tool="furniture" type="button" title="M\u00f6bel platzieren">
+          <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="12" height="6" rx="1"/><path d="M6 8V6a4 4 0 018 0v2"/><path d="M4 14v2M16 14v2"/></svg>
+          <span class="rp-edit-tool__label">M\u00f6bel</span>
+        </button>
+        <button class="rp-edit-tool" data-tool="import" type="button" title="Grundriss importieren">
+          <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H5a1 1 0 00-1 1v14a1 1 0 001 1h10a1 1 0 001-1V6l-4-4z"/><path d="M12 2v4h4"/><path d="M10 10v4M8 12h4"/></svg>
+          <span class="rp-edit-tool__label">Importieren</span>
+        </button>
+        <button class="rp-edit-tool" data-tool="delete" type="button" title="L\u00f6schen">
+          <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h14M7 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><path d="M5 6v10a2 2 0 002 2h6a2 2 0 002-2V6"/><line x1="9" y1="9" x2="9" y2="15"/><line x1="11" y1="9" x2="11" y2="15"/></svg>
+          <span class="rp-edit-tool__label">L\u00f6schen</span>
+        </button>
+      </div>
+    </div>`;
+  container.appendChild(editToolbar);
+
+  // Edit mode: open
+  function openEditMode() {
+    _editMode = true;
+    _activeEditTool = null;
+    editToggle.classList.add('rp-edit-toggle--hidden');
+    editBanner.classList.add('rp-edit-banner--visible');
+    editToolbar.classList.add('rp-edit-toolbar--visible');
+    editToolbar.querySelectorAll('.rp-edit-tool').forEach(t => t.classList.remove('rp-edit-tool--active'));
+    container.classList.add('rp-mapbox--editing');
+    editClearSelection();
+  }
+
+  // Edit mode: close
+  function closeEditMode() {
+    _editMode = false;
+    _activeEditTool = null;
+    editToggle.classList.remove('rp-edit-toggle--hidden');
+    editBanner.classList.remove('rp-edit-banner--visible');
+    editToolbar.classList.remove('rp-edit-toolbar--visible');
+    editToolbar.querySelectorAll('.rp-edit-tool').forEach(t => t.classList.remove('rp-edit-tool--active'));
+    container.classList.remove('rp-mapbox--editing');
+    editClearSelection();
+  }
+
+  editToggle.addEventListener('click', openEditMode);
+  editBanner.querySelector('.rp-edit-banner__btn--cancel').addEventListener('click', closeEditMode);
+  editBanner.querySelector('.rp-edit-banner__btn--save').addEventListener('click', () => {
+    // TODO: persist edits
+    closeEditMode();
+  });
+
+  // Tool selection (toggle active)
+  editToolbar.querySelectorAll('.rp-edit-tool').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tool = btn.dataset.tool;
+      if (_activeEditTool === tool) {
+        btn.classList.remove('rp-edit-tool--active');
+        _activeEditTool = null;
+      } else {
+        editToolbar.querySelectorAll('.rp-edit-tool').forEach(t => t.classList.remove('rp-edit-tool--active'));
+        btn.classList.add('rp-edit-tool--active');
+        _activeEditTool = tool;
+      }
     });
   });
 
@@ -1061,14 +1942,14 @@ function occInitMap() {
     _occMap.addSource('building-footprints', { type: 'geojson', data: filteredGeo });
     _occMap.addLayer({ id: 'building-footprints-fill', type: 'fill', source: 'building-footprints', minzoom: 15, paint: { 'fill-color': '#d73027', 'fill-opacity': 0.15 } });
     _occMap.addLayer({ id: 'building-footprints-outline', type: 'line', source: 'building-footprints', minzoom: 15, paint: { 'line-color': '#d73027', 'line-width': 2, 'line-opacity': 0.6 } });
+
+    // Layer order: building footprints → floors → rooms → assets → building markers/labels
+    addFloorLayers();
+    addRoomLayers();
+    addAssetLayers();
+
     _occMap.addLayer({ id: 'building-points', type: 'circle', source: 'buildings', paint: { 'circle-radius': 8, 'circle-color': '#d73027', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' } });
     _occMap.addLayer({ id: 'building-labels', type: 'symbol', source: 'buildings', minzoom: 14, layout: { 'text-field': ['get', 'objectCode'], 'text-size': 12, 'text-anchor': 'bottom', 'text-offset': [0, -1.2], 'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 } });
-
-    // Room layers
-    addRoomLayers();
-
-    // Asset layers
-    addAssetLayers();
 
     // Terrain DEM source for 3D elevation
     if (!_occMap.getSource('terrain-dem')) {
@@ -1081,6 +1962,15 @@ function occInitMap() {
       });
     }
     if (_is3D) _occMap.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
+
+    // Edit selection highlight
+    if (!_occMap.getSource('edit-selection')) {
+      _occMap.addSource('edit-selection', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      _occMap.addLayer({ id: 'edit-selection-outline', type: 'line', source: 'edit-selection', paint: { 'line-color': '#00bfff', 'line-width': 3, 'line-dasharray': [2, 1] } });
+    }
+
+    // Ensure correct z-order: fills/outlines → labels → markers → selection
+    ensureLayerOrder();
   });
 
   _occMap.on('load', () => {
@@ -1125,43 +2015,38 @@ function occInitMap() {
         data: filteredGeo
       });
 
-      // Footprint fill layer (visible at close zoom)
+      // Layer order: building footprints → floors → rooms → assets → building markers/labels
       _occMap.addLayer({
         id: 'building-footprints-fill',
         type: 'fill',
         source: 'building-footprints',
         minzoom: 15,
-        paint: {
-          'fill-color': '#d73027',
-          'fill-opacity': 0.15
-        }
+        paint: { 'fill-color': '#d73027', 'fill-opacity': 0.15 }
       });
-
-      // Footprint outline layer
       _occMap.addLayer({
         id: 'building-footprints-outline',
         type: 'line',
         source: 'building-footprints',
         minzoom: 15,
-        paint: {
-          'line-color': '#d73027',
-          'line-width': 2,
-          'line-opacity': 0.6
-        }
+        paint: { 'line-color': '#d73027', 'line-width': 2, 'line-opacity': 0.6 }
       });
 
+      // Floor layers
+      addFloorLayers();
+
+      // Room layers
+      addRoomLayers();
+
+      // Asset layers
+      addAssetLayers();
+
+      // Building markers/labels on top of all fills
       _occMap.addLayer({
         id: 'building-points',
         type: 'circle',
         source: 'buildings',
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#d73027',
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#ffffff'
-        }
+        paint: { 'circle-radius': 8, 'circle-color': '#d73027', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' }
       });
-
       _occMap.addLayer({
         id: 'building-labels',
         type: 'symbol',
@@ -1175,18 +2060,8 @@ function occInitMap() {
           'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
           'text-allow-overlap': true
         },
-        paint: {
-          'text-color': '#1a1a1a',
-          'text-halo-color': '#ffffff',
-          'text-halo-width': 1.5
-        }
+        paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 }
       });
-
-      // Room layers
-      addRoomLayers();
-
-      // Asset layers
-      addAssetLayers();
 
       // Terrain DEM source for 3D elevation
       if (!_occMap.getSource('terrain-dem')) {
@@ -1199,6 +2074,15 @@ function occInitMap() {
         });
       }
       if (_is3D) _occMap.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
+
+      // Edit selection highlight
+      if (!_occMap.getSource('edit-selection')) {
+        _occMap.addSource('edit-selection', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+        _occMap.addLayer({ id: 'edit-selection-outline', type: 'line', source: 'edit-selection', paint: { 'line-color': '#00bfff', 'line-width': 3, 'line-dasharray': [2, 1] } });
+      }
+
+      // Ensure correct z-order: fills/outlines → labels → markers → selection
+      ensureLayerOrder();
 
       // Fit map to visible features
       if (filteredGeo.features.length > 0 && selId && selId !== 'ch') {
@@ -1214,8 +2098,9 @@ function occInitMap() {
     }
 
     // Click popup with building info
-    const clickPopup = new maplibregl.Popup({ closeButton: true, closeOnClick: true, offset: 12, maxWidth: '280px' });
+    const clickPopup = new maplibregl.Popup({ closeButton: true, closeOnClick: false, offset: 12, maxWidth: '280px' });
     const handleMarkerClick = (e) => {
+      if (_editMode || _measureState.active) return;
       // If a room fill is under the click, skip the building popup
       const roomHits = _occMap.queryRenderedFeatures(e.point, { layers: ['room-fills'] });
       if (roomHits.length > 0) return;
@@ -1282,6 +2167,7 @@ function occInitMap() {
 
     // Room click popup
     _occMap.on('click', 'room-fills', (e) => {
+      if (_editMode || _measureState.active) return;
       // Skip if an asset is under the click
       const assetHits = _occMap.queryRenderedFeatures(e.point, { layers: ['asset-fills'] });
       if (assetHits.length > 0) return;
@@ -1308,6 +2194,7 @@ function occInitMap() {
 
     // Asset click popup
     _occMap.on('click', 'asset-fills', (e) => {
+      if (_editMode || _measureState.active) return;
       const f = e.features[0];
       const p = f.properties;
       hoverPopup.remove();
@@ -1332,6 +2219,105 @@ function occInitMap() {
     // Asset cursor + hover
     _occMap.on('mouseenter', 'asset-fills', () => { _occMap.getCanvas().style.cursor = 'pointer'; });
     _occMap.on('mouseleave', 'asset-fills', () => { _occMap.getCanvas().style.cursor = ''; });
+
+    // --- Edit mode: selection, move, rotate, delete ---
+    let _editDragStartLngLat = null;
+    let _editDragStartAngle = null;
+
+    _occMap.on('click', (e) => {
+      // Measurement mode: add points
+      if (_measureState.active) {
+        if (_measureState.isClosed) return;
+        if (isNearFirstPoint(e.lngLat)) {
+          _measureState.isClosed = true;
+          updateMeasureLine();
+          updateMeasureLabels();
+          updateMeasureDisplay();
+          return;
+        }
+        addMeasurePoint(e.lngLat);
+        return;
+      }
+
+      if (!_editMode) {
+        // Close popup when clicking empty space (since closeOnClick is false)
+        const interactiveLayers = ['building-points', 'building-labels', 'building-footprints-fill', 'room-fills', 'asset-fills'];
+        const hits = _occMap.queryRenderedFeatures(e.point, { layers: interactiveLayers.filter(l => _occMap.getLayer(l)) });
+        if (hits.length === 0) clickPopup.remove();
+        return;
+      }
+
+      // Delete tool: remove feature on click
+      if (_activeEditTool === 'delete') {
+        const info = editFindFeature(e.point);
+        if (info) {
+          info.geo.features.splice(info.featureIndex, 1);
+          editRefreshSource(info.source);
+          editClearSelection();
+        }
+        return;
+      }
+
+      // Select feature
+      const info = editFindFeature(e.point);
+      if (info) {
+        _editSelectedInfo = info;
+        editSetHighlight(info.feature);
+      } else {
+        editClearSelection();
+      }
+    });
+
+    // Move / rotate drag handling
+    _occMap.on('mousedown', (e) => {
+      if (!_editMode || !_editSelectedInfo) return;
+      if (_activeEditTool !== 'move' && _activeEditTool !== 'rotate') return;
+
+      const info = editFindFeature(e.point);
+      if (!info || info.source !== _editSelectedInfo.source || info.featureIndex !== _editSelectedInfo.featureIndex) return;
+
+      e.preventDefault();
+      _editDragging = true;
+      _editDragStartLngLat = e.lngLat;
+      _occMap.getCanvas().style.cursor = _activeEditTool === 'move' ? 'grabbing' : 'alias';
+      _occMap.dragPan.disable();
+
+      if (_activeEditTool === 'rotate') {
+        const centroid = editGetCentroid(_editSelectedInfo.feature.geometry.coordinates);
+        _editDragStartAngle = Math.atan2(e.lngLat.lat - centroid[1], e.lngLat.lng - centroid[0]);
+      }
+    });
+
+    _occMap.on('mousemove', (e) => {
+      if (!_editDragging || !_editSelectedInfo) return;
+
+      const feature = _editSelectedInfo.feature;
+      if (_activeEditTool === 'move') {
+        const dLng = e.lngLat.lng - _editDragStartLngLat.lng;
+        const dLat = e.lngLat.lat - _editDragStartLngLat.lat;
+        feature.geometry = editTranslateCoords(feature.geometry, dLng, dLat);
+        _editDragStartLngLat = e.lngLat;
+        editRefreshSource(_editSelectedInfo.source);
+        editSetHighlight(feature);
+      } else if (_activeEditTool === 'rotate') {
+        const centroid = editGetCentroid(feature.geometry.coordinates);
+        const currentAngle = Math.atan2(e.lngLat.lat - centroid[1], e.lngLat.lng - centroid[0]);
+        const deltaAngle = (currentAngle - _editDragStartAngle) * 180 / Math.PI;
+        feature.geometry = editRotateCoords(feature.geometry, centroid[0], centroid[1], deltaAngle);
+        _editDragStartAngle = currentAngle;
+        editRefreshSource(_editSelectedInfo.source);
+        editSetHighlight(feature);
+      }
+    });
+
+    _occMap.on('mouseup', () => {
+      if (!_editDragging) return;
+      _editDragging = false;
+      _editDragStartLngLat = null;
+      _editDragStartAngle = null;
+      _occMap.dragPan.enable();
+      _occMap.getCanvas().style.cursor = '';
+    });
   });
 }
 
@@ -1449,6 +2435,10 @@ function occUpdateMap() {
   const fpSource = _occMap.getSource('building-footprints');
   if (fpSource) fpSource.setData(filteredGeo);
 
+  // Update floors source
+  const floorSource = _occMap.getSource('floors');
+  if (floorSource) floorSource.setData(getFilteredFloors());
+
   // Update rooms source
   const roomSource = _occMap.getSource('rooms');
   if (roomSource) roomSource.setData(getFilteredRooms());
@@ -1460,6 +2450,12 @@ function occUpdateMap() {
   // Determine zoom behavior based on selection type
   const found = selId ? occFindNode(selId) : null;
   const nodeType = found ? found.node.type : null;
+
+  // Hide building layers when a floor is selected (rooms are the focus)
+  const bldgVisibility = nodeType === 'floor' ? 'none' : 'visible';
+  ['building-points', 'building-labels', 'building-footprints-fill', 'building-footprints-outline'].forEach(id => {
+    if (_occMap.getLayer(id)) _occMap.setLayoutProperty(id, 'visibility', bldgVisibility);
+  });
 
   if (filteredGeo.features.length > 0 && selId && selId !== 'ch') {
     if (nodeType === 'floor') {
@@ -1498,8 +2494,9 @@ function occAttachTreeEvents() {
       } else {
         state.occSelectedId = id;
         if (hasChildren) state.occExpandedIds.add(id);
+        // Preserve current tab if valid for the new node type
         const tabs = occGetTabs(found.node.type);
-        state.occTab = tabs[0].id;
+        if (!tabs.find(t => t.id === state.occTab)) state.occTab = tabs[0].id;
       }
 
       occUpdateView();
@@ -1526,8 +2523,9 @@ function occAttachContentEvents() {
       const found = occFindNode(id);
       if (found) {
         found.path.forEach(n => state.occExpandedIds.add(n.id));
+        // Preserve current tab if valid for the new node type
         const tabs = occGetTabs(found.node.type);
-        state.occTab = tabs[0].id;
+        if (!tabs.find(t => t.id === state.occTab)) state.occTab = tabs[0].id;
       }
       occUpdateView();
       occPushHash();

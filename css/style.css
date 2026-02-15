@@ -2742,8 +2742,8 @@ ul, ol { list-style: none; }
 .rp-tabs::-webkit-scrollbar { display: none; }
 
 .rp-tabs__tab {
-  padding: 1rem 1rem;
-  font-size: var(--text-body-sm);
+  padding: var(--space-md) 1rem;
+  font-size: var(--text-body);
   font-family: inherit;
   font-weight: var(--font-weight-normal);
   color: var(--color-gray-500);
@@ -2817,6 +2817,377 @@ ul, ol { list-style: none; }
   line-height: 1;
   color: #333;
 }
+.rp-map-btn--3d:disabled {
+  pointer-events: none;
+  cursor: default;
+}
+.rp-map-btn--3d:disabled span {
+  opacity: 0.4;
+}
+
+/* ---- Edit mode: toggle button (top-center) ---- */
+.rp-edit-toggle {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.rp-edit-toggle:hover {
+  background: #f5f5f5;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.rp-edit-toggle svg {
+  flex-shrink: 0;
+}
+.rp-edit-toggle--hidden {
+  display: none;
+}
+
+/* ---- Edit mode: banner (top-center, replaces toggle) ---- */
+.rp-edit-banner {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: #005ea8;
+  color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.rp-edit-banner--visible {
+  display: flex;
+}
+.rp-edit-banner svg {
+  flex-shrink: 0;
+  stroke: #fff;
+}
+.rp-edit-banner__label {
+  margin-right: 4px;
+}
+.rp-edit-banner__actions {
+  display: flex;
+  gap: 6px;
+  margin-left: 4px;
+}
+.rp-edit-banner__btn {
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.rp-edit-banner__btn--cancel {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+.rp-edit-banner__btn--cancel:hover {
+  background: rgba(255,255,255,0.3);
+}
+.rp-edit-banner__btn--save {
+  background: #fff;
+  color: #005ea8;
+}
+.rp-edit-banner__btn--save:hover {
+  background: #e8f0fa;
+}
+
+/* ---- Edit mode: toolbar (bottom-center) ---- */
+.rp-edit-toolbar {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: none;
+  background: #fff;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+.rp-edit-toolbar--visible {
+  display: block;
+}
+.rp-edit-toolbar__tools {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 4px;
+}
+.rp-edit-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rp-edit-toolbar__divider {
+  width: 1px;
+  height: 36px;
+  background: var(--color-gray-200);
+  margin: 0 6px;
+}
+.rp-edit-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: #5e666b;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  min-width: 56px;
+}
+.rp-edit-tool:hover {
+  background: #f5f7f9;
+  color: #333;
+}
+.rp-edit-tool--active {
+  background: #e0edff;
+  color: #005ea8;
+}
+.rp-edit-tool--active:hover {
+  background: #d0e2fa;
+}
+.rp-edit-tool svg {
+  flex-shrink: 0;
+}
+.rp-edit-tool__label {
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ---- Print preview overlay ---- */
+.rp-print-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 400;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.rp-print-overlay.active {
+  opacity: 1;
+}
+.rp-print-overlay svg {
+  width: 100%;
+  height: 100%;
+}
+.rp-print-crop {
+  position: absolute;
+  border: 2px dashed #d73027;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+  pointer-events: none;
+}
+.rp-print-crop-label {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #d73027;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* ---- Measure display panel ---- */
+.rp-measure-display {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  display: none;
+  flex-direction: column;
+  width: 260px;
+  z-index: 500;
+  overflow: hidden;
+  font-size: 13px;
+}
+.rp-measure-display.show {
+  display: flex;
+}
+.rp-measure-display__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  color: var(--text);
+}
+.rp-measure-display__close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 3px;
+  color: var(--text-secondary);
+}
+.rp-measure-display__close:hover {
+  background: var(--border);
+}
+.rp-measure-display__info {
+  padding: 6px 12px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.rp-measure-display__result {
+  padding: 6px 12px 10px;
+}
+.rp-measure-display__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+}
+.rp-measure-display__label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.rp-measure-display__value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Measure markers on map */
+.rp-measure-marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #000;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.rp-measure-marker:hover {
+  transform: scale(1.3);
+}
+
+/* Measure distance labels on map */
+.rp-measure-label {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Accordion hint text */
+.rp-accordion__hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+/* Secondary action button */
+.rp-accordion__action-btn--secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  margin-top: 6px;
+}
+.rp-accordion__action-btn--secondary:hover {
+  background: var(--border);
+}
+
+/* ---- Right-click context menu ---- */
+.rp-context-menu {
+  position: absolute;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  min-width: 200px;
+  z-index: 600;
+  display: none;
+  overflow: hidden;
+  font-size: 13px;
+}
+.rp-context-menu.show {
+  display: block;
+}
+.rp-context-menu.flip-horizontal {
+  transform: translateX(-100%);
+}
+.rp-context-menu.flip-vertical {
+  transform: translateY(-100%);
+}
+.rp-context-menu.flip-horizontal.flip-vertical {
+  transform: translate(-100%, -100%);
+}
+.rp-context-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.rp-context-menu__item:hover {
+  background: var(--surface);
+}
+.rp-context-menu__coords {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+.rp-context-menu__coords.copied {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Edit mode: red border on map */
+.rp-mapbox--editing {
+  box-shadow: inset 0 0 0 3px #d73027;
+  position: relative;
+}
 
 /* ---- Accordion toolbar panel (top-left) ---- */
 .rp-accordion-wrap {
@@ -2824,7 +3195,7 @@ ul, ol { list-style: none; }
   top: 10px;
   left: 10px;
   z-index: 5;
-  width: 320px;
+  width: 240px;
 }
 .rp-accordion {
   width: 100%;
@@ -3054,6 +3425,25 @@ ul, ol { list-style: none; }
   flex: 1;
   width: auto;
   margin: 0;
+}
+.rp-accordion__select {
+  width: 100%;
+  padding: 6px 28px 6px 8px;
+  border: 1px solid var(--color-gray-300);
+  border-radius: 4px;
+  font-family: var(--font-family-body);
+  font-size: 12px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E") no-repeat right 8px center;
+  appearance: none;
+  cursor: pointer;
+}
+.rp-accordion__select:focus {
+  border-color: var(--color-focus);
+}
+.rp-accordion__select:hover {
+  border-color: var(--color-gray-500);
 }
 .rp-accordion__file-input {
   width: 100%;
@@ -3672,4 +4062,10 @@ ul, ol { list-style: none; }
   .top-header__coat-of-arms { width: 28px; height: 28px; }
   .toolbar { flex-direction: column; align-items: stretch; }
   .search { max-width: none; }
+}
+
+/* ---- Print media query ---- */
+@media print {
+  body > *:not(#rp-print-container) { display: none !important; }
+  #rp-print-container { position: static !important; }
 }
