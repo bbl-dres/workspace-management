@@ -229,13 +229,70 @@ function renderScan() {
           <h3 class="scan-area__title">Objekt identifizieren</h3>
           <p class="scan-area__text">Scannen Sie den QR-Code auf dem M\u00f6belst\u00fcck oder geben Sie die Inventar-Nummer manuell ein, um den Status und die Historie des Objekts einzusehen.</p>
           <div class="scan-area__input-row">
-            <input class="scan-area__input" type="text" placeholder="z.B. INV-2024-001234">
-            <button class="btn btn--filled">Suchen</button>
+            <input class="scan-area__input" id="scanInput" type="text" placeholder="z.B. INV-2024-001234">
+            <button class="btn btn--filled" id="scanSearchBtn">Suchen</button>
           </div>
+          <div class="scan-area__feedback" id="scanFeedback"></div>
         </div>
       </div>
     </div>
   `;
+}
+
+function attachScanEvents() {
+  const input = document.getElementById('scanInput');
+  const btn = document.getElementById('scanSearchBtn');
+  const feedback = document.getElementById('scanFeedback');
+
+  function doScanSearch() {
+    let val = input.value.trim();
+    if (!val) {
+      feedback.textContent = 'Bitte geben Sie eine Inventar-Nummer ein.';
+      feedback.className = 'scan-area__feedback scan-area__feedback--error';
+      return;
+    }
+
+    // Extract inventory number from QR code URL
+    if (val.startsWith('http')) {
+      const match = val.match(/\/inv\/(INV-\d{4}-\d+)/i);
+      if (match) val = match[1];
+    }
+
+    val = val.toUpperCase();
+
+    // Search circular economy items
+    const circular = FURNITURE_ITEMS.find(
+      x => x.itemId.toUpperCase() === val || x.inventoryNumber.toUpperCase() === val
+    );
+    if (circular) {
+      navigateTo('item', circular.itemId);
+      return;
+    }
+
+    // Search all inventory (GeoJSON assets)
+    if (ASSETS_GEO && ASSETS_GEO.features) {
+      const asset = ASSETS_GEO.features.find(
+        f => f.properties.assetId.toUpperCase() === val || f.properties.inventoryNumber.toUpperCase() === val
+      );
+      if (asset) {
+        navigateTo('item', asset.properties.assetId);
+        return;
+      }
+    }
+
+    // Not found
+    feedback.textContent = 'Kein Objekt mit der Nummer \u00ab' + escapeHtml(val) + '\u00bb gefunden.';
+    feedback.className = 'scan-area__feedback scan-area__feedback--error';
+  }
+
+  btn.addEventListener('click', doScanSearch);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doScanSearch();
+  });
+  input.addEventListener('input', () => {
+    feedback.textContent = '';
+    feedback.className = 'scan-area__feedback';
+  });
 }
 
 // ---- NEUES OBJEKT ERFASSEN ----

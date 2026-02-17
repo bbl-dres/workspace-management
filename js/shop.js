@@ -193,13 +193,77 @@ function renderFurnitureCard(f) {
 // ---- FURNITURE DETAIL ----
 function renderFurnitureDetail(itemId) {
   const f = FURNITURE_ITEMS.find(x => x.itemId === itemId);
+
+  // Fallback: look up in inventory (ASSETS_GEO) if not a circular item
   if (!f) {
+    const assetFeature = ASSETS_GEO && ASSETS_GEO.features
+      ? ASSETS_GEO.features.find(ft => ft.properties.assetId === itemId || ft.properties.inventoryNumber === itemId)
+      : null;
+
+    if (!assetFeature) {
+      return `
+        ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Nicht gefunden'])}
+        <div class="container container--detail" id="mainContent">
+          <div class="no-results">
+            <div class="no-results__icon">${ICONS.placeholder}</div>
+            <p class="no-results__text">Objekt nicht gefunden.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render detail page from inventory asset
+    const a = assetFeature.properties;
+    const catLabel = getCategoryLabel(a.categoryId) || '';
+    const parentCat = getParentCategory(a.categoryId);
+    const building = BUILDINGS.find(b => b.buildingId === a.buildingId);
+    const floor = FLOORS.find(fl => fl.floorId === a.floorId);
+    const locationParts = [];
+    if (building) locationParts.push(building.name);
+    if (floor) locationParts.push(floor.name);
+    const locationLabel = locationParts.join(', ');
+
+    const bcItems = [['Inventar', "navigateTo('circular')"]];
+    if (parentCat) bcItems.push([parentCat.label]);
+    bcItems.push([escapeHtml(a.name)]);
+
+    const statusLabel = a.status || 'Aktiv';
+    const statusClass = statusLabel === 'Aktiv' ? 'badge--active' : 'badge--circular';
+
+    // Try to find a matching product for photos
+    const product = a.productId ? PRODUCTS.find(p => p.id === a.productId) : null;
+    const photos = product ? getItemPhotos(product) : [];
+    const badgeHtml = '<span class="badge ' + statusClass + ' carousel__badge">' + escapeHtml(statusLabel) + '</span>';
+
     return `
-      ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Nicht gefunden'])}
+      ${renderBreadcrumb(...bcItems)}
       <div class="container container--detail" id="mainContent">
-        <div class="no-results">
-          <div class="no-results__icon">${ICONS.placeholder}</div>
-          <p class="no-results__text">Objekt nicht gefunden.</p>
+        ${renderDetailToolbar()}
+        <div class="product-detail">
+          <div class="product-detail__image">
+            ${photos.length ? renderCarousel(photos, a.name, badgeHtml) : `<div class="product-detail__placeholder">${ICONS.placeholder}</div>`}
+          </div>
+          <div class="product-detail__info">
+            <h1 class="product-detail__title">${escapeHtml(a.name)}</h1>
+            <div class="product-detail__meta">
+              ${a.brand ? `<span class="product-detail__meta-label">Marke</span>
+              <span class="product-detail__meta-value">${escapeHtml(a.brand)}</span>` : ''}
+              <span class="product-detail__meta-label">Kategorie</span>
+              <span class="product-detail__meta-value">${catLabel}</span>
+              ${a.condition ? `<span class="product-detail__meta-label">Zustand</span>
+              <span class="product-detail__meta-value">${escapeHtml(a.condition)}</span>` : ''}
+              <span class="product-detail__meta-label">Inventar-Nr.</span>
+              <span class="product-detail__meta-value">${escapeHtml(a.inventoryNumber)}</span>
+              <span class="product-detail__meta-label">Status</span>
+              <span class="product-detail__meta-value">${escapeHtml(statusLabel)}</span>
+              ${locationLabel ? `<span class="product-detail__meta-label">Standort</span>
+              <span class="product-detail__meta-value">${escapeHtml(locationLabel)}</span>` : ''}
+              ${a.acquisitionDate ? `<span class="product-detail__meta-label">Beschaffung</span>
+              <span class="product-detail__meta-value">${a.acquisitionDate}</span>` : ''}
+              ${a.acquisitionCost ? `<span class="product-detail__meta-label">Anschaffungskosten</span>
+              <span class="product-detail__meta-value">CHF ${a.acquisitionCost.toFixed(2)}</span>` : ''}
+            </div>
+          </div>
         </div>
       </div>
     `;

@@ -745,6 +745,11 @@ ul, ol { list-style: none; }
   color: var(--color-gray-800);
 }
 
+.badge--active {
+  background: var(--color-badge-green-bg, #e8f5e9);
+  color: var(--color-badge-green-text, #2e7d32);
+}
+
 .badge--green {
   background: var(--color-badge-green-bg);
   color: var(--color-badge-green-text);
@@ -1168,6 +1173,18 @@ ul, ol { list-style: none; }
 
 .product-detail__image svg { color: var(--color-gray-300); }
 
+.product-detail__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  color: var(--color-gray-300);
+}
+
+.product-detail__placeholder svg { width: 64px; height: 64px; }
+
 .product-detail__info { flex: 1; min-width: 0; }
 
 .product-detail__title {
@@ -1516,6 +1533,17 @@ ul, ol { list-style: none; }
 
 .scan-area__input:focus { border-color: var(--color-primary); }
 .scan-area__input::placeholder { color: var(--color-secondary-400); }
+
+.scan-area__feedback {
+  margin-top: var(--space-sm);
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-normal);
+  min-height: 1.25em;
+}
+
+.scan-area__feedback--error {
+  color: var(--color-error, #d32f2f);
+}
 
 /* ===== NEW OBJECT FORM ===== */
 .form-card {

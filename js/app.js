@@ -445,7 +445,7 @@ function render() {
     case 'planning': app.innerHTML = renderPlanning(); break;
     case 'occupancy': app.innerHTML = renderOccupancy(); attachOccupancyEvents(); break;
     case 'circular': app.innerHTML = renderCircular(); attachShopEvents(); break;
-    case 'scan': app.innerHTML = renderScan(); break;
+    case 'scan': app.innerHTML = renderScan(); attachScanEvents(); break;
     case 'register': app.innerHTML = renderRegister(); break;
     case 'charter': app.innerHTML = renderCharter(); break;
     case 'style-worlds': app.innerHTML = renderStyleWorlds(); break;
