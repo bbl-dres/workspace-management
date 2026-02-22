@@ -30,15 +30,15 @@
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right:4px">
                     <path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Open in Editor
+                Im Editor \u00f6ffnen
             </button>
             <button class="fp-btn fp-btn--primary" id="btnPublish" style="display:none">
-                Publish
+                Ver&ouml;ffentlichen
             </button>
             <button class="fp-btn fp-btn--outline" id="btnExitEditor" style="display:none">
-                Exit Editor
+                Editor beenden
             </button>
-            <button class="fp-btn fp-btn--icon" id="btnMore" title="More options">
+            <button class="fp-btn fp-btn--icon" id="btnMore" title="Weitere Optionen">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <circle cx="8" cy="3" r="1.2" fill="currentColor"/>
                     <circle cx="8" cy="8" r="1.2" fill="currentColor"/>
@@ -54,7 +54,7 @@
         <!-- LEFT PANEL: Resources -->
         <aside class="fp-panel fp-panel--left" id="leftPanel">
             <div class="fp-panel__header">
-                <h2 class="fp-panel__title">Resources</h2>
+                <h2 class="fp-panel__title">Ressourcen</h2>
             </div>
             <div class="fp-panel__search">
                 <div class="fp-search-wrap">
@@ -62,9 +62,9 @@
                         <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/>
                         <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                     </svg>
-                    <input type="search" id="resourceSearch" placeholder="Quick search" class="fp-search">
+                    <input type="search" id="resourceSearch" placeholder="Schnellsuche" class="fp-search">
                 </div>
-                <button class="fp-color-btn" id="colorByBtn" title="Color by">
+                <button class="fp-color-btn" id="colorByBtn" title="Farbe nach">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <circle cx="5" cy="5" r="3.2" fill="#93C5FD" stroke="#3B82F6" stroke-width="0.7"/>
                         <circle cx="11" cy="5" r="3.2" fill="#FCD34D" stroke="#F59E0B" stroke-width="0.7"/>
@@ -74,7 +74,7 @@
             </div>
             <!-- Color-by Popover -->
             <div class="fp-color-popover" id="colorPopover" hidden>
-                <div class="fp-color-popover__title">Color by</div>
+                <div class="fp-color-popover__title">Farbe nach</div>
                 <div class="fp-color-popover__options" id="colorOptions"></div>
                 <div class="fp-color-popover__legend" id="colorLegend"></div>
             </div>
@@ -86,37 +86,37 @@
 
             <!-- Floating Toolbar -->
             <div class="fp-toolbar" id="toolbar">
-                <button data-tool="select" class="fp-toolbar__btn active" title="Select (V)">
+                <button data-tool="select" class="fp-toolbar__btn active" title="Ausw&auml;hlen (V)">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M3 2l9.5 5.5-4.2.7-.7 4.2L3 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
                     </svg>
                 </button>
-                <button data-tool="pan" class="fp-toolbar__btn" title="Pan (H)">
+                <button data-tool="pan" class="fp-toolbar__btn" title="Verschieben (H)">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M6 1.5v7.5M8.5 3v7M11 4.5v5.5M3.5 5v5.5a3.5 3.5 0 003.5 3.5h2.5a3.5 3.5 0 003.5-3.5V4.5M3.5 5c0-1 .5-2 1.5-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
                 <div class="fp-toolbar__sep"></div>
-                <button data-tool="measure" class="fp-toolbar__btn" title="Measure (M)">
+                <button data-tool="measure" class="fp-toolbar__btn" title="Messen (M)">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M3 13L13 3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                         <path d="M5.5 10.5l-1 1M7.5 8.5l-1 1M9.5 6.5l-1.5 1.5M11.5 4.5l-1 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
                     </svg>
                 </button>
                 <div class="fp-toolbar__sep"></div>
-                <button id="zoomIn" class="fp-toolbar__btn" title="Zoom In (+)">
+                <button id="zoomIn" class="fp-toolbar__btn" title="Vergr&ouml;ssern (+)">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/>
                         <path d="M7 5v4M5 7h4M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                     </svg>
                 </button>
-                <button id="zoomOut" class="fp-toolbar__btn" title="Zoom Out (-)">
+                <button id="zoomOut" class="fp-toolbar__btn" title="Verkleinern (-)">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/>
                         <path d="M5 7h4M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                     </svg>
                 </button>
-                <button id="fitView" class="fp-toolbar__btn" title="Fit View (F)">
+                <button id="fitView" class="fp-toolbar__btn" title="Ansicht anpassen (F)">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>

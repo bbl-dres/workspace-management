@@ -1229,6 +1229,41 @@ ul, ol { list-style: none; }
 
 .product-detail__actions { display: flex; gap: var(--space-3); }
 
+/* ===== MODULE DETAIL ===== */
+.module-detail__section-title {
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-800);
+  margin-bottom: var(--space-sm);
+}
+.module-detail__list {
+  list-style: none;
+  padding: var(--space-md);
+  margin: 0 0 var(--space-lg);
+  background: var(--color-gray-100);
+  border-radius: var(--radius);
+}
+.module-detail__list li {
+  font-size: var(--text-body-sm);
+  color: var(--color-gray-600);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+.module-detail__list li:last-child { border-bottom: none; }
+.module-detail__list li::before {
+  content: "\2022";
+  color: var(--color-accent);
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+}
+.module-detail__related { margin-top: var(--space-2xl); }
+
+/* ===== API DOCS (embedded Swagger UI) ===== */
+.api-docs-container .swagger-ui .topbar { display: none; }
+.api-docs-container .swagger-ui .information-container { padding: 0; }
+.api-docs-container .swagger-ui .scheme-container { padding: var(--space-sm) 0; margin: 0; box-shadow: none; }
+
 /* ===== PAGE SECTIONS – CD Bund container.postcss ===== */
 /* Width: 100%, centered, overflow-x clip, responsive padding per container.postcss */
 .container {

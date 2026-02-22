@@ -482,8 +482,8 @@ Der Header folgt dem 3-zeiligen admin.ch-Muster:
 ### 6.2 Planung Page
 
 1. Breadcrumb + Page Hero
-2. Tile-Grid — 3 Karten: Stilwelten, Planungsbeispiele, CAD-Daten
-3. Stilwelten-Grid (`section--bg-alt`) — 6 Bild-Karten
+2. Tile-Grid — 3 Karten: Multispace Module, Planungsbeispiele, CAD-Daten
+3. Multispace-Module-Grid (`section--bg-alt`) — Modul-Karten mit Detailseite
 
 ### 6.3 Section-Wrapper
 

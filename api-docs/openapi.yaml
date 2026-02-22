@@ -1,0 +1,1335 @@
+openapi: 3.0.3
+info:
+  title: Arbeitsplatz-Management API
+  description: |
+    REST API für die Arbeitsplatz-Management-Plattform des Bundesamts für Bauten und Logistik (BBL).
+
+    Ermöglicht die Verwaltung von Gebäuden, Geschossen, Räumen, Mobiliar, Bestellungen und
+    Multispace-Modulen der Bundesverwaltung.
+
+    **Hinweis:** Diese API-Dokumentation beschreibt die Zielarchitektur des Serviceportals.
+    Der aktuelle Prototyp verwendet statische JSON-Dateien anstelle einer Server-API.
+  version: 1.0.0
+  contact:
+    name: BBL – Bundesamt für Bauten und Logistik
+    url: https://www.bbl.admin.ch
+  license:
+    name: Prototyp – nur zur Demonstration
+
+servers:
+  - url: https://api.workspace.admin.ch/api/v1
+    description: Produktion (Zielarchitektur)
+  - url: http://localhost:8000/api/v1
+    description: Lokale Entwicklung
+
+tags:
+  - name: Standorte
+    description: Standorte / Areale (IfcSite)
+  - name: Gebäude
+    description: Gebäude / Liegenschaften (IfcBuilding)
+  - name: Geschosse
+    description: Geschosse / Stockwerke (IfcBuildingStorey)
+  - name: Räume
+    description: Räume (IfcSpace)
+  - name: Produkte
+    description: Produktkatalog – Mobiliar bestellen
+  - name: Kategorien
+    description: Produktkategorien (hierarchisch)
+  - name: Inventar
+    description: Inventarobjekte – physische Gegenstände
+  - name: Kreislaufwirtschaft
+    description: Kreislaufwirtschaft – gebrauchte Möbel
+  - name: Bestellungen
+    description: Bestellungen aus dem Produktkatalog
+  - name: Multispace Module
+    description: Raumausstattungsmodule gemäss Handbuch Multispace (BBL)
+  - name: Grundrisse
+    description: Grundrisse – Räume und Assets als GeoJSON
+  - name: Belegungsplanung
+    description: Belegungsplanung – Standortbaum und Kennzahlen
+
+paths:
+  # ── Sites ──────────────────────────────────────────
+  /sites:
+    get:
+      tags: [Standorte]
+      summary: Standorte auflisten
+      description: Gibt alle Standorte (Kantone / Areale) zurück.
+      responses:
+        '200':
+          description: Liste der Standorte
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Site'
+
+  /sites/{siteId}:
+    get:
+      tags: [Standorte]
+      summary: Standort-Details
+      parameters:
+        - name: siteId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: be
+      responses:
+        '200':
+          description: Standort-Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Buildings ──────────────────────────────────────
+  /buildings:
+    get:
+      tags: [Gebäude]
+      summary: Gebäude auflisten
+      parameters:
+        - name: siteId
+          in: query
+          description: Filter nach Standort
+          schema:
+            type: string
+          example: be
+        - name: status
+          in: query
+          description: Filter nach Gebäudestatus
+          schema:
+            type: string
+            enum: [Gebäude bestehend, Im Bau, Geplant, Sanierung, Rückbau, Stillgelegt]
+      responses:
+        '200':
+          description: Liste der Gebäude
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Building'
+
+  /buildings/{buildingId}:
+    get:
+      tags: [Gebäude]
+      summary: Gebäude-Details
+      description: Gibt Gebäudemetadaten inkl. GeoJSON-Footprint zurück.
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: b-001
+      responses:
+        '200':
+          description: Gebäude-Objekt mit GeoJSON-Geometrie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Floors ─────────────────────────────────────────
+  /floors:
+    get:
+      tags: [Geschosse]
+      summary: Geschosse auflisten
+      parameters:
+        - name: buildingId
+          in: query
+          required: true
+          description: Filter nach Gebäude
+          schema:
+            type: string
+          example: b-001
+      responses:
+        '200':
+          description: Liste der Geschosse (sortiert nach verticalOrder)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Floor'
+
+  /floors/{floorId}:
+    get:
+      tags: [Geschosse]
+      summary: Geschoss-Details
+      parameters:
+        - name: floorId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: b-001-eg
+      responses:
+        '200':
+          description: Geschoss-Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Floor'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Rooms ──────────────────────────────────────────
+  /rooms:
+    get:
+      tags: [Räume]
+      summary: Räume auflisten
+      parameters:
+        - name: floorId
+          in: query
+          required: true
+          description: Filter nach Geschoss
+          schema:
+            type: string
+          example: b-001-eg
+        - name: type
+          in: query
+          description: Filter nach Raumnutzungstyp
+          schema:
+            type: string
+            enum: [Büro, Sitzungszimmer, Open Space, Empfang, Teeküche, WC, Korridor, Lager, Technikraum, Garderobe, Druckerraum, Fokusraum, Lounge, Cafeteria, Schulungsraum, Archiv]
+      responses:
+        '200':
+          description: Liste der Räume
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+
+  /rooms/{roomId}:
+    get:
+      tags: [Räume]
+      summary: Raum-Details
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: b-001-eg-101
+      responses:
+        '200':
+          description: Raum-Objekt mit Geometrie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Products ───────────────────────────────────────
+  /products:
+    get:
+      tags: [Produkte]
+      summary: Produkte suchen und filtern
+      parameters:
+        - name: category
+          in: query
+          description: Kategorie-ID (inkl. Unterkategorien)
+          schema:
+            type: string
+          example: stuehle
+        - name: brand
+          in: query
+          description: Filter nach Marke
+          schema:
+            type: string
+          example: Giroflex
+        - name: search
+          in: query
+          description: Volltextsuche (Name, Beschreibung, Marke)
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: Sortierung
+          schema:
+            type: string
+            enum: [name-asc, name-desc, price-asc, price-desc, new]
+            default: name-asc
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Paginierte Produktliste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductList'
+
+  /products/{productId}:
+    get:
+      tags: [Produkte]
+      summary: Produkt-Details
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 3
+      responses:
+        '200':
+          description: Produkt-Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Categories ─────────────────────────────────────
+  /categories:
+    get:
+      tags: [Kategorien]
+      summary: Kategoriebaum
+      description: Gibt die hierarchische Kategorie-Struktur zurück (bis 3 Ebenen).
+      responses:
+        '200':
+          description: Kategoriebaum
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  # ── Inventory ──────────────────────────────────────
+  /inventory:
+    get:
+      tags: [Inventar]
+      summary: Inventarobjekte auflisten
+      parameters:
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+        - name: floorId
+          in: query
+          schema:
+            type: string
+        - name: roomId
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [Aktiv, Eingelagert, Zur Abgabe, Reserviert, Im Transfer, Entsorgt]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Paginierte Inventarliste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryList'
+    post:
+      tags: [Inventar]
+      summary: Neues Inventarobjekt erfassen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemCreate'
+      responses:
+        '201':
+          description: Objekt erfolgreich erfasst
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /inventory/{assetId}:
+    get:
+      tags: [Inventar]
+      summary: Inventarobjekt-Details
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: INV-2024-001234
+      responses:
+        '200':
+          description: Inventarobjekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Inventar]
+      summary: Inventarobjekt aktualisieren
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItemUpdate'
+      responses:
+        '200':
+          description: Aktualisiertes Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /inventory/{assetId}/position:
+    patch:
+      tags: [Inventar]
+      summary: Position/Rotation aktualisieren
+      description: Aktualisiert die Position und Rotation eines Assets im Grundriss (Drag & Drop im Editor).
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                position:
+                  type: object
+                  properties:
+                    x:
+                      type: number
+                      description: X-Koordinate (Meter, lokales Koordinatensystem)
+                    y:
+                      type: number
+                      description: Y-Koordinate (Meter, lokales Koordinatensystem)
+                rotation:
+                  type: number
+                  description: Rotation in Grad (0–360)
+              example:
+                position: { x: 12.5, y: 8.3 }
+                rotation: 90
+      responses:
+        '200':
+          description: Position aktualisiert
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /inventory/lookup/{identifier}:
+    get:
+      tags: [Inventar]
+      summary: Objekt per QR-Code / Inventarnummer suchen
+      description: Sucht ein Inventarobjekt anhand der Inventarnummer oder eines QR-Code-Inhalts.
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          description: Inventarnummer (z.B. INV-2024-001234) oder QR-Code-URL
+          schema:
+            type: string
+          example: INV-2024-001234
+      responses:
+        '200':
+          description: Gefundenes Inventarobjekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Circular ───────────────────────────────────────
+  /circular:
+    get:
+      tags: [Kreislaufwirtschaft]
+      summary: Verfügbare Kreislauf-Angebote
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: condition
+          in: query
+          schema:
+            type: string
+            enum: [Sehr gut, Gut, Akzeptabel, Reparaturbedürftig]
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name-asc, name-desc, price-asc, price-desc]
+            default: name-asc
+      responses:
+        '200':
+          description: Liste verfügbarer Objekte
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CircularListing'
+    post:
+      tags: [Kreislaufwirtschaft]
+      summary: Neues Kreislauf-Angebot erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CircularListingCreate'
+      responses:
+        '201':
+          description: Angebot erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CircularListing'
+
+  /circular/{itemId}:
+    get:
+      tags: [Kreislaufwirtschaft]
+      summary: Kreislauf-Angebot Details
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Angebot-Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CircularListing'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Orders ─────────────────────────────────────────
+  /orders:
+    post:
+      tags: [Bestellungen]
+      summary: Bestellung aufgeben
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          description: Bestellung erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /orders/{orderId}:
+    get:
+      tags: [Bestellungen]
+      summary: Bestelldetails
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: ORD-2026-000042
+      responses:
+        '200':
+          description: Bestell-Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Multispace Modules ─────────────────────────────
+  /multispace-modules:
+    get:
+      tags: [Multispace Module]
+      summary: Alle Multispace Module
+      description: Gibt die 10 standardisierten Raumausstattungsmodule gemäss Handbuch Multispace (BBL) zurück.
+      responses:
+        '200':
+          description: Liste aller Module
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MultispaceModule'
+
+  /multispace-modules/{moduleNr}:
+    get:
+      tags: [Multispace Module]
+      summary: Modul-Details
+      parameters:
+        - name: moduleNr
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "1"
+      responses:
+        '200':
+          description: Modul-Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultispaceModule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Floor Plans ────────────────────────────────────
+  /floorplans/{floorId}:
+    get:
+      tags: [Grundrisse]
+      summary: Grundriss laden
+      description: |
+        Gibt den vollständigen Grundriss eines Geschosses als GeoJSON FeatureCollection zurück.
+        Enthält Raum-Polygone und Asset-Positionen für den Grundriss-Editor.
+      parameters:
+        - name: floorId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: b-001-eg
+      responses:
+        '200':
+          description: GeoJSON FeatureCollection mit Räumen und Assets
+          content:
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/FloorPlanGeoJSON'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /floorplans/{floorId}/assets:
+    post:
+      tags: [Grundrisse]
+      summary: Asset zum Grundriss hinzufügen
+      parameters:
+        - name: floorId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId, position]
+              properties:
+                productId:
+                  type: integer
+                  description: Produkt-ID aus dem Katalog
+                position:
+                  type: object
+                  properties:
+                    x:
+                      type: number
+                    y:
+                      type: number
+                rotation:
+                  type: number
+                  default: 0
+                roomId:
+                  type: string
+                  description: Raum-ID (automatisch ermittelt falls leer)
+      responses:
+        '201':
+          description: Asset hinzugefügt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+
+  /floorplans/{floorId}/assets/{assetId}:
+    delete:
+      tags: [Grundrisse]
+      summary: Asset aus Grundriss entfernen
+      parameters:
+        - name: floorId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Asset entfernt
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Occupancy ──────────────────────────────────────
+  /occupancy/tree:
+    get:
+      tags: [Belegungsplanung]
+      summary: Standortbaum mit Kennzahlen
+      description: |
+        Gibt den vollständigen hierarchischen Standortbaum zurück:
+        Schweiz → Kanton → Gebäude → Geschoss.
+        Jeder Knoten enthält aggregierte Kennzahlen (Fläche, Arbeitsplätze, Räume).
+      responses:
+        '200':
+          description: Standortbaum
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupancyTree'
+
+  /occupancy/{nodeId}/metrics:
+    get:
+      tags: [Belegungsplanung]
+      summary: Kennzahlen für einen Knoten
+      description: Gibt Flächen- und Belegungskennzahlen für ein Gebäude oder Geschoss zurück.
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: b-001
+      responses:
+        '200':
+          description: Kennzahlen-Objekt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupancyMetrics'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  responses:
+    NotFound:
+      description: Ressource nicht gefunden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Nicht gefunden
+              message:
+                type: string
+
+    ValidationError:
+      description: Validierungsfehler
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Validierungsfehler
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                    message:
+                      type: string
+
+  schemas:
+    # ── Spatial ────────────────────────────────────
+    Site:
+      type: object
+      properties:
+        siteId:
+          type: string
+          example: be
+        name:
+          type: string
+          example: Bern
+        type:
+          type: string
+          example: Verwaltungsstandort
+        buildingCount:
+          type: integer
+          example: 5
+
+    Building:
+      type: object
+      properties:
+        buildingId:
+          type: string
+          example: b-001
+        siteId:
+          type: string
+          example: be
+        name:
+          type: string
+          example: Bundeshaus Ost
+        objectCode:
+          type: string
+          example: "1502.AB"
+        address:
+          $ref: '#/components/schemas/Address'
+        centroid:
+          type: array
+          items:
+            type: number
+          example: [7.4445, 46.9470]
+          description: "[lng, lat] WGS84"
+        yearBuilt:
+          type: string
+          example: "1892"
+        status:
+          type: string
+          example: Gebäude bestehend
+        category:
+          type: string
+          example: Verwaltungsgebäude
+        areaGross:
+          type: number
+          example: 12450
+          description: Bruttogeschossfläche m²
+        photo:
+          type: string
+
+    Floor:
+      type: object
+      properties:
+        floorId:
+          type: string
+          example: b-001-eg
+        buildingId:
+          type: string
+          example: b-001
+        name:
+          type: string
+          example: Erdgeschoss
+        nameShort:
+          type: string
+          example: EG
+        levelNumber:
+          type: integer
+          example: 0
+        verticalOrder:
+          type: integer
+          example: 0
+        areaGross:
+          type: number
+          example: 2650
+        workspaceCount:
+          type: integer
+          example: 45
+        roomCount:
+          type: integer
+          example: 12
+
+    Room:
+      type: object
+      properties:
+        roomId:
+          type: string
+          example: b-001-eg-101
+        floorId:
+          type: string
+          example: b-001-eg
+        name:
+          type: string
+          example: EG01
+        type:
+          type: string
+          example: Büro
+        area:
+          type: number
+          example: 28.5
+        workspaces:
+          type: integer
+          example: 4
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          example: Bundesgasse 3
+        postalCode:
+          type: string
+          example: "3003"
+        city:
+          type: string
+          example: Bern
+        canton:
+          type: string
+          example: BE
+        country:
+          type: string
+          example: CH
+
+    # ── Products ───────────────────────────────────
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: Bürostuhl Giroflex 64 Anthrazit
+        description:
+          type: string
+          example: Ergonomischer Drehstuhl
+        price:
+          type: number
+          example: 180.00
+        currency:
+          type: string
+          example: CHF
+        category:
+          type: string
+          example: stuehle
+        subcategory:
+          type: string
+          example: buerostuehle
+        brand:
+          type: string
+          example: Giroflex
+        isNew:
+          type: boolean
+          example: true
+        photo:
+          type: string
+          example: photo-1580480055273-228ff5388ef8
+        photos:
+          type: array
+          items:
+            type: string
+
+    ProductList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        total:
+          type: integer
+          example: 35
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          example: stuehle
+        label:
+          type: string
+          example: Stühle
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+
+    # ── Inventory ──────────────────────────────────
+    InventoryItem:
+      type: object
+      properties:
+        assetId:
+          type: string
+          example: INV-2024-001234
+        inventoryNumber:
+          type: string
+          example: INV-2024-001234
+        name:
+          type: string
+          example: Bürostuhl Giroflex 64 Anthrazit
+        brand:
+          type: string
+          example: Giroflex
+        categoryId:
+          type: string
+          example: buerostuehle
+        productId:
+          type: integer
+          example: 3
+        buildingId:
+          type: string
+          example: b-001
+        floorId:
+          type: string
+          example: b-001-eg
+        roomId:
+          type: string
+          example: b-001-eg-101
+        status:
+          type: string
+          enum: [Aktiv, Eingelagert, Zur Abgabe, Reserviert, Im Transfer, Entsorgt]
+          example: Aktiv
+        condition:
+          type: string
+          enum: [Sehr gut, Gut, Akzeptabel, Reparaturbedürftig, Defekt]
+          example: Gut
+        acquisitionDate:
+          type: string
+          format: date
+          example: "2024-03-15"
+        acquisitionCost:
+          type: number
+          example: 180.00
+        position:
+          type: object
+          properties:
+            x:
+              type: number
+            y:
+              type: number
+        rotation:
+          type: number
+          example: 0
+
+    InventoryItemCreate:
+      type: object
+      required: [name, inventoryNumber, status]
+      properties:
+        name:
+          type: string
+        inventoryNumber:
+          type: string
+        brand:
+          type: string
+        categoryId:
+          type: string
+        productId:
+          type: integer
+        buildingId:
+          type: string
+        floorId:
+          type: string
+        roomId:
+          type: string
+        status:
+          type: string
+          enum: [Aktiv, Eingelagert, Zur Abgabe]
+        condition:
+          type: string
+          enum: [Sehr gut, Gut, Akzeptabel, Reparaturbedürftig]
+
+    InventoryItemUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        condition:
+          type: string
+        buildingId:
+          type: string
+        floorId:
+          type: string
+        roomId:
+          type: string
+
+    InventoryList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryItem'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    # ── Circular ───────────────────────────────────
+    CircularListing:
+      type: object
+      properties:
+        itemId:
+          type: string
+        name:
+          type: string
+          example: Bürostuhl Giroflex 64
+        description:
+          type: string
+        brand:
+          type: string
+        price:
+          type: number
+          example: 60.00
+        currency:
+          type: string
+          example: CHF
+        condition:
+          type: string
+          example: Gut
+        status:
+          type: string
+          enum: [Zur Abgabe, Reserviert, Vergeben]
+        photos:
+          type: array
+          items:
+            type: string
+        buildingId:
+          type: string
+        floorId:
+          type: string
+
+    CircularListingCreate:
+      type: object
+      required: [inventoryNumber, condition, price]
+      properties:
+        inventoryNumber:
+          type: string
+        condition:
+          type: string
+          enum: [Sehr gut, Gut, Akzeptabel, Reparaturbedürftig]
+        price:
+          type: number
+        description:
+          type: string
+
+    # ── Orders ─────────────────────────────────────
+    Order:
+      type: object
+      properties:
+        orderId:
+          type: string
+          example: ORD-2026-000042
+        status:
+          type: string
+          enum: [Entwurf, Übermittelt, In Bearbeitung, Teilgeliefert, Geliefert, Abgeschlossen, Storniert]
+          example: Übermittelt
+        orderDate:
+          type: string
+          format: date-time
+        organization:
+          type: string
+          example: Bundesamt für Bauten und Logistik
+        costCenter:
+          type: string
+          example: KST-4200-001
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        totalAmount:
+          type: number
+          example: 540.00
+        currency:
+          type: string
+          example: CHF
+
+    OrderItem:
+      type: object
+      properties:
+        productId:
+          type: integer
+        productName:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        lineTotal:
+          type: number
+
+    OrderCreate:
+      type: object
+      required: [organization, items, deliveryAddress]
+      properties:
+        organization:
+          type: string
+          example: Bundesamt für Bauten und Logistik
+        costCenter:
+          type: string
+        contactName:
+          type: string
+        contactEmail:
+          type: string
+          format: email
+        items:
+          type: array
+          items:
+            type: object
+            required: [productId, quantity]
+            properties:
+              productId:
+                type: integer
+              quantity:
+                type: integer
+                minimum: 1
+        deliveryAddress:
+          type: object
+          properties:
+            buildingName:
+              type: string
+            floor:
+              type: string
+            street:
+              type: string
+            postalCode:
+              type: string
+            city:
+              type: string
+        deliveryNotes:
+          type: string
+
+    # ── Multispace ─────────────────────────────────
+    MultispaceModule:
+      type: object
+      properties:
+        module:
+          type: string
+          example: "1"
+        title:
+          type: string
+          example: "Modul 1 – Standardarbeitsplatz"
+        description:
+          type: string
+          example: "Der Standardarbeitsplatz gestaltet sich als Schreibtischarbeitsplatz..."
+        photo:
+          type: string
+        areaPerWorkspace:
+          type: string
+          example: "3.0 m²"
+        elements:
+          type: array
+          items:
+            type: string
+          example:
+            - Arbeitstisch liftmatisch höhenverstellbar
+            - Akustik-Tischaufsatz
+            - Drehstuhl
+            - IT-Ausstattung
+
+    # ── Floor Plans ────────────────────────────────
+    FloorPlanGeoJSON:
+      type: object
+      description: GeoJSON FeatureCollection mit Räumen und Assets
+      properties:
+        type:
+          type: string
+          example: FeatureCollection
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: Feature
+              geometry:
+                type: object
+                description: GeoJSON Polygon
+              properties:
+                type: object
+                properties:
+                  featureType:
+                    type: string
+                    enum: [room, asset]
+                  id:
+                    type: string
+
+    # ── Occupancy ──────────────────────────────────
+    OccupancyTree:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ch
+        label:
+          type: string
+          example: Schweiz
+        type:
+          type: string
+          enum: [country, kanton, building, floor]
+        count:
+          type: integer
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/OccupancyTree'
+
+    OccupancyMetrics:
+      type: object
+      properties:
+        nodeId:
+          type: string
+        nodeType:
+          type: string
+        flaeche:
+          type: string
+          example: "12'450 m²"
+        plaetze:
+          type: integer
+          example: 450
+        raeume:
+          type: integer
+          example: 85
+        belegung:
+          type: number
+          description: Belegungsquote (0–1)
+          example: 0.78

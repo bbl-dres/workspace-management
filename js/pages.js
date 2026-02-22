@@ -31,7 +31,7 @@ function renderHome() {
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('planning')" role="button" tabindex="0">
           <h3 class="card__title">Arbeitspl\u00e4tze gestalten</h3>
-          <p class="card__description">Stilwelten, Planungsbeispiele und CAD-Daten f\u00fcr die B\u00fcroplanung. Vorlagen und Konzepte f\u00fcr die Einrichtung von Arbeitspl\u00e4tzen.</p>
+          <p class="card__description">Multispace Module, Planungsbeispiele und CAD-Daten f\u00fcr die B\u00fcroplanung. Vorlagen und Konzepte f\u00fcr die Einrichtung von Arbeitspl\u00e4tzen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('circular')" role="button" tabindex="0">
@@ -65,9 +65,9 @@ function renderPlanning() {
       </div>
 
       <div class="tile-grid">
-        <div class="card card--centered card--clickable" onclick="navigateTo('style-worlds')" role="button" tabindex="0">
-          <h3 class="card__title">Stilwelten</h3>
-          <p class="card__description">Vordefinierte Einrichtungskonzepte und B\u00fcro-Stile als Planungsgrundlage. Von konzentriertem Einzelarbeiten bis zur offenen Kollaborationszone.</p>
+        <div class="card card--centered card--clickable" onclick="navigateTo('multispace-module')" role="button" tabindex="0">
+          <h3 class="card__title">Multispace Module</h3>
+          <p class="card__description">Standardisierte Raumausstattungsmodule gem\u00e4ss Handbuch Multispace des BBL. Von Standardarbeitsplatz bis Service Funktionen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('examples')" role="button" tabindex="0">
@@ -87,8 +87,8 @@ function renderPlanning() {
     <section class="section section--bg-alt">
       <h2 class="section__title">Multispace Module</h2>
       <div class="tile-grid">
-        ${STILWELTEN.slice(0, 3).map(s => `
-        <div class="card card--clickable" onclick="navigateTo('style-worlds')" role="button" tabindex="0">
+        ${MULTISPACE_MODULES.slice(0, 3).map(s => `
+        <div class="card card--clickable" onclick="navigateTo('multispace-module', '${s.module}')" role="button" tabindex="0">
           <div class="card__image card__image--visual">
             <img src="https://images.unsplash.com/${s.photo}?w=600&h=300&fit=crop&auto=format&q=80" alt="${escapeHtml(s.title)}" loading="lazy">
           </div>
@@ -101,31 +101,31 @@ function renderPlanning() {
         `).join('')}
       </div>
       <div class="section-link">
-        <a href="#/style-worlds" class="section-link__a" onclick="navigateTo('style-worlds');return false">Alle Module anzeigen &rarr;</a>
+        <a href="#/multispace-module" class="section-link__a" onclick="navigateTo('multispace-module');return false">Alle Module anzeigen &rarr;</a>
       </div>
     </section>
   `;
 }
 
-// ---- STILWELTEN ----
-function renderStyleWorlds() {
+// ---- MULTISPACE MODULE ----
+function renderMultispaceModules() {
   return `
-    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Stilwelten'])}
+    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Multispace Module'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
         <h1 class="page-hero__title">Multispace Module</h1>
-        <p class="page-hero__subtitle">Standardisierte Raumausstattungsmodule gem\u00e4ss Handbuch Multispace des Bundesamts f\u00fcr Bauten und Logistik (BBL). 11 Module f\u00fcr die modulare Einrichtung von B\u00fcrofl\u00e4chen der Bundesverwaltung.</p>
+        <p class="page-hero__subtitle">Standardisierte Raumausstattungsmodule gem\u00e4ss Handbuch Multispace des Bundesamts f\u00fcr Bauten und Logistik (BBL). 10 Module f\u00fcr die modulare Einrichtung von B\u00fcrofl\u00e4chen der Bundesverwaltung.</p>
       </div>
 
       <div class="tile-grid">
-        ${STILWELTEN.map(s => `
-          <div class="card card--clickable">
+        ${MULTISPACE_MODULES.map(s => `
+          <div class="card card--clickable" onclick="navigateTo('multispace-module', '${s.module}')" role="button" tabindex="0">
             <div class="card__image card__image--visual">
               <img src="https://images.unsplash.com/${s.photo}?w=600&h=300&fit=crop&auto=format&q=80" alt="${escapeHtml(s.title)}" loading="lazy">
             </div>
             <div class="card__body">
               <div class="card__title">${escapeHtml(s.title)}</div>
-              <div class="card__description">${escapeHtml(s.description)}</div>
+              <div class="card__description">${escapeHtml(s.description).substring(0, 150)}...</div>
             </div>
             <div class="card__arrow">
               <span class="card__arrow-icon">&rarr;</span>
@@ -133,6 +133,87 @@ function renderStyleWorlds() {
           </div>
         `).join('')}
       </div>
+    </div>
+  `;
+}
+
+// ---- MULTISPACE MODULE DETAIL ----
+function renderMultispaceModuleDetail(moduleNr) {
+  const m = MULTISPACE_MODULES.find(x => x.module === moduleNr);
+  if (!m) {
+    return `
+      ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Multispace Module', "navigateTo('multispace-module')"], ['Nicht gefunden'])}
+      <div class="container container--detail" id="mainContent">
+        <div class="no-results">
+          <div class="no-results__icon">${ICONS.placeholder}</div>
+          <p class="no-results__text">Modul nicht gefunden.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  const others = MULTISPACE_MODULES.filter(x => x.module !== moduleNr);
+
+  return `
+    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Multispace Module', "navigateTo('multispace-module')"], [escapeHtml(m.title)])}
+    <div class="container container--detail" id="mainContent">
+      <div class="detail-toolbar">
+        <button class="btn btn--outline btn--sm detail-toolbar__back" onclick="navigateTo('multispace-module')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+          Zur\u00fcck
+        </button>
+      </div>
+      <div class="product-detail">
+        <div class="product-detail__image">
+          <div class="carousel">
+            <div class="carousel__viewport">
+              <div class="carousel__track">
+                <div class="carousel__slide carousel__slide--active">
+                  <img src="https://images.unsplash.com/${m.photo}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(m.title)}" loading="lazy">
+                </div>
+              </div>
+            </div>
+            <span class="badge badge--new carousel__badge">Modul ${escapeHtml(m.module)}</span>
+          </div>
+        </div>
+        <div class="product-detail__info">
+          <h1 class="product-detail__title">${escapeHtml(m.title)}</h1>
+          <p class="product-detail__desc">${escapeHtml(m.description)}</p>
+          <div class="product-detail__meta">
+            <span class="product-detail__meta-label">Modul-Nr.</span>
+            <span class="product-detail__meta-value">${escapeHtml(m.module)}</span>
+            <span class="product-detail__meta-label">Fl\u00e4chenrichtmass</span>
+            <span class="product-detail__meta-value">${escapeHtml(m.areaPerWorkspace)}</span>
+          </div>
+          ${m.elements && m.elements.length ? `
+          <div class="module-detail__elements">
+            <h3 class="module-detail__section-title">Ausstattung</h3>
+            <ul class="module-detail__list">
+              ${m.elements.map(el => `<li>${escapeHtml(el)}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+
+      ${others.length ? `
+      <section class="module-detail__related">
+        <h2 class="section__title">Weitere Module</h2>
+        <div class="tile-grid">
+          ${others.slice(0, 4).map(o => `
+          <div class="card card--clickable" onclick="navigateTo('multispace-module', '${o.module}')" role="button" tabindex="0">
+            <div class="card__image card__image--visual">
+              <img src="https://images.unsplash.com/${o.photo}?w=600&h=300&fit=crop&auto=format&q=80" alt="${escapeHtml(o.title)}" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">${escapeHtml(o.title)}</div>
+            </div>
+            <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
+          </div>
+          `).join('')}
+        </div>
+      </section>
+      ` : ''}
     </div>
   `;
 }
@@ -206,6 +287,20 @@ function renderCad() {
           </li>
         `).join('')}
       </ul>
+    </div>
+  `;
+}
+
+// ---- API DOKUMENTATION ----
+function renderApiDocs() {
+  return `
+    ${renderBreadcrumb(['API Dokumentation'])}
+    <div class="container container--with-top-pad api-docs-container" id="mainContent">
+      <div class="page-hero">
+        <h1 class="page-hero__title">API Dokumentation</h1>
+        <p class="page-hero__subtitle">RESTful API-Referenz f\u00fcr das Workspace-Management-System. Alle Endpunkte, Parameter und Datenmodelle auf einen Blick.</p>
+      </div>
+      <div id="swagger-ui"></div>
     </div>
   `;
 }

@@ -25,7 +25,7 @@
 | **Order**          | Order from the catalog                        | Bestellung                   | `state.cart` + checkout      | —                      |
 | **OrderItem**      | Single order line item                        | Bestellposition              | `state.cart[]`               | —                      |
 | **PlanningExample**| Showcase project for workspace planning       | Planungsbeispiel             | `data/planning-examples.json`| —                      |
-| **StyleWorld**     | Workspace style / atmosphere concept          | Stilwelt                     | `data/style-worlds.json`     | —                      |
+| **MultispaceModule** | BBL Multispace workspace module             | Multispace Modul             | `data/multispace-module.json`| —                      |
 | **CadFile**        | CAD download section with file listings       | CAD-Dateibereich             | `data/cad-files.json`        | —                      |
 
 ### Domain Model
@@ -647,7 +647,7 @@ the key mapping decisions:
 | Order            | `state.cart` + checkout                | SAP MM / Order portal          |
 | OrderItem        | `state.cart[]` entries                 | SAP MM / Order portal          |
 | PlanningExample  | `data/planning-examples.json`          | CMS / Content API              |
-| StyleWorld       | `data/style-worlds.json`               | CMS / Content API              |
+| MultispaceModule | `data/multispace-module.json`          | CMS / Content API              |
 | CadFile          | `data/cad-files.json`                  | DMS / Content API              |
 
 ---
@@ -671,20 +671,41 @@ Each entry represents a reference project card shown in the inspiration section.
 
 ---
 
-### 9.2 StyleWorld (Stilwelt)
+### 9.2 MultispaceModule (Multispace Modul)
 
-A workspace style or atmosphere concept describing a particular furnishing
-philosophy. Each style world defines a coherent design language for a type
-of workspace environment.
+A standardized workspace module from the BBL Multispace Handbuch. Each module
+defines a coherent furnishing concept for a specific workspace scenario —
+from individual desks to meeting rooms and service areas. Based on the
+*Handbuch Multispace* (v8, 31.10.2025) of the Federal Office for Buildings
+and Logistics (BBL).
 
-| Attribute        | Type       | Required | Description                                      | DE Term                |
-|------------------|------------|----------|--------------------------------------------------|------------------------|
-| `title`          | string     | ✓        | Style name (e.g. `"Focus Workspace"`)             | Titel                  |
-| `description`    | string     | ✓        | Detailed description of the style concept and furnishing elements | Beschreibung |
-| `photo`          | string     | ✓        | Image URL / Unsplash photo ID                     | Bild-URL               |
+| Attribute          | Type       | Required | Description                                      | DE Term                |
+|--------------------|------------|----------|--------------------------------------------------|------------------------|
+| `module`           | string     | ✓        | Module number (e.g. `"1"`)                        | Modul-Nr.              |
+| `title`            | string     | ✓        | Module title (e.g. `"Modul 1 – Standardarbeitsplatz"`) | Titel             |
+| `description`      | string     | ✓        | Description of the module concept                 | Beschreibung           |
+| `photo`            | string     | ✓        | Image URL / Unsplash photo ID                     | Bild-URL               |
+| `areaPerWorkspace` | string     |          | Area guideline (e.g. `"3.0 m²"`, `"variabel"`)   | Flächenrichtmass       |
+| `elements`         | string[]   |          | List of furniture/equipment elements              | Ausstattungselemente   |
 
-**Prototype mapping:** Direct 1:1 correspondence to `data/style-worlds.json`.
-Each entry represents a style world card in the inspiration / planning section.
+**Module overview (Handbuch Multispace v8):**
+
+| Nr | Title                          | Area per Workspace |
+|----|--------------------------------|--------------------|
+| 1  | Standardarbeitsplatz           | 3.0 m²             |
+| 2  | Team Arbeitsplatz              | 25–35 m²           |
+| 3  | Fokus Arbeitsplatz             | 3.0 m²             |
+| 4  | Formelle Sitzungen             | 19–25 m²           |
+| 5  | Telefon-/Videokonferenzbox     | 4.5 m²             |
+| 6  | Informelle Sitzungen           | 4–23 m²            |
+| 7  | Interaktive Sitzungen          | 30–65 m²           |
+| 8  | Team Ablage                    | variabel            |
+| 9  | Locker, Garderoben             | variabel            |
+| 10 | Service Funktionen             | variabel            |
+
+**Prototype mapping:** Direct 1:1 correspondence to `data/multispace-module.json`.
+Each entry represents a module card in the planning section, with a detail page
+accessible via `#/multispace-module/{moduleNr}`.
 
 ---
 

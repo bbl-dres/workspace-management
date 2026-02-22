@@ -61,8 +61,8 @@ in Bundesgebäuden. Sie richtet sich an Mitarbeitende der Bundesverwaltung.
 
 | ID     | Anforderung                                                                                     |
 |--------|-------------------------------------------------------------------------------------------------|
-| PLAN-1 | Übersichtsseite mit Tiles: Stilwelten, Planungsbeispiele, CAD-Daten                            |
-| PLAN-2 | Stilwelten-Karten mit farbigen Gradienten (6 Stile)                                            |
+| PLAN-1 | Übersichtsseite mit Tiles: Multispace Module, Planungsbeispiele, CAD-Daten                     |
+| PLAN-2 | Multispace Module mit Detailseiten (10 Module gem. Handbuch Multispace v8)                     |
 | PLAN-3 | Platzhalter für zukünftige Grundriss-App                                                       |
 
 ### 2.4 Circular-Hub

@@ -49,14 +49,14 @@ class FloorPlanRenderer {
 
         this.colorSchemes = {
             none: {
-                id: 'none', label: 'None',
-                description: 'No color coding',
+                id: 'none', label: 'Keine',
+                description: 'Keine Farbcodierung',
                 categories: {},
                 mapRoom: () => null,
             },
             function: {
-                id: 'function', label: 'Function',
-                description: 'Room function / usage type',
+                id: 'function', label: 'Funktion',
+                description: 'Raumfunktion / Nutzungstyp',
                 categories: {
                     'Büro':           { fill: '#DBEAFE', stroke: '#93C5FD', label: 'Büro' },
                     'Sitzungszimmer': { fill: '#FEF3C7', stroke: '#FCD34D', label: 'Sitzungszimmer' },
@@ -75,7 +75,7 @@ class FloorPlanRenderer {
             },
             sia416: {
                 id: 'sia416', label: 'SIA 416',
-                description: 'Swiss standard (SIA 416:2003)',
+                description: 'Schweizer Norm (SIA 416:2003)',
                 categories: {
                     'HNF': { fill: '#BFDBFE', stroke: '#3B82F6', label: 'HNF \u2013 Hauptnutzfl\u00E4che' },
                     'NNF': { fill: '#FDE68A', stroke: '#F59E0B', label: 'NNF \u2013 Nebennutzfl\u00E4che' },
@@ -93,7 +93,7 @@ class FloorPlanRenderer {
             },
             din277: {
                 id: 'din277', label: 'DIN 277',
-                description: 'German standard (DIN 277:2024)',
+                description: 'Deutsche Norm (DIN 277:2024)',
                 categories: {
                     'NUF': { fill: '#BBF7D0', stroke: '#22C55E', label: 'NUF \u2013 Nutzungsfl\u00E4che' },
                     'TF':  { fill: '#E2E8F0', stroke: '#64748B', label: 'TF \u2013 Techn. Funktionsfl\u00E4che' },
@@ -108,11 +108,11 @@ class FloorPlanRenderer {
             },
             boma: {
                 id: 'boma', label: 'BOMA',
-                description: 'BOMA International standard',
+                description: 'Internationaler BOMA-Standard',
                 categories: {
-                    'OFFICE':   { fill: '#BFDBFE', stroke: '#3B82F6', label: 'Office Area' },
-                    'FLOOR':    { fill: '#C4B5FD', stroke: '#7C3AED', label: 'Floor Common Area' },
-                    'BUILDING': { fill: '#FED7AA', stroke: '#F97316', label: 'Building Common Area' },
+                    'OFFICE':   { fill: '#BFDBFE', stroke: '#3B82F6', label: 'B\u00fcrofl\u00e4che' },
+                    'FLOOR':    { fill: '#C4B5FD', stroke: '#7C3AED', label: 'Geschoss-Gemeinschaftsfl\u00e4che' },
+                    'BUILDING': { fill: '#FED7AA', stroke: '#F97316', label: 'Geb\u00e4ude-Gemeinschaftsfl\u00e4che' },
                 },
                 mapRoom: (room) => {
                     const t = room.properties.type;
@@ -123,13 +123,13 @@ class FloorPlanRenderer {
             },
             rics: {
                 id: 'rics', label: 'RICS',
-                description: 'RICS property measurement (IPMS)',
+                description: 'RICS-Fl\u00e4chenmessung (IPMS)',
                 categories: {
-                    'NIA':   { fill: '#BFDBFE', stroke: '#3B82F6', label: 'NIA \u2013 Net Internal Area' },
-                    'AMEN':  { fill: '#FDE68A', stroke: '#F59E0B', label: 'Amenity' },
-                    'ANC':   { fill: '#FDBA74', stroke: '#EA580C', label: 'Ancillary' },
-                    'CIRC':  { fill: '#C7D2FE', stroke: '#6366F1', label: 'Circulation' },
-                    'FACIL': { fill: '#E2E8F0', stroke: '#64748B', label: 'Facilities' },
+                    'NIA':   { fill: '#BFDBFE', stroke: '#3B82F6', label: 'NIA \u2013 Nettoinnenfl\u00e4che' },
+                    'AMEN':  { fill: '#FDE68A', stroke: '#F59E0B', label: 'Gemeinschaftsfl\u00e4che' },
+                    'ANC':   { fill: '#FDBA74', stroke: '#EA580C', label: 'Nebenfl\u00e4che' },
+                    'CIRC':  { fill: '#C7D2FE', stroke: '#6366F1', label: 'Verkehrsfl\u00e4che' },
+                    'FACIL': { fill: '#E2E8F0', stroke: '#64748B', label: 'Technikfl\u00e4che' },
                 },
                 mapRoom: (room) => {
                     const t = room.properties.type;
@@ -718,7 +718,7 @@ class FloorPlanRenderer {
             for (let i = 0; i < pts.length - 1; i++) {
                 total += Math.sqrt((pts[i + 1].x - pts[i].x) ** 2 + (pts[i + 1].y - pts[i].y) ** 2);
             }
-            const label = 'Total: ' + (total >= 1 ? total.toFixed(2) + ' m' : (total * 100).toFixed(0) + ' cm');
+            const label = 'Gesamt: ' + (total >= 1 ? total.toFixed(2) + ' m' : (total * 100).toFixed(0) + ' cm');
             const lastSP = screenPts[screenPts.length - 1];
             this._drawMeasureLabel(label, lastSP.x, lastSP.y + 18);
         }

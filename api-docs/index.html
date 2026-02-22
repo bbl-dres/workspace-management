@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Dokumentation – Workspace Management</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+  <style>
+    body { margin: 0; background: #fafafa; }
+    .swagger-ui .topbar { display: none; }
+    .api-header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .api-header__back {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.15s;
+    }
+    .api-header__back:hover { color: #fff; }
+    .api-header__sep { color: rgba(255,255,255,0.3); }
+    .api-header__title { font-size: 16px; font-weight: 600; }
+    .api-header__badge {
+      background: rgba(255,255,255,0.15);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="api-header">
+    <a href="../index.html" class="api-header__back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+      Arbeitsplatz-Management
+    </a>
+    <span class="api-header__sep">|</span>
+    <span class="api-header__title">API Dokumentation</span>
+    <span class="api-header__badge">v1.0.0</span>
+  </div>
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    SwaggerUIBundle({
+      url: 'openapi.yaml',
+      dom_id: '#swagger-ui',
+      deepLinking: true,
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIBundle.SwaggerUIStandalonePreset
+      ],
+      layout: 'BaseLayout',
+      defaultModelsExpandDepth: 1,
+      docExpansion: 'list',
+      filter: true,
+      tagsSorter: 'alpha'
+    });
+  </script>
+</body>
+</html>

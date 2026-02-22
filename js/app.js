@@ -11,13 +11,13 @@ let FLOORS_GEO = null;
 let ROOMS_GEO = null;
 let ASSETS_GEO = null;
 let FURNITURE_ITEMS = [];
-let STILWELTEN = [];
+let MULTISPACE_MODULES = [];
 let PLANUNGSBEISPIELE = [];
 let CAD_SECTIONS = [];
 let LOCATIONS = { id: 'ch', label: 'Schweiz', type: 'country', count: 0, children: [] };
 
 async function loadData() {
-  const [catRes, prodRes, siteRes, bldRes, flrRes, roomRes, assetsRes, furnRes, stilRes, planRes, cadRes] = await Promise.all([
+  const [catRes, prodRes, siteRes, bldRes, flrRes, roomRes, assetsRes, furnRes, modRes, planRes, cadRes] = await Promise.all([
     fetch('data/categories.json'),
     fetch('data/products.json'),
     fetch('data/sites.json'),
@@ -26,7 +26,7 @@ async function loadData() {
     fetch('data/rooms.geojson'),
     fetch('data/assets.geojson'),
     fetch('data/assets-circular.json'),
-    fetch('data/style-worlds.json'),
+    fetch('data/multispace-module.json'),
     fetch('data/planning-examples.json'),
     fetch('data/cad-files.json')
   ]);
@@ -38,7 +38,7 @@ async function loadData() {
   ROOMS_GEO = await roomRes.json();
   ASSETS_GEO = await assetsRes.json();
   FURNITURE_ITEMS = await furnRes.json();
-  STILWELTEN = await stilRes.json();
+  MULTISPACE_MODULES = await modRes.json();
   PLANUNGSBEISPIELE = await planRes.json();
   CAD_SECTIONS = await cadRes.json();
 
@@ -421,7 +421,7 @@ function render() {
 
   // Update nav active states
   const activePage = ['scan', 'register', 'charter', 'item'].includes(state.page) ? 'circular'
-                   : ['style-worlds', 'examples', 'cad'].includes(state.page) ? 'planning'
+                   : ['multispace-module', 'multispace-module-detail', 'examples', 'cad'].includes(state.page) ? 'planning'
                    : state.page;
   document.querySelectorAll('.main-navigation__link').forEach(link => {
     const nav = link.dataset.nav;
@@ -448,9 +448,11 @@ function render() {
     case 'scan': app.innerHTML = renderScan(); attachScanEvents(); break;
     case 'register': app.innerHTML = renderRegister(); break;
     case 'charter': app.innerHTML = renderCharter(); break;
-    case 'style-worlds': app.innerHTML = renderStyleWorlds(); break;
+    case 'multispace-module': app.innerHTML = renderMultispaceModules(); break;
+    case 'multispace-module-detail': app.innerHTML = renderMultispaceModuleDetail(state.subPage); break;
     case 'examples': app.innerHTML = renderExamples(); break;
     case 'cad': app.innerHTML = renderCad(); attachAccordionEvents(); break;
+    case 'api-docs': app.innerHTML = renderApiDocs(); initSwaggerUI(); break;
     case 'cart': app.innerHTML = renderCart(); attachCartEvents(); break;
     case 'search': app.innerHTML = renderSearch(); attachSearchEvents(); break;
     default: app.innerHTML = renderShop(); attachShopEvents();
@@ -462,7 +464,12 @@ function render() {
 // ===================================================================
 function navigateTo(page, subPage) {
   const prevPage = state.page;
-  state.page = page;
+  // Map sub-routes to their detail page states
+  if (page === 'multispace-module' && subPage) {
+    state.page = 'multispace-module-detail';
+  } else {
+    state.page = page;
+  }
   state.subPage = (page === 'product') ? null : (subPage || null);
   state.productId = (page === 'product') ? Number(subPage) : null;
   if (page !== 'search') state.searchQuery = '';
@@ -514,6 +521,10 @@ function handleHash() {
     state.page = 'item';
     state.subPage = sub;
     state.productId = null;
+  } else if (page === 'multispace-module' && sub) {
+    state.page = 'multispace-module-detail';
+    state.subPage = sub;
+    state.productId = null;
   } else if (page === 'occupancy') {
     state.page = 'occupancy';
     state.subPage = sub;
@@ -540,7 +551,7 @@ function handleHash() {
     // Restore map background style from URL
     const bgFromUrl = hashParams ? hashParams.get('bg') : null;
     state.occMapStyle = (bgFromUrl && MAP_STYLES[bgFromUrl]) ? bgFromUrl : state.occMapStyle;
-  } else if (['home', 'shop', 'planning', 'circular', 'scan', 'register', 'charter', 'style-worlds', 'examples', 'cad', 'cart', 'search'].includes(page)) {
+  } else if (['home', 'shop', 'planning', 'circular', 'scan', 'register', 'charter', 'multispace-module', 'examples', 'cad', 'api-docs', 'cart', 'search'].includes(page)) {
     state.page = page;
     state.subPage = sub;
     state.productId = null;
@@ -549,6 +560,45 @@ function handleHash() {
     state.productId = null;
   }
   render();
+}
+
+// ===================================================================
+// SWAGGER UI (lazy-loaded)
+// ===================================================================
+function initSwaggerUI() {
+  const target = document.getElementById('swagger-ui');
+  if (!target) return;
+
+  function mount() {
+    SwaggerUIBundle({
+      url: 'api-docs/openapi.yaml',
+      dom_id: '#swagger-ui',
+      deepLinking: true,
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIBundle.SwaggerUIStandalonePreset
+      ],
+      layout: 'BaseLayout',
+      defaultModelsExpandDepth: 1,
+      docExpansion: 'list',
+      filter: true,
+      tagsSorter: 'alpha'
+    });
+  }
+
+  if (typeof SwaggerUIBundle !== 'undefined') { mount(); return; }
+
+  // Lazy-load CSS
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://unpkg.com/swagger-ui-dist@5/swagger-ui.css';
+  document.head.appendChild(link);
+
+  // Lazy-load JS bundle
+  const script = document.createElement('script');
+  script.src = 'https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js';
+  script.onload = mount;
+  document.head.appendChild(script);
 }
 
 window.addEventListener('hashchange', handleHash);

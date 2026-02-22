@@ -58,7 +58,8 @@ A single-page application (SPA) prototype for the Swiss Federal Office for Build
 | Route | Description |
 |---|---|
 | `#/planning` | Overview of planning resources |
-| `#/style-worlds` | Style world inspirations |
+| `#/multispace-module` | Multispace Module (BBL Handbuch) |
+| `#/multispace-module/{nr}` | Module detail page |
 | `#/examples` | Planning examples |
 | `#/cad` | CAD file downloads |
 
@@ -109,7 +110,7 @@ data/
   assets.geojson        Inventory items positioned in rooms
   assets-circular.json  Circular economy listings
   sites.json            Site / canton groupings
-  style-worlds.json     Style world inspirations
+  multispace-module.json  Multispace Module (BBL Handbuch v8)
   planning-examples.json  Planning examples
   cad-files.json        CAD download sections
 scripts/
