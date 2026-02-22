@@ -8,16 +8,16 @@ function renderHome() {
     <section class="hero" id="mainContent">
       <div class="hero__content">
         <h1 class="hero__title">Arbeitsplatz-Management</h1>
-        <p class="hero__description">Die Plattform f\u00fcr die Einrichtung und Verwaltung von Arbeitspl\u00e4tzen in der Bundesverwaltung. Mobiliar bestellen, R\u00e4ume planen, gebrauchte M\u00f6bel wiederverwenden.</p>
+        <p class="hero__description">Die Plattform für die Einrichtung und Verwaltung von Arbeitsplätzen in der Bundesverwaltung. Mobiliar bestellen, Räume planen, gebrauchte Möbel wiederverwenden.</p>
         <div class="hero__cta">
           <a href="#/shop" class="btn btn--filled btn--lg" onclick="navigateTo('shop');return false">Zum Produktkatalog ${ICONS.arrowRight}</a>
-          <a href="#/planung" class="btn btn--outline btn--lg" onclick="navigateTo('planning');return false">Arbeitspl\u00e4tze gestalten ${ICONS.arrowRight}</a>
+          <a href="#/planung" class="btn btn--outline btn--lg" onclick="navigateTo('planning');return false">Arbeitsplätze gestalten ${ICONS.arrowRight}</a>
         </div>
       </div>
       <div class="hero__image">
         <picture>
           <source srcset="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=800&fit=crop&auto=format&q=80" media="(min-width: 768px)">
-          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=533&fit=crop&auto=format&q=80" alt="Beispiel eines modernen B\u00fcroarbeitsplatzes" loading="eager">
+          <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=533&fit=crop&auto=format&q=80" alt="Beispiel eines modernen Büroarbeitsplatzes" loading="eager">
         </picture>
       </div>
     </section>
@@ -26,17 +26,17 @@ function renderHome() {
       <div class="tile-grid">
         <div class="card card--centered card--clickable" onclick="navigateTo('shop')" role="button" tabindex="0">
           <h3 class="card__title">Produktkatalog</h3>
-          <p class="card__description">B\u00fcrom\u00f6bel, Sitzm\u00f6bel, Beleuchtung und Zubeh\u00f6r bestellen. Alle Produkte entsprechen den Standards der Bundesverwaltung.</p>
+          <p class="card__description">Büromöbel, Sitzmöbel, Beleuchtung und Zubehör bestellen. Alle Produkte entsprechen den Standards der Bundesverwaltung.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('planning')" role="button" tabindex="0">
-          <h3 class="card__title">Arbeitspl\u00e4tze gestalten</h3>
-          <p class="card__description">Multispace Module, Planungsbeispiele und CAD-Daten f\u00fcr die B\u00fcroplanung. Vorlagen und Konzepte f\u00fcr die Einrichtung von Arbeitspl\u00e4tzen.</p>
+          <h3 class="card__title">Arbeitsplätze gestalten</h3>
+          <p class="card__description">Multispace Module, Planungsbeispiele und CAD-Daten für die Büroplanung. Vorlagen und Konzepte für die Einrichtung von Arbeitsplätzen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('circular')" role="button" tabindex="0">
-          <h3 class="card__title">Gebrauchte M\u00f6bel</h3>
-          <p class="card__description">Gebrauchtes Mobiliar wiederverwenden statt entsorgen. Objekte scannen, erfassen und im Angebot verf\u00fcgbarer M\u00f6bel suchen.</p>
+          <h3 class="card__title">Gebrauchte Möbel</h3>
+          <p class="card__description">Gebrauchtes Mobiliar wiederverwenden statt entsorgen. Objekte scannen, erfassen und im Angebot verfügbarer Möbel suchen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
       </div>
@@ -57,27 +57,27 @@ function renderHome() {
 // ---- PLANUNG ----
 function renderPlanning() {
   return `
-    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten'])}
+    ${renderBreadcrumb(['Arbeitsplätze gestalten'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
-        <h1 class="page-hero__title">Arbeitspl\u00e4tze gestalten</h1>
-        <p class="page-hero__subtitle">B\u00fcror\u00e4ume nach aktuellen Arbeitsplatzstandards des Bundes planen und einrichten.</p>
+        <h1 class="page-hero__title">Arbeitsplätze gestalten</h1>
+        <p class="page-hero__subtitle">Büroräume nach aktuellen Arbeitsplatzstandards des Bundes planen und einrichten.</p>
       </div>
 
       <div class="tile-grid">
         <div class="card card--centered card--clickable" onclick="navigateTo('multispace-module')" role="button" tabindex="0">
           <h3 class="card__title">Multispace Module</h3>
-          <p class="card__description">Standardisierte Raumausstattungsmodule gem\u00e4ss Handbuch Multispace des BBL. Von Standardarbeitsplatz bis Service Funktionen.</p>
+          <p class="card__description">Standardisierte Raumausstattungsmodule gemäss Handbuch Multispace des BBL. Von Standardarbeitsplatz bis Service Funktionen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('examples')" role="button" tabindex="0">
           <h3 class="card__title">Planungsbeispiele</h3>
-          <p class="card__description">Realisierte Referenzprojekte aus der Bundesverwaltung. Sehen Sie, wie andere Bundesstellen ihre R\u00e4ume gestaltet haben.</p>
+          <p class="card__description">Realisierte Referenzprojekte aus der Bundesverwaltung. Sehen Sie, wie andere Bundesstellen ihre Räume gestaltet haben.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('cad')" role="button" tabindex="0">
           <h3 class="card__title">CAD-Daten</h3>
-          <p class="card__description">Laden Sie CAD-Dateien und technische Zeichnungen f\u00fcr die professionelle Raumplanung herunter. F\u00fcr Planer und Architekten.</p>
+          <p class="card__description">Laden Sie CAD-Dateien und technische Zeichnungen für die professionelle Raumplanung herunter. Für Planer und Architekten.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
       </div>
@@ -110,11 +110,11 @@ function renderPlanning() {
 // ---- MULTISPACE MODULE ----
 function renderMultispaceModules() {
   return `
-    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Multispace Module'])}
+    ${renderBreadcrumb(['Arbeitsplätze gestalten', "navigateTo('planning')"], ['Multispace Module'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
         <h1 class="page-hero__title">Multispace Module</h1>
-        <p class="page-hero__subtitle">Standardisierte Raumausstattungsmodule gem\u00e4ss Handbuch Multispace des Bundesamts f\u00fcr Bauten und Logistik (BBL). 10 Module f\u00fcr die modulare Einrichtung von B\u00fcrofl\u00e4chen der Bundesverwaltung.</p>
+        <p class="page-hero__subtitle">Standardisierte Raumausstattungsmodule gemäss Handbuch Multispace des Bundesamts für Bauten und Logistik (BBL). 10 Module für die modulare Einrichtung von Büroflächen der Bundesverwaltung.</p>
       </div>
 
       <div class="tile-grid">
@@ -142,7 +142,7 @@ function renderMultispaceModuleDetail(moduleNr) {
   const m = MULTISPACE_MODULES.find(x => x.module === moduleNr);
   if (!m) {
     return `
-      ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Multispace Module', "navigateTo('multispace-module')"], ['Nicht gefunden'])}
+      ${renderBreadcrumb(['Arbeitsplätze gestalten', "navigateTo('planning')"], ['Multispace Module', "navigateTo('multispace-module')"], ['Nicht gefunden'])}
       <div class="container container--detail" id="mainContent">
         <div class="no-results">
           <div class="no-results__icon">${ICONS.placeholder}</div>
@@ -155,12 +155,12 @@ function renderMultispaceModuleDetail(moduleNr) {
   const others = MULTISPACE_MODULES.filter(x => x.module !== moduleNr);
 
   return `
-    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Multispace Module', "navigateTo('multispace-module')"], [escapeHtml(m.title)])}
+    ${renderBreadcrumb(['Arbeitsplätze gestalten', "navigateTo('planning')"], ['Multispace Module', "navigateTo('multispace-module')"], [escapeHtml(m.title)])}
     <div class="container container--detail" id="mainContent">
       <div class="detail-toolbar">
         <button class="btn btn--outline btn--sm detail-toolbar__back" onclick="navigateTo('multispace-module')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
-          Zur\u00fcck
+          Zurück
         </button>
       </div>
       <div class="product-detail">
@@ -182,7 +182,7 @@ function renderMultispaceModuleDetail(moduleNr) {
           <div class="product-detail__meta">
             <span class="product-detail__meta-label">Modul-Nr.</span>
             <span class="product-detail__meta-value">${escapeHtml(m.module)}</span>
-            <span class="product-detail__meta-label">Fl\u00e4chenrichtmass</span>
+            <span class="product-detail__meta-label">Flächenrichtmass</span>
             <span class="product-detail__meta-value">${escapeHtml(m.areaPerWorkspace)}</span>
           </div>
           ${m.elements && m.elements.length ? `
@@ -221,11 +221,11 @@ function renderMultispaceModuleDetail(moduleNr) {
 // ---- PLANUNGSBEISPIELE ----
 function renderExamples() {
   return `
-    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Planungsbeispiele'])}
+    ${renderBreadcrumb(['Arbeitsplätze gestalten', "navigateTo('planning')"], ['Planungsbeispiele'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
         <h1 class="page-hero__title">Planungsbeispiele</h1>
-        <p class="page-hero__subtitle">Realisierte Referenzprojekte aus der Bundesverwaltung. Sehen Sie, wie andere Bundesstellen ihre R\u00e4ume gestaltet haben.</p>
+        <p class="page-hero__subtitle">Realisierte Referenzprojekte aus der Bundesverwaltung. Sehen Sie, wie andere Bundesstellen ihre Räume gestaltet haben.</p>
       </div>
 
       <div class="tile-grid">
@@ -257,11 +257,11 @@ function renderCad() {
   const chevronIcon = `<svg class="accordion__arrow" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>`;
 
   return `
-    ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['CAD-Daten'])}
+    ${renderBreadcrumb(['Arbeitsplätze gestalten', "navigateTo('planning')"], ['CAD-Daten'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
         <h1 class="page-hero__title">CAD-Daten</h1>
-        <p class="page-hero__subtitle">CAD-Dateien und technische Zeichnungen f\u00fcr die professionelle Raumplanung. F\u00fcr Planer und Architekten.</p>
+        <p class="page-hero__subtitle">CAD-Dateien und technische Zeichnungen für die professionelle Raumplanung. Für Planer und Architekten.</p>
       </div>
 
       <ul class="accordion">
@@ -298,7 +298,7 @@ function renderApiDocs() {
     <div class="container container--with-top-pad api-docs-container" id="mainContent">
       <div class="page-hero">
         <h1 class="page-hero__title">API Dokumentation</h1>
-        <p class="page-hero__subtitle">RESTful API-Referenz f\u00fcr das Workspace-Management-System. Alle Endpunkte, Parameter und Datenmodelle auf einen Blick.</p>
+        <p class="page-hero__subtitle">RESTful API-Referenz für das Workspace-Management-System. Alle Endpunkte, Parameter und Datenmodelle auf einen Blick.</p>
       </div>
       <div id="swagger-ui"></div>
     </div>
@@ -308,11 +308,11 @@ function renderApiDocs() {
 // ---- OBJEKT SCANNEN ----
 function renderScan() {
   return `
-    ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Objekt scannen'])}
+    ${renderBreadcrumb(['Gebrauchte Möbel', "navigateTo('circular')"], ['Objekt scannen'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
         <h1 class="page-hero__title">Objekt scannen</h1>
-        <p class="page-hero__subtitle">Scannen Sie den QR-Code auf dem M\u00f6belst\u00fcck oder geben Sie die Inventar-Nummer manuell ein.</p>
+        <p class="page-hero__subtitle">Scannen Sie den QR-Code auf dem Möbelstück oder geben Sie die Inventar-Nummer manuell ein.</p>
       </div>
 
       <div class="scan-area">
@@ -322,7 +322,7 @@ function renderScan() {
         </div>
         <div class="scan-area__content">
           <h3 class="scan-area__title">Objekt identifizieren</h3>
-          <p class="scan-area__text">Scannen Sie den QR-Code auf dem M\u00f6belst\u00fcck oder geben Sie die Inventar-Nummer manuell ein, um den Status und die Historie des Objekts einzusehen.</p>
+          <p class="scan-area__text">Scannen Sie den QR-Code auf dem Möbelstück oder geben Sie die Inventar-Nummer manuell ein, um den Status und die Historie des Objekts einzusehen.</p>
           <div class="scan-area__input-row">
             <input class="scan-area__input" id="scanInput" type="text" placeholder="z.B. INV-2024-001234">
             <button class="btn btn--filled" id="scanSearchBtn">Suchen</button>
@@ -376,7 +376,7 @@ function attachScanEvents() {
     }
 
     // Not found
-    feedback.textContent = 'Kein Objekt mit der Nummer \u00ab' + escapeHtml(val) + '\u00bb gefunden.';
+    feedback.textContent = 'Kein Objekt mit der Nummer «' + escapeHtml(val) + '» gefunden.';
     feedback.className = 'scan-area__feedback scan-area__feedback--error';
   }
 
@@ -393,18 +393,18 @@ function attachScanEvents() {
 // ---- NEUES OBJEKT ERFASSEN ----
 function renderRegister() {
   return `
-    ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Neues Objekt erfassen'])}
+    ${renderBreadcrumb(['Gebrauchte Möbel', "navigateTo('circular')"], ['Neues Objekt erfassen'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
         <h1 class="page-hero__title">Neues Objekt erfassen</h1>
-        <p class="page-hero__subtitle">Erfassen Sie gebrauchtes Mobiliar und machen Sie es f\u00fcr andere Bundesstellen verf\u00fcgbar.</p>
+        <p class="page-hero__subtitle">Erfassen Sie gebrauchtes Mobiliar und machen Sie es für andere Bundesstellen verfügbar.</p>
       </div>
 
       <div class="form-card">
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Bezeichnung</label>
-            <input class="form-input" type="text" placeholder="z.B. B\u00fcrostuhl Giroflex 64">
+            <input class="form-input" type="text" placeholder="z.B. Bürostuhl Giroflex 64">
           </div>
           <div class="form-group">
             <label class="form-label">Marke</label>
@@ -413,22 +413,22 @@ function renderRegister() {
           <div class="form-group">
             <label class="form-label">Kategorie</label>
             <select class="form-select">
-              <option value="">Bitte w\u00e4hlen...</option>
+              <option value="">Bitte wählen...</option>
               ${CATEGORIES.filter(c => c.id !== 'alle').map(c => `<option value="${c.id}">${c.label}</option>`).join('')}
             </select>
           </div>
           <div class="form-group">
             <label class="form-label">Zustand</label>
             <select class="form-select">
-              <option value="">Bitte w\u00e4hlen...</option>
+              <option value="">Bitte wählen...</option>
               <option>Sehr gut</option>
               <option>Gut</option>
               <option>Akzeptabel</option>
-              <option>Reparaturbed\u00fcrftig</option>
+              <option>Reparaturbedürftig</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Standort / Geb\u00e4ude</label>
+            <label class="form-label">Standort / Gebäude</label>
             <input class="form-input" type="text" placeholder="z.B. Bundeshaus West, 3. OG">
           </div>
           <div class="form-group">
@@ -437,7 +437,7 @@ function renderRegister() {
           </div>
           <div class="form-group form-group--full">
             <label class="form-label">Bemerkungen</label>
-            <textarea class="form-textarea" placeholder="Zus\u00e4tzliche Informationen zum Objekt..."></textarea>
+            <textarea class="form-textarea" placeholder="Zusätzliche Informationen zum Objekt..."></textarea>
           </div>
           <div class="form-actions">
             <button class="btn btn--filled">Objekt erfassen</button>
@@ -452,14 +452,14 @@ function renderRegister() {
 // ---- CHARTA KREISLAUFORIENTIERTES BAUEN ----
 function renderCharter() {
   return `
-    ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Charta kreislauforientiertes Bauen'])}
+    ${renderBreadcrumb(['Gebrauchte Möbel', "navigateTo('circular')"], ['Charta kreislauforientiertes Bauen'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="placeholder-area">
         <div class="placeholder-area__icon">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
         </div>
         <div class="placeholder-area__title">Charta kreislauforientiertes Bauen (in Entwicklung)</div>
-        <p class="placeholder-area__text">Unsere Strategie f\u00fcr Kreislaufwirtschaft und nachhaltiges Bauen.<br>Diese Seite wird in einer zuk\u00fcnftigen Version verf\u00fcgbar sein.</p>
+        <p class="placeholder-area__text">Unsere Strategie für Kreislaufwirtschaft und nachhaltiges Bauen.<br>Diese Seite wird in einer zukünftigen Version verfügbar sein.</p>
       </div>
     </div>
   `;
@@ -542,8 +542,8 @@ function renderSearch() {
           <div class="form-group">
             <label class="form-label">Sortierung</label>
             <select class="form-select" id="searchSortSelect">
-              <option value="name-asc" ${state.searchSortBy==='name-asc'?'selected':''}>Name A\u2013Z</option>
-              <option value="name-desc" ${state.searchSortBy==='name-desc'?'selected':''}>Name Z\u2013A</option>
+              <option value="name-asc" ${state.searchSortBy==='name-asc'?'selected':''}>Name A–Z</option>
+              <option value="name-desc" ${state.searchSortBy==='name-desc'?'selected':''}>Name Z–A</option>
               <option value="price-asc" ${state.searchSortBy==='price-asc'?'selected':''}>Preis aufsteigend</option>
               <option value="price-desc" ${state.searchSortBy==='price-desc'?'selected':''}>Preis absteigend</option>
             </select>
@@ -556,7 +556,7 @@ function renderSearch() {
           <strong>${results.length}</strong> Suchergebnis${results.length !== 1 ? 'se' : ''}
         </div>
         <div class="search-results__sort-label">
-          Sortieren: ${state.searchSortBy === 'name-asc' ? 'Name A\u2013Z' : state.searchSortBy === 'name-desc' ? 'Name Z\u2013A' : state.searchSortBy === 'price-asc' ? 'Preis \u2191' : 'Preis \u2193'}
+          Sortieren: ${state.searchSortBy === 'name-asc' ? 'Name A–Z' : state.searchSortBy === 'name-desc' ? 'Name Z–A' : state.searchSortBy === 'price-asc' ? 'Preis ↑' : 'Preis ↓'}
         </div>
       </div>
 
@@ -567,7 +567,7 @@ function renderSearch() {
       ` : `
         <div class="no-results">
           <div class="no-results__icon">${ICONS.placeholder}</div>
-          <p class="no-results__text">${q ? `Keine Ergebnisse f\u00fcr \u00ab${q}\u00bb gefunden.` : 'Bitte geben Sie einen Suchbegriff ein.'}</p>
+          <p class="no-results__text">${q ? `Keine Ergebnisse für «${q}» gefunden.` : 'Bitte geben Sie einen Suchbegriff ein.'}</p>
         </div>
       `}
     </div>

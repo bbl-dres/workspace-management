@@ -72,7 +72,7 @@ function renderDetailToolbar() {
     <div class="detail-toolbar">
       <button class="btn btn--outline btn--sm detail-toolbar__back" onclick="history.back()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
-        Zur\u00fcck
+        Zurück
       </button>
       ${renderShareBar()}
     </div>
@@ -106,7 +106,7 @@ function renderCarousel(photos, altText, badgeHtml) {
   }
   const slides = photos.map((photo, i) => `
     <div class="carousel__slide${i === 0 ? ' carousel__slide--active' : ''}" data-index="${i}">
-      <img src="https://images.unsplash.com/${photo}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(altText)} \u2013 Bild ${i + 1}" loading="lazy">
+      <img src="https://images.unsplash.com/${photo}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(altText)} – Bild ${i + 1}" loading="lazy">
     </div>
   `).join('');
   const bullets = photos.map((_, i) => `
@@ -127,7 +127,7 @@ function renderCarousel(photos, altText, badgeHtml) {
         <div class="carousel__pagination">
           ${bullets}
         </div>
-        <button class="carousel__next" aria-label="N\u00e4chstes Bild">
+        <button class="carousel__next" aria-label="Nächstes Bild">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,18 15,12 9,6"/></svg>
         </button>
       </div>

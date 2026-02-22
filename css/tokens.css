@@ -10,6 +10,44 @@
    xs: 480px | sm: 640px | md: 768px | lg: 1024px | xl: 1280px | 2xl: 1544px | 3xl: 1920px
    ========================================================================== */
 
+/* ── @FONT-FACE – CD Bund font-face.postcss ─────────────────────────────── */
+@font-face {
+  font-family: 'Font-Regular';
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Font-Bold';
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Font-Italic';
+  font-style: italic;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Font-Bold-Italic';
+  font-style: italic;
+  font-display: swap;
+  src: url('./fonts/NotoSans-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Fallback-font';
+  src: local(Verdana);
+  advance-override: 125%;
+  ascent-override: 95%;
+  descent-override: -25%;
+  line-gap-override: 25%;
+}
+
 :root {
 
   /* ── BRAND (Official primary palette = Swiss Red) ──────────────────────── */
@@ -73,6 +111,7 @@
 
   /* ── FOCUS ────────────────────────────────────────────────────────────── */
   --color-focus:               #8655F6;          /* Official purple-500 */
+  --color-focus-dark:          #C4B5FD;          /* Official purple-300 – for dark backgrounds */
 
   /* ── STATUS / SEMANTIC ────────────────────────────────────────────────── */
   --color-success:             #047857;          /* green-700 */
@@ -127,7 +166,10 @@
   --color-circular-bg:         #ECFDF5;
 
   /* ── TYPOGRAPHY ───────────────────────────────────────────────────────── */
-  --font-family:               "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-family:               "Font-Regular", "Hind", "Fallback-font", sans-serif;
+  --font-family-bold:          "Font-Bold", "Hind", "Fallback-font", sans-serif;
+  --font-family-italic:        "Font-Italic", "Hind", "Fallback-font";
+  --font-family-bold-italic:   "Font-Bold-Italic", "Hind", "Fallback-font";
   --font-family-mono:          "JetBrains Mono", "Fira Code", Consolas, monospace;
 
   /* Responsive type scale – base (mobile-first) values.
@@ -202,6 +244,19 @@
   --topbar-height:             46px;
   --nav-height:                56px;              /* main-navigation base */
 
+  /* ── ICON SIZES (CD Bund icons.postcss) ──────────────────────────────── */
+  --icon-sm:                   0.75rem;           /* 12px – h-3 (icon--sm) */
+  --icon-base:                 1rem;              /* 16px – h-4 (icon--base) */
+  --icon-md:                   1.25rem;           /* 20px – h-5 (icon--md) */
+  --icon-lg:                   1.5rem;            /* 24px – h-6 (icon--lg) */
+  --icon-xl:                   1.75rem;           /* 28px – h-7 (icon--xl) */
+  --icon-2xl:                  2.25rem;           /* 36px – h-9 (icon--2xl) */
+  --icon-3xl:                  3rem;              /* 48px – h-12 (icon--3xl) */
+  --icon-4xl:                  5rem;              /* 80px – h-20 (icon--4xl) */
+
+  /* Icon stroke width (CD default) */
+  --icon-stroke:               0.3px;
+
   /* ── BREAKPOINTS (reference) ──────────────────────────────────────────── */
   /* xs: 480px | sm: 640px | md: 768px | lg: 1024px |
      xl: 1280px | 2xl: 1544px | 3xl: 1920px          */
@@ -215,7 +270,9 @@
   --radius-2xl:                8px;
   --radius-3xl:                10px;
   --radius-4xl:                12px;             /* CD Bund 4xl */
-  --radius-pill:               20px;             /* pill-shaped buttons */
+  --radius-5xl:                15px;             /* CD Bund 5xl */
+  --radius-6xl:                24px;             /* CD Bund 6xl */
+  --radius-pill:               20px;             /* pill-shaped buttons (project-specific) */
   --radius-full:               9999px;
 
   /* ── SHADOWS (official dual-layer) ──────────────────────────────────── */

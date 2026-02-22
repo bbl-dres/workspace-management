@@ -1,82 +1,82 @@
 [
   {
     "module": "1",
-    "title": "Modul 1 \u2013 Standardarbeitsplatz",
-    "description": "Der Standardarbeitsplatz gestaltet sich als Schreibtischarbeitsplatz mit Schreibtischstuhl. Als Teil einer Gruppe von h\u00f6chstens vier Schreibtischen befindet er sich im offenen Raum und wird von umliegenden anderen Arbeitsbereichen in eine Zone definiert. Hier wird im Team oder allein gearbeitet, hin und wieder wird am Platz telefoniert. Ein am Tisch montiertes Sichtschutzpaneel sorgt zus\u00e4tzlich f\u00fcr akustische Abschirmung. Alle Schreibtische sind allen Mitarbeitenden zug\u00e4nglich \u2013 es gibt keine zugewiesenen Pl\u00e4tze.",
+    "title": "Modul 1 – Standardarbeitsplatz",
+    "description": "Der Standardarbeitsplatz gestaltet sich als Schreibtischarbeitsplatz mit Schreibtischstuhl. Als Teil einer Gruppe von höchstens vier Schreibtischen befindet er sich im offenen Raum und wird von umliegenden anderen Arbeitsbereichen in eine Zone definiert. Hier wird im Team oder allein gearbeitet, hin und wieder wird am Platz telefoniert. Ein am Tisch montiertes Sichtschutzpaneel sorgt zusätzlich für akustische Abschirmung. Alle Schreibtische sind allen Mitarbeitenden zugänglich – es gibt keine zugewiesenen Plätze.",
     "photo": "photo-1593642632559-0c6d3fc62b89",
-    "areaPerWorkspace": "3.0 m\u00b2",
-    "elements": ["Arbeitstisch liftmatisch h\u00f6henverstellbar", "Akustik-Tischaufsatz", "Drehstuhl", "IT-Ausstattung"]
+    "areaPerWorkspace": "3.0 m²",
+    "elements": ["Arbeitstisch liftmatisch höhenverstellbar", "Akustik-Tischaufsatz", "Drehstuhl", "IT-Ausstattung"]
   },
   {
     "module": "2",
-    "title": "Modul 2 \u2013 Team Arbeitsplatz",
-    "description": "Der Team Arbeitsplatz bietet Platz f\u00fcr 6 oder 8 Mitarbeitende, die in einem Team eine bestimmte Aufgabe bearbeiten, zu dessen Erarbeitung die physische N\u00e4he und der rege Austausch im Team n\u00f6tig ist. Ein elektrifizierter Gruppentisch erm\u00f6glicht die einfache und umgehende Nutzung. Der Team Arbeitsplatz befindet sich auf offener Fl\u00e4che, ist jedoch r\u00e4umlich von anderen Arbeitsbereichen separiert. Mobiler AV Screen, Whiteboard und Zubeh\u00f6r werden jeder Gruppe zugewiesen.",
+    "title": "Modul 2 – Team Arbeitsplatz",
+    "description": "Der Team Arbeitsplatz bietet Platz für 6 oder 8 Mitarbeitende, die in einem Team eine bestimmte Aufgabe bearbeiten, zu dessen Erarbeitung die physische Nähe und der rege Austausch im Team nötig ist. Ein elektrifizierter Gruppentisch ermöglicht die einfache und umgehende Nutzung. Der Team Arbeitsplatz befindet sich auf offener Fläche, ist jedoch räumlich von anderen Arbeitsbereichen separiert. Mobiler AV Screen, Whiteboard und Zubehör werden jeder Gruppe zugewiesen.",
     "photo": "photo-1497215842964-222b430dc094",
-    "areaPerWorkspace": "25\u201335 m\u00b2",
+    "areaPerWorkspace": "25–35 m²",
     "elements": ["Benchtisch 6er/8er", "Drehstuhl", "IT-Ausstattung", "Mobiles Whiteboard/Pinboard", "Caddy", "Mobiler AV Screen"]
   },
   {
     "module": "3",
-    "title": "Modul 3 \u2013 Fokus Arbeitsplatz",
-    "description": "Der Fokus Arbeitsplatz befindet sich in einer ruhigen Umgebung \u2013 in der N\u00e4he ist kein lautes Sprechen und Telefonieren erlaubt. Mehrere Fokus Arbeitspl\u00e4tze k\u00f6nnen locker und mit ausreichendem Abstand gruppiert werden, sind aber r\u00e4umlich von Standard- und Team Arbeitspl\u00e4tzen zu separieren. Jeder Fokus Arbeitsplatz wird mittels einer freistehenden Umbauung akustisch gesch\u00fctzt. Pflanzen und biophile Elemente werten das ruhige Arbeitsumfeld auf.",
+    "title": "Modul 3 – Fokus Arbeitsplatz",
+    "description": "Der Fokus Arbeitsplatz befindet sich in einer ruhigen Umgebung – in der Nähe ist kein lautes Sprechen und Telefonieren erlaubt. Mehrere Fokus Arbeitsplätze können locker und mit ausreichendem Abstand gruppiert werden, sind aber räumlich von Standard- und Team Arbeitsplätzen zu separieren. Jeder Fokus Arbeitsplatz wird mittels einer freistehenden Umbauung akustisch geschützt. Pflanzen und biophile Elemente werten das ruhige Arbeitsumfeld auf.",
     "photo": "photo-1497366216548-37526070297c",
-    "areaPerWorkspace": "3.0 m\u00b2",
-    "elements": ["Arbeitstisch h\u00f6henverstellbar", "Akustik-Trennwand/Umbauung", "Drehstuhl", "IT-Ausstattung"]
+    "areaPerWorkspace": "3.0 m²",
+    "elements": ["Arbeitstisch höhenverstellbar", "Akustik-Trennwand/Umbauung", "Drehstuhl", "IT-Ausstattung"]
   },
   {
     "module": "4",
-    "title": "Modul 4 \u2013 Formelle Sitzungen",
-    "description": "Formelle Sitzungen finden in geschlossenen R\u00e4umen statt. Diese sind f\u00fcr 4, 6 oder 8 Personen mit formellen Sitzungsm\u00f6beln ausgestattet, welche in ihrer Formensprache seri\u00f6s anmuten und auch \u00fcber eine l\u00e4ngere Sitzungsdauer als bequem empfunden werden. An einer der l\u00e4ngeren W\u00e4nde ist ein magnetisches Whiteboard montiert. Teil dieses Moduls sind auch Besprechungsboxen f\u00fcr 4 oder 2 Personen als autarke Raum-in-Raum-L\u00f6sungen. Alle formellen Sitzungszimmer sind \u00fcber ein internes Buchungssystem buchbar.",
+    "title": "Modul 4 – Formelle Sitzungen",
+    "description": "Formelle Sitzungen finden in geschlossenen Räumen statt. Diese sind für 4, 6 oder 8 Personen mit formellen Sitzungsmöbeln ausgestattet, welche in ihrer Formensprache seriös anmuten und auch über eine längere Sitzungsdauer als bequem empfunden werden. An einer der längeren Wände ist ein magnetisches Whiteboard montiert. Teil dieses Moduls sind auch Besprechungsboxen für 4 oder 2 Personen als autarke Raum-in-Raum-Lösungen. Alle formellen Sitzungszimmer sind über ein internes Buchungssystem buchbar.",
     "photo": "photo-1462826303086-329426d1aef5",
-    "areaPerWorkspace": "19\u201325 m\u00b2",
+    "areaPerWorkspace": "19–25 m²",
     "elements": ["Sitzungstisch", "Sitzungsstuhl/Schalendrehsessel", "Whiteboard magnetisch", "Besprechungsbox 4er/2er", "Caddy", "AV-Ausstattung"]
   },
   {
     "module": "5",
-    "title": "Modul 5 \u2013 Telefon-/Videokonferenzbox",
-    "description": "Dieses Modul umfasst Raum-in-Raum-L\u00f6sungen f\u00fcr jeweils eine Person. Die gleichm\u00e4ssige Verteilung der Boxen bietet die M\u00f6glichkeit ungest\u00f6rt und ohne zu st\u00f6ren zu telefonieren oder an Videokonferenzen teilzunehmen. Eine entsprechende Schallisolierung erm\u00f6glicht ein Gespr\u00e4ch in unmittelbarer N\u00e4he zum gew\u00e4hlten Arbeitsplatz. Telefonboxen mit Schreibtisch eignen sich f\u00fcr Videokonferenzen oder l\u00e4ngere Telefonate mit Notebook.",
+    "title": "Modul 5 – Telefon-/Videokonferenzbox",
+    "description": "Dieses Modul umfasst Raum-in-Raum-Lösungen für jeweils eine Person. Die gleichmässige Verteilung der Boxen bietet die Möglichkeit ungestört und ohne zu stören zu telefonieren oder an Videokonferenzen teilzunehmen. Eine entsprechende Schallisolierung ermöglicht ein Gespräch in unmittelbarer Nähe zum gewählten Arbeitsplatz. Telefonboxen mit Schreibtisch eignen sich für Videokonferenzen oder längere Telefonate mit Notebook.",
     "photo": "photo-1568992687947-868a62a9f521",
-    "areaPerWorkspace": "4.5 m\u00b2",
-    "elements": ["Besprechungsbox Framery Q-Flow", "H\u00f6henverstellbarer Tisch", "Drehstuhl", "IT-Ausstattung"]
+    "areaPerWorkspace": "4.5 m²",
+    "elements": ["Besprechungsbox Framery Q-Flow", "Höhenverstellbarer Tisch", "Drehstuhl", "IT-Ausstattung"]
   },
   {
     "module": "6",
-    "title": "Modul 6 \u2013 Informelle Sitzungen",
-    "description": "Informelle Sitzungen dienen der einfachen, aktiven Kommunikation mit einem schnellen Austausch, der nicht am Arbeitsplatz stattfinden soll. R\u00e4umlich immer etwas separiert von den Arbeitstischen, wird kleinen Gruppen von 4, 6 oder 8 Personen erm\u00f6glicht, sich unkompliziert zusammenzufinden, ohne lange Wege zur\u00fcckzulegen oder ein Sitzungszimmer buchen zu m\u00fcssen. Informelle Sitzungen sind im Regelfall spontan und k\u00fcrzer als formelle Sitzungen.",
+    "title": "Modul 6 – Informelle Sitzungen",
+    "description": "Informelle Sitzungen dienen der einfachen, aktiven Kommunikation mit einem schnellen Austausch, der nicht am Arbeitsplatz stattfinden soll. Räumlich immer etwas separiert von den Arbeitstischen, wird kleinen Gruppen von 4, 6 oder 8 Personen ermöglicht, sich unkompliziert zusammenzufinden, ohne lange Wege zurückzulegen oder ein Sitzungszimmer buchen zu müssen. Informelle Sitzungen sind im Regelfall spontan und kürzer als formelle Sitzungen.",
     "photo": "photo-1524758631624-e2822e304c36",
-    "areaPerWorkspace": "4\u201323 m\u00b2",
-    "elements": ["Stehtisch/Bistrotisch", "Hocker/Stehhocker", "Besprechungskoje", "Loungem\u00f6bel", "Beistelltisch", "Akustikpaneel"]
+    "areaPerWorkspace": "4–23 m²",
+    "elements": ["Stehtisch/Bistrotisch", "Hocker/Stehhocker", "Besprechungskoje", "Loungemöbel", "Beistelltisch", "Akustikpaneel"]
   },
   {
     "module": "7",
-    "title": "Modul 7 \u2013 Interaktive Sitzungen",
-    "description": "Interaktive Sitzungen finden in grossen geschlossenen R\u00e4umen statt. Sitzungszimmer dieses Typs sind flexibel m\u00f6bliert und k\u00f6nnen entsprechend der Veranstaltung ohne grossen Aufwand eingerichtet werden. Neben Whiteboard, mobilem AV Screen und Trolley sind die R\u00e4ume mit einer multimedialen Anlage ausgestattet, die sich dem flexiblen Charakter anpasst. Alle interaktiven Sitzungszimmer werden \u00fcber ein internes Buchungssystem reserviert.",
+    "title": "Modul 7 – Interaktive Sitzungen",
+    "description": "Interaktive Sitzungen finden in grossen geschlossenen Räumen statt. Sitzungszimmer dieses Typs sind flexibel möbliert und können entsprechend der Veranstaltung ohne grossen Aufwand eingerichtet werden. Neben Whiteboard, mobilem AV Screen und Trolley sind die Räume mit einer multimedialen Anlage ausgestattet, die sich dem flexiblen Charakter anpasst. Alle interaktiven Sitzungszimmer werden über ein internes Buchungssystem reserviert.",
     "photo": "photo-1517502884422-41eaead166d4",
-    "areaPerWorkspace": "30\u201365 m\u00b2",
-    "elements": ["Konferenztisch/Klapptisch", "Stapelstuhl/Stehhocker", "Whiteboard/Pinboard", "Mobiler AV Screen", "Kreativraum-M\u00f6bel", "Trolley"]
+    "areaPerWorkspace": "30–65 m²",
+    "elements": ["Konferenztisch/Klapptisch", "Stapelstuhl/Stehhocker", "Whiteboard/Pinboard", "Mobiler AV Screen", "Kreativraum-Möbel", "Trolley"]
   },
   {
     "module": "8",
-    "title": "Modul 8 \u2013 Team Ablage",
-    "description": "Die Teamablage bietet L\u00f6sungen zur Ablage f\u00fcr verschiedene Szenarien. Ordner k\u00f6nnen in offenen Ablagen verstaut werden, dekorative Elemente bieten Platz in sowohl offenen als auch geschlossenen Elementen. Zur Archivierung oder Aufbewahrung anderer Utensilien bietet sich eine geschlossene Ablage an. Elemente dienen auch als Abgrenzung zwischen Arbeitsbereichen.",
+    "title": "Modul 8 – Team Ablage",
+    "description": "Die Teamablage bietet Lösungen zur Ablage für verschiedene Szenarien. Ordner können in offenen Ablagen verstaut werden, dekorative Elemente bieten Platz in sowohl offenen als auch geschlossenen Elementen. Zur Archivierung oder Aufbewahrung anderer Utensilien bietet sich eine geschlossene Ablage an. Elemente dienen auch als Abgrenzung zwischen Arbeitsbereichen.",
     "photo": "photo-1595428774223-ef52624120d2",
     "areaPerWorkspace": "variabel",
-    "elements": ["Offenes Regal/Sideboard", "Schiebet\u00fcrschrank", "Fl\u00fcgelt\u00fcrschrank", "Registraturschrank"]
+    "elements": ["Offenes Regal/Sideboard", "Schiebetürschrank", "Flügeltürschrank", "Registraturschrank"]
   },
   {
     "module": "9",
-    "title": "Modul 9 \u2013 Locker, Garderoben",
-    "description": "Nahe des Eingangs befinden sich die Locker. Hier hat jeder Mitarbeitende eine pers\u00f6nliche, abschliessbare Ablage, welche die Organisation des Arbeitsablaufs unterst\u00fctzt. Da es keine zugewiesenen Schreibtische gibt, werden alle pers\u00f6nlichen Gegenst\u00e4nde im jeweiligen Locker aufbewahrt. Organizer-Taschen in zwei Gr\u00f6ssen erleichtern den Transport. Garderoben kommen als freistehende Elemente zum Einsatz.",
+    "title": "Modul 9 – Locker, Garderoben",
+    "description": "Nahe des Eingangs befinden sich die Locker. Hier hat jeder Mitarbeitende eine persönliche, abschliessbare Ablage, welche die Organisation des Arbeitsablaufs unterstützt. Da es keine zugewiesenen Schreibtische gibt, werden alle persönlichen Gegenstände im jeweiligen Locker aufbewahrt. Organizer-Taschen in zwei Grössen erleichtern den Transport. Garderoben kommen als freistehende Elemente zum Einsatz.",
     "photo": "photo-1558618666-fcd25c85f82e",
     "areaPerWorkspace": "variabel",
     "elements": ["Schliessfach/Locker", "Garderobe", "Organizer-Taschen"]
   },
   {
     "module": "10",
-    "title": "Modul 10 \u2013 Service Funktionen",
-    "description": "Damit Abfall so effektiv wie m\u00f6glich getrennt und zur Wiederverwertung in den Stoffkreislauf zur\u00fcckgef\u00fchrt werden kann, werden den Mitarbeitenden gen\u00fcgend Sammelbeh\u00e4lter nahe der Arbeitspl\u00e4tze und an den Entsorgungsstellen auf den Etagen zur Verf\u00fcgung gestellt. Je einfacher sich der Abfalltrennvorgang gestaltet, desto unproblematischer die korrekte Abfalltrennung.",
+    "title": "Modul 10 – Service Funktionen",
+    "description": "Damit Abfall so effektiv wie möglich getrennt und zur Wiederverwertung in den Stoffkreislauf zurückgeführt werden kann, werden den Mitarbeitenden genügend Sammelbehälter nahe der Arbeitsplätze und an den Entsorgungsstellen auf den Etagen zur Verfügung gestellt. Je einfacher sich der Abfalltrennvorgang gestaltet, desto unproblematischer die korrekte Abfalltrennung.",
     "photo": "photo-1497215842964-222b430dc094",
     "areaPerWorkspace": "variabel",
-    "elements": ["Entsorgungsstationen", "Recycling-Beh\u00e4lter", "Sammelstellen"]
+    "elements": ["Entsorgungsstationen", "Recycling-Behälter", "Sammelstellen"]
   }
 ]

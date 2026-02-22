@@ -3,9 +3,9 @@
     "id": "einzelarbeitsplatz",
     "title": "Einzelarbeitsplatz",
     "files": [
-      { "name": "Grundriss Einzelb\u00fcro Typ A (12 m\u00b2)", "format": "DWG", "size": "245.30 kB", "date": "15. M\u00e4rz 2025" },
-      { "name": "Grundriss Einzelb\u00fcro Typ B (15 m\u00b2)", "format": "DWG", "size": "312.80 kB", "date": "15. M\u00e4rz 2025" },
-      { "name": "M\u00f6blierungsvorschlag Einzelb\u00fcro", "format": "PDF", "size": "1.85 MB", "date": "10. Januar 2025" },
+      { "name": "Grundriss Einzelbüro Typ A (12 m²)", "format": "DWG", "size": "245.30 kB", "date": "15. März 2025" },
+      { "name": "Grundriss Einzelbüro Typ B (15 m²)", "format": "DWG", "size": "312.80 kB", "date": "15. März 2025" },
+      { "name": "Möblierungsvorschlag Einzelbüro", "format": "PDF", "size": "1.85 MB", "date": "10. Januar 2025" },
       { "name": "Massbeschriftung Standardarbeitsplatz", "format": "PDF", "size": "420.00 kB", "date": "10. Januar 2025" }
     ]
   },
@@ -13,16 +13,16 @@
     "id": "sitzungsraum",
     "title": "Sitzungsraum",
     "files": [
-      { "name": "Sitzungsraum 4\u20138 Personen", "format": "DWG", "size": "198.50 kB", "date": "22. Februar 2025" },
-      { "name": "Sitzungsraum 10\u201320 Personen", "format": "DWG", "size": "356.20 kB", "date": "22. Februar 2025" },
-      { "name": "Medientechnik-Positionen Sitzungsr\u00e4ume", "format": "PDF", "size": "890.00 kB", "date": "5. Dezember 2024" }
+      { "name": "Sitzungsraum 4–8 Personen", "format": "DWG", "size": "198.50 kB", "date": "22. Februar 2025" },
+      { "name": "Sitzungsraum 10–20 Personen", "format": "DWG", "size": "356.20 kB", "date": "22. Februar 2025" },
+      { "name": "Medientechnik-Positionen Sitzungsräume", "format": "PDF", "size": "890.00 kB", "date": "5. Dezember 2024" }
     ]
   },
   {
     "id": "open-space",
     "title": "Open Space",
     "files": [
-      { "name": "Grossraumb\u00fcro Rasteranordnung 24 AP", "format": "DWG", "size": "512.40 kB", "date": "8. November 2024" },
+      { "name": "Grossraumbüro Rasteranordnung 24 AP", "format": "DWG", "size": "512.40 kB", "date": "8. November 2024" },
       { "name": "Zonierungskonzept Open Space", "format": "PDF", "size": "2.10 MB", "date": "8. November 2024" },
       { "name": "Verkehrswege und Fluchtwege", "format": "PDF", "size": "645.00 kB", "date": "1. September 2024" }
     ]
@@ -32,26 +32,26 @@
     "title": "Empfang & Lounge",
     "files": [
       { "name": "Empfangsbereich Standardlayout", "format": "DWG", "size": "278.90 kB", "date": "14. Juni 2024" },
-      { "name": "Wartezone M\u00f6blierungsvarianten", "format": "PDF", "size": "1.42 MB", "date": "14. Juni 2024" }
+      { "name": "Wartezone Möblierungsvarianten", "format": "PDF", "size": "1.42 MB", "date": "14. Juni 2024" }
     ]
   },
   {
     "id": "teekueche",
-    "title": "Teek\u00fcche & Sozialraum",
+    "title": "Teeküche & Sozialraum",
     "files": [
-      { "name": "K\u00fcchenzeile Typ Standard", "format": "DWG", "size": "189.70 kB", "date": "3. April 2024" },
-      { "name": "Sozialraum M\u00f6blierung", "format": "DWG", "size": "210.30 kB", "date": "3. April 2024" },
-      { "name": "Installationsplan Wasser / Strom", "format": "PDF", "size": "1.05 MB", "date": "20. M\u00e4rz 2024" }
+      { "name": "Küchenzeile Typ Standard", "format": "DWG", "size": "189.70 kB", "date": "3. April 2024" },
+      { "name": "Sozialraum Möblierung", "format": "DWG", "size": "210.30 kB", "date": "3. April 2024" },
+      { "name": "Installationsplan Wasser / Strom", "format": "PDF", "size": "1.05 MB", "date": "20. März 2024" }
     ]
   },
   {
     "id": "3d-modelle",
     "title": "3D-Modelle",
     "files": [
-      { "name": "BIM-Modell Standardb\u00fcro (IFC 4.0)", "format": "IFC", "size": "8.50 MB", "date": "28. Januar 2025" },
-      { "name": "Raummodell Einzelb\u00fcro SketchUp", "format": "SKP", "size": "4.20 MB", "date": "15. Dezember 2024" },
+      { "name": "BIM-Modell Standardbüro (IFC 4.0)", "format": "IFC", "size": "8.50 MB", "date": "28. Januar 2025" },
+      { "name": "Raummodell Einzelbüro SketchUp", "format": "SKP", "size": "4.20 MB", "date": "15. Dezember 2024" },
       { "name": "Raummodell Open Space SketchUp", "format": "SKP", "size": "6.80 MB", "date": "15. Dezember 2024" },
-      { "name": "\u00dcbersicht 3D-Modelle und Formate", "format": "PDF", "size": "320.00 kB", "date": "1. November 2024" }
+      { "name": "Übersicht 3D-Modelle und Formate", "format": "PDF", "size": "320.00 kB", "date": "1. November 2024" }
     ]
   }
 ]

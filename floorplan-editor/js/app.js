@@ -104,7 +104,7 @@ async function init() {
     } catch (err) {
         console.error('Failed to load floor plan data:', err);
         document.getElementById('resourceList').innerHTML =
-            '<div class="fp-empty">Fehler beim Laden der Daten. Stellen Sie sicher, dass die Seite \u00fcber einen lokalen Server bereitgestellt wird.</div>';
+            '<div class="fp-empty">Fehler beim Laden der Daten. Stellen Sie sicher, dass die Seite über einen lokalen Server bereitgestellt wird.</div>';
         return;
     }
 
@@ -186,7 +186,7 @@ function loadFloor(floorId) {
     const building = state.buildings.find(b => b.buildingId === state.selectedBuildingId);
     const floor = state.floors.find(f => f.floorId === floorId);
     document.getElementById('floorLabel').textContent =
-        `${building.name} \u2013 ${floor.name}`;
+        `${building.name} – ${floor.name}`;
 
     // Update URL and back link
     pushHash();
@@ -272,8 +272,8 @@ function renderToolbar() {
 
     if (state.editMode) {
         toolbar.innerHTML = `
-            <button class="fp-toolbar__btn fp-toolbar__btn--label" data-tool="add" title="Element hinzuf\u00fcgen" disabled>
-                ${ICON.add} Hinzuf\u00fcgen
+            <button class="fp-toolbar__btn fp-toolbar__btn--label" data-tool="add" title="Element hinzufügen" disabled>
+                ${ICON.add} Hinzufügen
             </button>
             <button class="fp-toolbar__btn" data-tool="text" title="Text (T)" disabled>
                 ${ICON.text}
@@ -281,14 +281,14 @@ function renderToolbar() {
             <button class="fp-toolbar__btn" data-tool="draw" title="Zeichnen (D)" disabled>
                 ${ICON.draw}
             </button>
-            <button class="fp-toolbar__btn active" data-tool="select" title="Ausw\u00e4hlen (V)">
+            <button class="fp-toolbar__btn active" data-tool="select" title="Auswählen (V)">
                 ${ICON.cursor}
             </button>
             <button class="fp-toolbar__btn" data-tool="furniture" title="Mobiliar" disabled>
                 ${ICON.furniture}
             </button>
             <div class="fp-toolbar__sep"></div>
-            <button class="fp-toolbar__btn fp-toolbar__btn--disabled" id="undoBtn" title="R\u00fcckg\u00e4ngig (Ctrl+Z)" disabled>
+            <button class="fp-toolbar__btn fp-toolbar__btn--disabled" id="undoBtn" title="Rückgängig (Ctrl+Z)" disabled>
                 ${ICON.undo}
             </button>
             <button class="fp-toolbar__btn fp-toolbar__btn--disabled" id="redoBtn" title="Wiederholen (Ctrl+Y)" disabled>
@@ -298,7 +298,7 @@ function renderToolbar() {
                 ${ICON.measure}
             </button>
             <div class="fp-toolbar__sep"></div>
-            <button id="zoomIn" class="fp-toolbar__btn" title="Vergr\u00f6ssern (+)">
+            <button id="zoomIn" class="fp-toolbar__btn" title="Vergrössern (+)">
                 ${ICON.zoomIn}
             </button>
             <button id="zoomOut" class="fp-toolbar__btn" title="Verkleinern (-)">
@@ -310,7 +310,7 @@ function renderToolbar() {
         `;
     } else {
         toolbar.innerHTML = `
-            <button data-tool="select" class="fp-toolbar__btn active" title="Ausw\u00e4hlen (V)">
+            <button data-tool="select" class="fp-toolbar__btn active" title="Auswählen (V)">
                 ${ICON.cursor}
             </button>
             <button data-tool="pan" class="fp-toolbar__btn" title="Verschieben (H)">
@@ -321,7 +321,7 @@ function renderToolbar() {
                 ${ICON.measure}
             </button>
             <div class="fp-toolbar__sep"></div>
-            <button id="zoomIn" class="fp-toolbar__btn" title="Vergr\u00f6ssern (+)">
+            <button id="zoomIn" class="fp-toolbar__btn" title="Vergrössern (+)">
                 ${ICON.zoomIn}
             </button>
             <button id="zoomOut" class="fp-toolbar__btn" title="Verkleinern (-)">
@@ -371,13 +371,13 @@ function renderRoomItem(room, assetsByRoom, opts) {
                     : ''
                 }
                 <span class="fp-resource-room__label">${escapeHtml(p.type)}${nested ? ' ' + escapeHtml(p.nr) : ''}</span>
-                <span class="fp-resource-room__area">${p.area} m\u00B2</span>
+                <span class="fp-resource-room__area">${p.area} m²</span>
             </div>
             ${hasAssets ? `
                 <div class="fp-resource-room__assets">
                     ${assets.map(a => `
                         <div class="fp-resource-asset ${nested ? 'fp-resource-asset--nested' : ''}" data-asset-id="${escapeHtml(a.properties.assetId)}">
-                            <span class="fp-resource-asset__icon">\u25C6</span>
+                            <span class="fp-resource-asset__icon">◆</span>
                             <span class="fp-resource-asset__name">${escapeHtml(a.properties.name)}</span>
                         </div>
                     `).join('')}
@@ -426,7 +426,7 @@ function renderResourceListGrouped(rooms) {
                     <span class="fp-resource-group__color" style="background:${cat.fill};border-color:${cat.stroke}"></span>
                     <span class="fp-resource-group__label">${escapeHtml(cat.label)}</span>
                     <span class="fp-resource-group__count">${items.length}</span>
-                    <span class="fp-resource-group__area">${totalArea} m\u00B2</span>
+                    <span class="fp-resource-group__area">${totalArea} m²</span>
                 </div>
                 <div class="fp-resource-group__items">
                     ${items.map(room => renderRoomItem(room, assetsByRoom, {
@@ -471,11 +471,11 @@ function renderLeftPanel() {
 
 /* Category label map for the library filter */
 const CATEGORY_LABELS = {
-    stuehle: 'St\u00FChle',
+    stuehle: 'Stühle',
     tische: 'Tische',
     usm: 'USM',
     lampen: 'Lampen',
-    schraenke: 'Schr\u00E4nke',
+    schraenke: 'Schränke',
     regale: 'Regale',
     korpus: 'Korpus',
     garderobe: 'Garderobe',
@@ -598,15 +598,15 @@ function renderFloorProperties(floorFeature, rooms, assets) {
             </div>
             <div class="fp-metrics-grid">
                 <div class="fp-metric">
-                    <span class="fp-metric__label">Fl\u00e4che</span>
-                    <span class="fp-metric__value">${floor.areaGross} <span class="fp-metric__unit">m\u00B2</span></span>
+                    <span class="fp-metric__label">Fläche</span>
+                    <span class="fp-metric__value">${floor.areaGross} <span class="fp-metric__unit">m²</span></span>
                 </div>
                 <div class="fp-metric">
-                    <span class="fp-metric__label">Arbeitspl\u00e4tze</span>
+                    <span class="fp-metric__label">Arbeitsplätze</span>
                     <span class="fp-metric__value">${totalWorkspaces}</span>
                 </div>
                 <div class="fp-metric">
-                    <span class="fp-metric__label">R\u00e4ume</span>
+                    <span class="fp-metric__label">Räume</span>
                     <span class="fp-metric__value">${rooms.length}</span>
                 </div>
                 <div class="fp-metric">
@@ -630,7 +630,7 @@ function renderFloorProperties(floorFeature, rooms, assets) {
                     <span class="fp-attr__value">${escapeHtml(floor.name)}</span>
                 </div>
                 <div class="fp-attr">
-                    <span class="fp-attr__label">Geb\u00e4ude</span>
+                    <span class="fp-attr__label">Gebäude</span>
                     <span class="fp-attr__value">${escapeHtml(building.name)}</span>
                 </div>
                 <div class="fp-attr">
@@ -643,7 +643,7 @@ function renderFloorProperties(floorFeature, rooms, assets) {
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Sichtbarkeit</span>
-                    <span class="fp-attr__badge fp-attr__badge--green">\u00d6ffentlich</span>
+                    <span class="fp-attr__badge fp-attr__badge--green">Öffentlich</span>
                 </div>
             </div>
         </div>
@@ -659,7 +659,7 @@ function renderRoomProperties(room) {
 
     let html = `
         <div class="fp-props-section">
-            <span class="fp-props-back" id="propsBack">\u2190 Geschoss</span>
+            <span class="fp-props-back" id="propsBack">← Geschoss</span>
             <div class="fp-props-section__header" style="margin-top:8px">
                 <h3 style="display:flex;align-items:center;gap:6px">
                     <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${colors.fill};border:1px solid ${colors.stroke}"></span>
@@ -668,11 +668,11 @@ function renderRoomProperties(room) {
             </div>
             <div class="fp-metrics-grid">
                 <div class="fp-metric">
-                    <span class="fp-metric__label">Fl\u00e4che</span>
-                    <span class="fp-metric__value">${p.area} <span class="fp-metric__unit">m\u00B2</span></span>
+                    <span class="fp-metric__label">Fläche</span>
+                    <span class="fp-metric__value">${p.area} <span class="fp-metric__unit">m²</span></span>
                 </div>
                 <div class="fp-metric">
-                    <span class="fp-metric__label">Arbeitspl\u00e4tze</span>
+                    <span class="fp-metric__label">Arbeitsplätze</span>
                     <span class="fp-metric__value">${p.workspaces}</span>
                 </div>
                 <div class="fp-metric">
@@ -700,11 +700,11 @@ function renderRoomProperties(room) {
                     <span class="fp-attr__value">${escapeHtml(p.nr)}</span>
                 </div>
                 <div class="fp-attr">
-                    <span class="fp-attr__label">Fl\u00e4che</span>
-                    <span class="fp-attr__value">${p.area} m\u00B2</span>
+                    <span class="fp-attr__label">Fläche</span>
+                    <span class="fp-attr__value">${p.area} m²</span>
                 </div>
                 <div class="fp-attr">
-                    <span class="fp-attr__label">Arbeitspl\u00e4tze</span>
+                    <span class="fp-attr__label">Arbeitsplätze</span>
                     <span class="fp-attr__value">${p.workspaces}</span>
                 </div>
             </div>
@@ -743,7 +743,7 @@ function renderAssetProperties(asset) {
 
     const html = `
         <div class="fp-props-section">
-            <span class="fp-props-back" id="propsBack">\u2190 Geschoss</span>
+            <span class="fp-props-back" id="propsBack">← Geschoss</span>
             <div class="fp-props-section__header" style="margin-top:8px">
                 <h3>${escapeHtml(p.name)}</h3>
             </div>
@@ -814,7 +814,7 @@ function renderEditableAssetProperties(asset) {
 
     const html = `
         <div class="fp-props-section">
-            <span class="fp-props-back" id="propsBack">\u2190 Geschoss</span>
+            <span class="fp-props-back" id="propsBack">← Geschoss</span>
             <div class="fp-props-section__header" style="margin-top:8px">
                 <h3>${escapeHtml(p.name)}</h3>
             </div>
@@ -834,12 +834,12 @@ function renderEditableAssetProperties(asset) {
                     <input type="text" class="fp-edit-field__input" id="editPosZ" value="${posLocal.y.toFixed(2)} m" readonly>
                 </div>
                 <div class="fp-edit-field">
-                    <label class="fp-edit-field__label">Basish\u00f6he</label>
+                    <label class="fp-edit-field__label">Basishöhe</label>
                     <input type="text" class="fp-edit-field__input" value="0 m" readonly>
                 </div>
                 <div class="fp-edit-field">
                     <label class="fp-edit-field__label">Rotation</label>
-                    <input type="text" class="fp-edit-field__input" id="editRotation" value="0\u00B0" readonly>
+                    <input type="text" class="fp-edit-field__input" id="editRotation" value="0°" readonly>
                 </div>
             </div>
         </div>

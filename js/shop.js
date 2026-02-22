@@ -16,7 +16,7 @@ function renderCategoryTree(categories, countFn) {
           <div class="cat-item__radio ${isActive ? 'cat-item__radio--active' : ''}"></div>
           <span class="cat-item__label">${cat.label}</span>
           ${count > 0 && cat.id !== 'alle' ? `<span class="cat-item__count">${count}</span>` : ''}
-          ${hasChildren ? `<span class="cat-item__toggle ${isExpanded ? 'cat-item__toggle--open' : ''}">\u203A</span>` : ''}
+          ${hasChildren ? `<span class="cat-item__toggle ${isExpanded ? 'cat-item__toggle--open' : ''}">›</span>` : ''}
         </div>
         ${hasChildren ? `<div class="cat-item__children ${isExpanded ? 'cat-item__children--open' : ''}">${renderCategoryTree(cat.children, countFn)}</div>` : ''}
       </div>
@@ -202,7 +202,7 @@ function renderFurnitureDetail(itemId) {
 
     if (!assetFeature) {
       return `
-        ${renderBreadcrumb(['Gebrauchte M\u00f6bel', "navigateTo('circular')"], ['Nicht gefunden'])}
+        ${renderBreadcrumb(['Gebrauchte Möbel', "navigateTo('circular')"], ['Nicht gefunden'])}
         <div class="container container--detail" id="mainContent">
           <div class="no-results">
             <div class="no-results__icon">${ICONS.placeholder}</div>
@@ -278,7 +278,7 @@ function renderFurnitureDetail(itemId) {
   if (floor) locationParts.push(floor.name);
   const locationLabel = locationParts.join(', ');
 
-  const bcItems = [['Gebrauchte M\u00f6bel', "navigateTo('circular')"]];
+  const bcItems = [['Gebrauchte Möbel', "navigateTo('circular')"]];
   if (parentCat) bcItems.push([parentCat.label]);
   bcItems.push([escapeHtml(f.name)]);
 
@@ -323,13 +323,13 @@ function renderFurnitureDetail(itemId) {
   `;
 }
 
-// ---- CIRCULAR (Gebrauchte M\u00f6bel) ----
+// ---- CIRCULAR (Gebrauchte Möbel) ----
 function renderCircular() {
   const items = filterFurnitureItems();
   const catLabel = getCategoryLabel(state.activeCategory);
   const parent = getParentCategory(state.activeCategory);
 
-  const bcItems = [['Gebrauchte M\u00f6bel', "navigateTo('circular')"]];
+  const bcItems = [['Gebrauchte Möbel', "navigateTo('circular')"]];
   if (state.activeCategory !== 'alle') {
     if (parent) {
       bcItems.push([parent.label, `setCategory('${parent.id}')`]);
@@ -341,24 +341,24 @@ function renderCircular() {
     ${renderBreadcrumb(...bcItems)}
     <div class="container container--with-top-pad">
       <div class="page-hero">
-        <h1 class="page-hero__title">Gebrauchte M\u00f6bel</h1>
-        <p class="page-hero__subtitle">Gebrauchtes Mobiliar wiederverwenden statt entsorgen. Objekte scannen, erfassen und im Angebot verf\u00fcgbarer M\u00f6bel suchen.</p>
+        <h1 class="page-hero__title">Gebrauchte Möbel</h1>
+        <p class="page-hero__subtitle">Gebrauchtes Mobiliar wiederverwenden statt entsorgen. Objekte scannen, erfassen und im Angebot verfügbarer Möbel suchen.</p>
       </div>
 
       <div class="tile-grid tile-grid--3col">
         <div class="card card--centered card--clickable" onclick="navigateTo('scan')" role="button" tabindex="0">
           <h3 class="card__title">Objekt scannen</h3>
-          <p class="card__description">Scannen Sie den QR-Code oder geben Sie die Inventar-Nummer eines M\u00f6belst\u00fccks ein, um dessen Status und Verf\u00fcgbarkeit zu pr\u00fcfen.</p>
+          <p class="card__description">Scannen Sie den QR-Code oder geben Sie die Inventar-Nummer eines Möbelstücks ein, um dessen Status und Verfügbarkeit zu prüfen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('register')" role="button" tabindex="0">
           <h3 class="card__title">Neues Objekt erfassen</h3>
-          <p class="card__description">Gebrauchtes Mobiliar ins System eintragen und f\u00fcr andere Bundesstellen verf\u00fcgbar machen.</p>
+          <p class="card__description">Gebrauchtes Mobiliar ins System eintragen und für andere Bundesstellen verfügbar machen.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
         <div class="card card--centered card--clickable" onclick="navigateTo('charter')" role="button" tabindex="0">
           <h3 class="card__title">Charta kreislauforientiertes Bauen</h3>
-          <p class="card__description">Erfahren Sie mehr \u00fcber unsere Strategie f\u00fcr Kreislaufwirtschaft und nachhaltiges Bauen in der Bundesverwaltung.</p>
+          <p class="card__description">Erfahren Sie mehr über unsere Strategie für Kreislaufwirtschaft und nachhaltiges Bauen in der Bundesverwaltung.</p>
           <div class="card__arrow"><span class="card__arrow-icon">&rarr;</span></div>
         </div>
       </div>
@@ -374,7 +374,7 @@ function renderCircular() {
       <main class="main-content" id="mainContent">
         <div class="toolbar">
           <div class="search">
-            <input class="search__field" type="search" placeholder="Gebrauchte M\u00f6bel suchen..." id="searchInput" value="${escapeHtml(state.searchQuery)}" aria-label="Gebrauchte M\u00f6bel suchen">
+            <input class="search__field" type="search" placeholder="Gebrauchte Möbel suchen..." id="searchInput" value="${escapeHtml(state.searchQuery)}" aria-label="Gebrauchte Möbel suchen">
             <button class="search__button" aria-label="Suchen">${ICONS.search}</button>
           </div>
           <select class="select" id="sortSelect" aria-label="Sortierung">
@@ -392,7 +392,7 @@ function renderCircular() {
         ` : `
           <div class="no-results">
             <div class="no-results__icon">${ICONS.placeholder}</div>
-            <p class="no-results__text">Keine gebrauchten M\u00f6bel gefunden.</p>
+            <p class="no-results__text">Keine gebrauchten Möbel gefunden.</p>
           </div>
         `}
       </main>
@@ -414,7 +414,7 @@ function renderCart() {
         <div class="cart-item__image">${imgHtml}</div>
         <div class="cart-item__info">
           <div class="cart-item__name">${escapeHtml(p.name)}</div>
-          <div class="cart-item__unit-price">Preis pro St\u00fcck: ${p.currency} ${p.price.toFixed(2)}</div>
+          <div class="cart-item__unit-price">Preis pro Stück: ${p.currency} ${p.price.toFixed(2)}</div>
         </div>
         <div class="cart-item__quantity">
           <label class="cart-item__qty-label" for="qty-${i}">Anzahl</label>
@@ -442,7 +442,7 @@ function renderCart() {
       <div class="detail-toolbar">
         <button class="btn btn--outline btn--sm detail-toolbar__back" onclick="history.back()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
-          Zur\u00fcck
+          Zurück
         </button>
         <div class="detail-toolbar__actions">
           <button class="detail-toolbar__icon" aria-label="Drucken" onclick="window.print()">
@@ -497,7 +497,7 @@ function renderCart() {
                     </div>
                     <div class="form-group">
                       <label class="form-label">Bundesstelle / Organisation</label>
-                      <input class="form-input" type="text" placeholder="z.B. Bundesamt f\u00fcr Bauten und Logistik">
+                      <input class="form-input" type="text" placeholder="z.B. Bundesamt für Bauten und Logistik">
                     </div>
                     <div class="form-group">
                       <label class="form-label">Kostenstelle</label>
@@ -515,7 +515,7 @@ function renderCart() {
                       <h3 style="font-size:var(--text-h4);font-weight:var(--font-weight-bold);margin:var(--space-md) 0 var(--space-sm)">Lieferadresse</h3>
                     </div>
                     <div class="form-group">
-                      <label class="form-label">Geb\u00e4ude</label>
+                      <label class="form-label">Gebäude</label>
                       <input class="form-input" type="text" placeholder="z.B. Bundeshaus West">
                     </div>
                     <div class="form-group">
@@ -544,19 +544,19 @@ function renderCart() {
           <li class="wizard-accordion__step ${step3Active ? 'wizard-accordion__step--active' : ''}">
             <button class="wizard-accordion__header" aria-expanded="${step3Active}" aria-controls="wizard-step-3" data-step="3">
               <span class="wizard-accordion__number">3</span>
-              <span class="wizard-accordion__label">Bestellung \u00fcbermitteln</span>
+              <span class="wizard-accordion__label">Bestellung übermitteln</span>
               <svg class="wizard-accordion__chevron" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6,9 12,15 18,9"/></svg>
             </button>
             <div class="wizard-accordion__panel" id="wizard-step-3" ${step3Active ? '' : 'aria-hidden="true"'}>
               <div class="wizard-accordion__content">
                 <div class="cart-summary-review">
-                  <p style="margin-bottom:var(--space-md)">Bitte pr\u00fcfen Sie Ihre Bestellung. Mit dem Absenden wird die Bestellung an das BBL \u00fcbermittelt.</p>
+                  <p style="margin-bottom:var(--space-md)">Bitte prüfen Sie Ihre Bestellung. Mit dem Absenden wird die Bestellung an das BBL übermittelt.</p>
                   <div class="cart-summary-review__total">
                     <span>Bestellwert exkl. MwSt</span>
                     <strong>${currency} ${total.toFixed(2)}</strong>
                   </div>
                   <div style="margin-top:var(--space-lg)">
-                    <button class="btn btn--filled btn--lg" onclick="alert('Bestellung \u00fcbermittelt (Demo)')">Bestellung \u00fcbermitteln</button>
+                    <button class="btn btn--filled btn--lg" onclick="alert('Bestellung übermittelt (Demo)')">Bestellung übermitteln</button>
                   </div>
                 </div>
               </div>
@@ -572,7 +572,7 @@ function renderCart() {
           </div>
           ${state.cartStep < 3 ? `
             <button class="btn btn--filled btn--lg cart-summary__next" data-next-step="${state.cartStep + 1}">
-              N\u00e4chster Schritt
+              Nächster Schritt
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
             </button>
           ` : ''}
@@ -645,7 +645,7 @@ function attachProductDetailEvents() {
   btn.addEventListener('click', () => {
     const id = Number(btn.dataset.productId);
     addToCart(id);
-    btn.textContent = 'Hinzugef\u00fcgt \u2713';
+    btn.textContent = 'Hinzugefügt ✓';
     btn.disabled = true;
     setTimeout(() => {
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> In den Warenkorb`;

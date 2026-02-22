@@ -50,7 +50,7 @@ function occRenderTreeNode(node, depth) {
     : '<span class="rp-tree__chevron-spacer"></span>';
 
   let label = node.label;
-  if (node.type === 'building' && node.code) label = `${node.code} \u2013 ${node.label}`;
+  if (node.type === 'building' && node.code) label = `${node.code} – ${node.label}`;
 
   let html = `
     <div class="rp-tree__item ${isSelected ? 'rp-tree__item--selected' : ''}" data-id="${node.id}" data-depth="${depth}" style="padding-left:${depth * 16 + 8}px">
@@ -68,8 +68,8 @@ function occRenderTreeNode(node, depth) {
 function occGetTabs(nodeType) {
   if (nodeType === 'building' || nodeType === 'floor') return [
     { id: 'map', label: 'Karte' },
-    { id: 'overview', label: '\u00dcbersicht' },
-    { id: 'metrics', label: 'R\u00e4ume' },
+    { id: 'overview', label: 'Übersicht' },
+    { id: 'metrics', label: 'Räume' },
     { id: 'equipment', label: 'Ausstattung' }
   ];
   // default: portfolio view (country, kanton, no selection)
@@ -126,15 +126,15 @@ function occRenderBuilding(b, path) {
 
   if (tab === 'metrics') {
     const floors = b.children || [];
-    const totalFlaeche = floors.length > 0 ? b.flaeche : '\u2013';
+    const totalFlaeche = floors.length > 0 ? b.flaeche : '–';
     const totalPlaetze = floors.reduce((s, f) => s + (f.plaetze || 0), 0);
     return `
       <div class="rp-detail">
         <h2 class="rp-detail__title">${escapeHtml(b.label)}</h2>
         <p class="rp-detail__subtitle">${b.address}</p>
-        <div class="rp-detail__section-title">Fl\u00e4chen nach Stockwerk</div>
+        <div class="rp-detail__section-title">Flächen nach Stockwerk</div>
         <table class="rp-table">
-          <thead><tr><th>Stockwerk</th><th>Fl\u00e4che</th><th>Arbeitspl\u00e4tze</th><th>R\u00e4ume</th></tr></thead>
+          <thead><tr><th>Stockwerk</th><th>Fläche</th><th>Arbeitsplätze</th><th>Räume</th></tr></thead>
           <tbody>
             ${floors.map(f => `<tr class="rp-table__row--link" data-select="${f.id}"><td>${f.label}</td><td>${f.flaeche}</td><td>${f.plaetze}</td><td>${f.raeume}</td></tr>`).join('')}
           </tbody>
@@ -150,18 +150,18 @@ function occRenderBuilding(b, path) {
       <div class="rp-detail">
         <h2 class="rp-detail__title">${escapeHtml(b.label)}</h2>
         <p class="rp-detail__subtitle">${b.address}</p>
-        <div class="rp-detail__section-title">Inventar (${assets.length} Objekte${totalValue ? ' \u00b7 ' + totalValue.toLocaleString('de-CH') + ' CHF' : ''})</div>
+        <div class="rp-detail__section-title">Inventar (${assets.length} Objekte${totalValue ? ' · ' + totalValue.toLocaleString('de-CH') + ' CHF' : ''})</div>
         ${assets.length ? `
         <table class="rp-table">
           <thead><tr><th>Name</th><th>Marke</th><th>Zustand</th><th>Status</th><th>Wert</th></tr></thead>
           <tbody>
-            ${assets.map(a => `<tr><td>${escapeHtml(a.name || '')}</td><td>${escapeHtml(a.brand || '\u2013')}</td><td>${escapeHtml(a.condition || '\u2013')}</td><td>${escapeHtml(a.status || '\u2013')}</td><td>${a.acquisitionCost ? a.acquisitionCost.toLocaleString('de-CH') + ' CHF' : '\u2013'}</td></tr>`).join('')}
+            ${assets.map(a => `<tr><td>${escapeHtml(a.name || '')}</td><td>${escapeHtml(a.brand || '–')}</td><td>${escapeHtml(a.condition || '–')}</td><td>${escapeHtml(a.status || '–')}</td><td>${a.acquisitionCost ? a.acquisitionCost.toLocaleString('de-CH') + ' CHF' : '–'}</td></tr>`).join('')}
           </tbody>
         </table>` : '<div class="rp-detail__empty">Keine Ausstattungsdaten vorhanden.</div>'}
       </div>`;
   }
 
-  // \u00dcbersicht (default)
+  // Übersicht (default)
   return `
     <div class="rp-detail">
       <div class="rp-detail__header">
@@ -178,15 +178,15 @@ function occRenderBuilding(b, path) {
       <div class="rp-detail__section-title">Objektdaten</div>
       <div class="rp-detail__grid">
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">Geb\u00e4ude-ID</div>
+          <div class="rp-detail__field-label">Gebäude-ID</div>
           <div class="rp-detail__field-value">${b.code}</div>
         </div>
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">Geb\u00e4udestatus</div>
+          <div class="rp-detail__field-label">Gebäudestatus</div>
           <div class="rp-detail__field-value">${b.status}</div>
         </div>
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">Geb\u00e4udekategorie</div>
+          <div class="rp-detail__field-label">Gebäudekategorie</div>
           <div class="rp-detail__field-value">${b.kategorie}</div>
         </div>
         <div class="rp-detail__field">
@@ -194,7 +194,7 @@ function occRenderBuilding(b, path) {
           <div class="rp-detail__field-value">${b.baujahr}</div>
         </div>
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">Gesamtfl\u00e4che</div>
+          <div class="rp-detail__field-label">Gesamtfläche</div>
           <div class="rp-detail__field-value">${b.flaeche}</div>
         </div>
         <div class="rp-detail__field">
@@ -206,7 +206,7 @@ function occRenderBuilding(b, path) {
       ${b.children && b.children.length ? `
         <div class="rp-detail__section-title">Stockwerke</div>
         <table class="rp-table">
-          <thead><tr><th>Stockwerk</th><th>Fl\u00e4che</th><th>Arbeitspl\u00e4tze</th><th>R\u00e4ume</th></tr></thead>
+          <thead><tr><th>Stockwerk</th><th>Fläche</th><th>Arbeitsplätze</th><th>Räume</th></tr></thead>
           <tbody>
             ${b.children.map(f => `<tr class="rp-table__row--link" data-select="${f.id}"><td>${f.label}</td><td>${f.flaeche}</td><td>${f.plaetze}</td><td>${f.raeume}</td></tr>`).join('')}
           </tbody>
@@ -229,13 +229,13 @@ function occRenderFloor(floor, path) {
 
     return `
       <div class="rp-detail">
-        <h2 class="rp-detail__title">${floor.label} \u2013 ${escapeHtml(bLabel)}</h2>
-        <p class="rp-detail__subtitle">${floor.flaeche} &middot; ${floor.plaetze} Arbeitspl\u00e4tze &middot; ${floor.raeume} R\u00e4ume</p>
+        <h2 class="rp-detail__title">${floor.label} – ${escapeHtml(bLabel)}</h2>
+        <p class="rp-detail__subtitle">${floor.flaeche} &middot; ${floor.plaetze} Arbeitsplätze &middot; ${floor.raeume} Räume</p>
         <div class="rp-detail__section-title">Raumliste</div>
         <table class="rp-table">
-          <thead><tr><th>Raum</th><th>Typ</th><th>Fl\u00e4che</th><th>Pl\u00e4tze</th></tr></thead>
+          <thead><tr><th>Raum</th><th>Typ</th><th>Fläche</th><th>Plätze</th></tr></thead>
           <tbody>
-            ${rooms.map(r => `<tr><td>${escapeHtml(r.nr)}</td><td>${escapeHtml(r.type)}</td><td>${r.area} m\u00b2</td><td>${r.workspaces || '\u2013'}</td></tr>`).join('')}
+            ${rooms.map(r => `<tr><td>${escapeHtml(r.nr)}</td><td>${escapeHtml(r.type)}</td><td>${r.area} m²</td><td>${r.workspaces || '–'}</td></tr>`).join('')}
           </tbody>
         </table>
       </div>`;
@@ -246,28 +246,28 @@ function occRenderFloor(floor, path) {
     const totalValue = assets.reduce((s, a) => s + (a.acquisitionCost || 0), 0);
     return `
       <div class="rp-detail">
-        <h2 class="rp-detail__title">${floor.label} \u2013 ${escapeHtml(bLabel)}</h2>
-        <p class="rp-detail__subtitle">${floor.flaeche} &middot; ${floor.plaetze} Arbeitspl\u00e4tze &middot; ${floor.raeume} R\u00e4ume</p>
-        <div class="rp-detail__section-title">Inventar (${assets.length} Objekte${totalValue ? ' \u00b7 ' + totalValue.toLocaleString('de-CH') + ' CHF' : ''})</div>
+        <h2 class="rp-detail__title">${floor.label} – ${escapeHtml(bLabel)}</h2>
+        <p class="rp-detail__subtitle">${floor.flaeche} &middot; ${floor.plaetze} Arbeitsplätze &middot; ${floor.raeume} Räume</p>
+        <div class="rp-detail__section-title">Inventar (${assets.length} Objekte${totalValue ? ' · ' + totalValue.toLocaleString('de-CH') + ' CHF' : ''})</div>
         ${assets.length ? `
         <table class="rp-table">
           <thead><tr><th>Name</th><th>Raum</th><th>Marke</th><th>Zustand</th><th>Status</th><th>Wert</th></tr></thead>
           <tbody>
             ${assets.map(a => {
               const room = (floor.rooms || []).find(r => r.id === a.roomId);
-              const roomLabel = room ? room.nr : '\u2013';
-              return `<tr><td>${escapeHtml(a.name || '')}</td><td>${escapeHtml(roomLabel)}</td><td>${escapeHtml(a.brand || '\u2013')}</td><td>${escapeHtml(a.condition || '\u2013')}</td><td>${escapeHtml(a.status || '\u2013')}</td><td>${a.acquisitionCost ? a.acquisitionCost.toLocaleString('de-CH') + ' CHF' : '\u2013'}</td></tr>`;
+              const roomLabel = room ? room.nr : '–';
+              return `<tr><td>${escapeHtml(a.name || '')}</td><td>${escapeHtml(roomLabel)}</td><td>${escapeHtml(a.brand || '–')}</td><td>${escapeHtml(a.condition || '–')}</td><td>${escapeHtml(a.status || '–')}</td><td>${a.acquisitionCost ? a.acquisitionCost.toLocaleString('de-CH') + ' CHF' : '–'}</td></tr>`;
             }).join('')}
           </tbody>
         </table>` : '<div class="rp-detail__empty">Keine Ausstattungsdaten vorhanden.</div>'}
       </div>`;
   }
 
-  // \u00dcbersicht (default)
+  // Übersicht (default)
   return `
     <div class="rp-detail">
-      <h2 class="rp-detail__title">${floor.label} \u2013 ${escapeHtml(bLabel)}</h2>
-      <p class="rp-detail__subtitle">${floor.flaeche} &middot; ${floor.plaetze} Arbeitspl\u00e4tze &middot; ${floor.raeume} R\u00e4ume</p>
+      <h2 class="rp-detail__title">${floor.label} – ${escapeHtml(bLabel)}</h2>
+      <p class="rp-detail__subtitle">${floor.flaeche} &middot; ${floor.plaetze} Arbeitsplätze &middot; ${floor.raeume} Räume</p>
 
       <div class="rp-detail__grid">
         <div class="rp-detail__field">
@@ -275,19 +275,19 @@ function occRenderFloor(floor, path) {
           <div class="rp-detail__field-value">${floor.label}</div>
         </div>
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">Geb\u00e4ude</div>
+          <div class="rp-detail__field-label">Gebäude</div>
           <div class="rp-detail__field-value">${escapeHtml(bLabel)}</div>
         </div>
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">Fl\u00e4che</div>
+          <div class="rp-detail__field-label">Fläche</div>
           <div class="rp-detail__field-value">${floor.flaeche}</div>
         </div>
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">Arbeitspl\u00e4tze</div>
+          <div class="rp-detail__field-label">Arbeitsplätze</div>
           <div class="rp-detail__field-value">${floor.plaetze}</div>
         </div>
         <div class="rp-detail__field">
-          <div class="rp-detail__field-label">R\u00e4ume</div>
+          <div class="rp-detail__field-label">Räume</div>
           <div class="rp-detail__field-value">${floor.raeume}</div>
         </div>
       </div>
@@ -844,9 +844,9 @@ function formatDistance(meters) {
 }
 
 function formatArea(sqm) {
-  if (sqm >= 1000000) return (sqm / 1000000).toFixed(2) + ' km\u00b2';
+  if (sqm >= 1000000) return (sqm / 1000000).toFixed(2) + ' km²';
   if (sqm >= 10000) return (sqm / 10000).toFixed(2) + ' ha';
-  return Math.round(sqm) + ' m\u00b2';
+  return Math.round(sqm) + ' m²';
 }
 
 function updateMeasureLine() {
@@ -1012,7 +1012,7 @@ function createFurnitureRect(lngLat) {
   const lng = lngLat.lng;
   return {
     type: 'Feature',
-    properties: { label: 'Neues M\u00f6bel' },
+    properties: { label: 'Neues Möbel' },
     geometry: {
       type: 'Polygon',
       coordinates: [[
@@ -1250,7 +1250,7 @@ function occInitMap() {
       </button>
       <div class="rp-accordion__body">
         <div class="rp-accordion__search">
-          <input class="rp-accordion__search-input" type="text" placeholder="Adresse suchen\u2026" autocomplete="off">
+          <input class="rp-accordion__search-input" type="text" placeholder="Adresse suchen…" autocomplete="off">
           <div class="rp-accordion__search-results"></div>
         </div>
       </div>
@@ -1265,7 +1265,7 @@ function occInitMap() {
       <div class="rp-accordion__body">
         <div class="rp-accordion__form-row">
           <label>Titel</label>
-          <input class="rp-accordion__input" type="text" placeholder="Kartentitel\u2026" id="rpPrintTitle">
+          <input class="rp-accordion__input" type="text" placeholder="Kartentitel…" id="rpPrintTitle">
         </div>
         <div class="rp-accordion__form-row">
           <label>Orientierung</label>
@@ -1301,9 +1301,9 @@ function occInitMap() {
         <svg class="rp-accordion__chevron" viewBox="0 0 12 12" width="12" height="12"><polyline points="4,2 8,6 4,10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="rp-accordion__body">
-        <p class="rp-accordion__hint">Klicken Sie auf die Karte, um einen Messpfad zu zeichnen. Klicken Sie auf den ersten Punkt, um die Fl\u00e4che zu schliessen.</p>
+        <p class="rp-accordion__hint">Klicken Sie auf die Karte, um einen Messpfad zu zeichnen. Klicken Sie auf den ersten Punkt, um die Fläche zu schliessen.</p>
         <button class="rp-accordion__action-btn" id="rpMeasureStartBtn" type="button">Messung starten</button>
-        <button class="rp-accordion__action-btn rp-accordion__action-btn--secondary" id="rpMeasureClearBtn" type="button" style="display:none">Messung l\u00f6schen</button>
+        <button class="rp-accordion__action-btn rp-accordion__action-btn--secondary" id="rpMeasureClearBtn" type="button" style="display:none">Messung löschen</button>
       </div>
     </div>
 
@@ -1345,7 +1345,7 @@ function occInitMap() {
         </div>
         <div class="rp-accordion__layer-section" data-layer="rooms">
           <div class="rp-accordion__layer-header">
-            <span class="rp-accordion__layer-title">R\u00e4ume</span>
+            <span class="rp-accordion__layer-title">Räume</span>
             <button class="rp-accordion__eye active" data-layer="rooms" title="Layer ein/ausblenden">
               <svg class="rp-accordion__eye-open" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/></svg>
               <svg class="rp-accordion__eye-closed" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><line x1="3" y1="3" x2="17" y2="17"/></svg>
@@ -1371,14 +1371,14 @@ function occInitMap() {
         </div>
         <div class="rp-accordion__layer-section" data-layer="buildings">
           <div class="rp-accordion__layer-header">
-            <span class="rp-accordion__layer-title">Geb\u00e4ude</span>
+            <span class="rp-accordion__layer-title">Gebäude</span>
             <button class="rp-accordion__eye active" data-layer="buildings" title="Layer ein/ausblenden">
               <svg class="rp-accordion__eye-open" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="10" cy="10" r="3"/></svg>
               <svg class="rp-accordion__eye-closed" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><line x1="3" y1="3" x2="17" y2="17"/></svg>
             </button>
           </div>
           <div class="rp-accordion__layer-items">
-            <div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:#d73027"></span><span>Geb\u00e4ude</span></div>
+            <div class="rp-accordion__layer-item"><span class="rp-accordion__swatch" style="background:#d73027"></span><span>Gebäude</span></div>
           </div>
         </div>
       </div>
@@ -1386,12 +1386,13 @@ function occInitMap() {
   `;
   accordionWrap.appendChild(accordion);
 
-  // Accordion toggle button (collapse/expand the panel)
+  // Accordion toggle button (collapse/expand the panel) — collapsed by default
+  accordion.classList.add('rp-accordion--collapsed');
   const accordionToggle = document.createElement('button');
-  accordionToggle.className = 'rp-accordion__panel-toggle';
+  accordionToggle.className = 'rp-accordion__panel-toggle rp-accordion__panel-toggle--collapsed';
   accordionToggle.type = 'button';
-  accordionToggle.title = 'Menu ausblenden';
-  accordionToggle.innerHTML = '<svg viewBox="0 0 12 12" width="12" height="12"><polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Menu ausblenden</span>';
+  accordionToggle.title = 'Menu einblenden';
+  accordionToggle.innerHTML = '<svg viewBox="0 0 12 12" width="12" height="12"><polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Menu einblenden</span>';
   accordionWrap.appendChild(accordionToggle);
   container.appendChild(accordionWrap);
 
@@ -1426,8 +1427,8 @@ function occInitMap() {
         <span class="rp-measure-display__value" id="rpMeasureTotalDistance">0 m</span>
       </div>
       <div class="rp-measure-display__row" id="rpMeasureAreaRow" style="display:none">
-        <span class="rp-measure-display__label">Fl\u00e4che:</span>
-        <span class="rp-measure-display__value" id="rpMeasureTotalArea">0 m\u00b2</span>
+        <span class="rp-measure-display__label">Fläche:</span>
+        <span class="rp-measure-display__value" id="rpMeasureTotalArea">0 m²</span>
       </div>
     </div>`;
   container.appendChild(_measureDisplay);
@@ -1472,7 +1473,7 @@ function occInitMap() {
     ctxMenu.querySelector('#rpCtxCoords').classList.remove('copied');
 
     const measureText = ctxMenu.querySelector('#rpCtxMeasureText');
-    measureText.textContent = _measureState.active ? 'Messung l\u00f6schen' : 'Distanz messen';
+    measureText.textContent = _measureState.active ? 'Messung löschen' : 'Distanz messen';
 
     const mapRect = container.getBoundingClientRect();
     const menuW = 200, menuH = 160;
@@ -1650,7 +1651,7 @@ function occInitMap() {
     const printDims = getPrintDimensions(orientation);
     const btn = accordion.querySelector('#rpPrintBtn');
     const originalText = btn.textContent;
-    btn.textContent = 'Wird erstellt\u2026';
+    btn.textContent = 'Wird erstellt…';
     btn.disabled = true;
 
     // Create off-screen print container
@@ -1687,7 +1688,7 @@ function occInitMap() {
       // North arrow
       const northArrow = document.createElement('div');
       northArrow.style.cssText = 'position:absolute;top:5mm;right:5mm;background:rgba(255,255,255,0.9);padding:2mm;border-radius:2px;text-align:center;';
-      northArrow.innerHTML = '<div style="font-size:16pt;">\u2191</div><div style="font-size:8pt;">N</div>';
+      northArrow.innerHTML = '<div style="font-size:16pt;">↑</div><div style="font-size:8pt;">N</div>';
       mapContainer.appendChild(northArrow);
     }
     printContainer.appendChild(mapContainer);
@@ -1695,7 +1696,7 @@ function occInitMap() {
     // Footer
     const footer = document.createElement('div');
     footer.style.cssText = 'margin-top:3mm;padding-top:3mm;border-top:1px solid #ccc;font-size:8pt;color:#666;display:flex;justify-content:space-between;';
-    footer.innerHTML = `<span>Quelle: Belegungsplanung</span><span>\u00a9 ${new Date().getFullYear()} BBL</span>`;
+    footer.innerHTML = `<span>Quelle: Belegungsplanung</span><span>© ${new Date().getFullYear()} BBL</span>`;
     printContainer.appendChild(footer);
 
     document.body.appendChild(printContainer);
@@ -1766,7 +1767,7 @@ function occInitMap() {
   function getStyleSwatch(styleId, w, h) {
     const s = MAP_STYLES[styleId];
     const color = s ? s.swatch : '#e8e8e8';
-    return `<span class="rp-style-swatch" style="width:${w}px;height:${h}px;background:${color};display:block;border-radius:3px;"></span>`;
+    return `<span class="rp-style-swatch" style="width:${w}px;height:${h}px;background:${color};display:block;border-radius:var(--radius);"></span>`;
   }
 
   const styleSwitcher = document.createElement('div');
@@ -1892,17 +1893,17 @@ function occInitMap() {
       </div>
       <div class="rp-edit-toolbar__divider"></div>
       <div class="rp-edit-toolbar__group">
-        <button class="rp-edit-tool" data-tool="furniture" type="button" title="M\u00f6bel platzieren">
+        <button class="rp-edit-tool" data-tool="furniture" type="button" title="Möbel platzieren">
           <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="12" height="6" rx="1"/><path d="M6 8V6a4 4 0 018 0v2"/><path d="M4 14v2M16 14v2"/></svg>
-          <span class="rp-edit-tool__label">M\u00f6bel</span>
+          <span class="rp-edit-tool__label">Möbel</span>
         </button>
         <button class="rp-edit-tool" data-tool="import" type="button" title="Grundriss importieren">
           <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H5a1 1 0 00-1 1v14a1 1 0 001 1h10a1 1 0 001-1V6l-4-4z"/><path d="M12 2v4h4"/><path d="M10 10v4M8 12h4"/></svg>
           <span class="rp-edit-tool__label">Importieren</span>
         </button>
-        <button class="rp-edit-tool" data-tool="delete" type="button" title="L\u00f6schen">
+        <button class="rp-edit-tool" data-tool="delete" type="button" title="Löschen">
           <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h14M7 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><path d="M5 6v10a2 2 0 002 2h6a2 2 0 002-2V6"/><line x1="9" y1="9" x2="9" y2="15"/><line x1="11" y1="9" x2="11" y2="15"/></svg>
-          <span class="rp-edit-tool__label">L\u00f6schen</span>
+          <span class="rp-edit-tool__label">Löschen</span>
         </button>
       </div>
     </div>`;
@@ -2196,7 +2197,7 @@ function occInitMap() {
       const lngLat = centroid || e.lngLat;
       const address = JSON.parse(p.address || '{}');
       const addressStr = address.street ? `${address.street}, ${address.postalCode} ${address.city}` : '';
-      const areaStr = p.areaGross ? Number(p.areaGross).toLocaleString('de-CH') + ' m\u00b2' : '';
+      const areaStr = p.areaGross ? Number(p.areaGross).toLocaleString('de-CH') + ' m²' : '';
 
       // Hide hover popup
       hoverPopup.remove();
@@ -2211,7 +2212,7 @@ function occInitMap() {
             ${p.category ? `<div class="rp-map-popup__row">${p.category}</div>` : ''}
             ${areaStr ? `<div class="rp-map-popup__row">${areaStr}</div>` : ''}
             ${p.status ? `<div class="rp-map-popup__row">${p.status}</div>` : ''}
-            <a class="rp-map-popup__link" href="javascript:void(0)" onclick="occSelectBuilding('${buildingId}')">Details anzeigen \u2192</a>
+            <a class="rp-map-popup__link" href="javascript:void(0)" onclick="occSelectBuilding('${buildingId}')">Details anzeigen →</a>
           </div>
         `)
         .addTo(_occMap);
@@ -2265,8 +2266,8 @@ function occInitMap() {
           <div class="rp-map-popup">
             <strong class="rp-map-popup__title">${p.nr}</strong>
             <div class="rp-map-popup__row">${p.type}</div>
-            <div class="rp-map-popup__row">${p.area} m\u00b2</div>
-            ${p.workspaces ? `<div class="rp-map-popup__row">${p.workspaces} Arbeitspl\u00e4tze</div>` : ''}
+            <div class="rp-map-popup__row">${p.area} m²</div>
+            ${p.workspaces ? `<div class="rp-map-popup__row">${p.workspaces} Arbeitsplätze</div>` : ''}
           </div>
         `)
         .addTo(_occMap);
@@ -2282,8 +2283,8 @@ function occInitMap() {
       const f = e.features[0];
       const p = f.properties;
       hoverPopup.remove();
-      const condLabel = p.condition || '\u2013';
-      const statusLabel = p.status || '\u2013';
+      const condLabel = p.condition || '–';
+      const statusLabel = p.status || '–';
       const costStr = p.acquisitionCost ? Number(p.acquisitionCost).toLocaleString('de-CH') + ' CHF' : '';
       clickPopup
         .setLngLat(e.lngLat)

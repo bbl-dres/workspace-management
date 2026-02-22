@@ -78,7 +78,7 @@ function buildLocationTree() {
       id: f.floorId,
       label: f.name,
       type: 'floor',
-      flaeche: f.areaGross ? f.areaGross.toLocaleString('de-CH') + ' m\u00b2' : '',
+      flaeche: f.areaGross ? f.areaGross.toLocaleString('de-CH') + ' m²' : '',
       plaetze: f.workspaceCount || 0,
       raeume: f.roomCount || 0,
       rooms: f.rooms || []
@@ -109,7 +109,7 @@ function buildLocationTree() {
       baujahr: b.yearBuilt,
       status: b.status,
       kategorie: b.category,
-      flaeche: b.areaGross ? b.areaGross.toLocaleString('de-CH') + ' m\u00b2' : '',
+      flaeche: b.areaGross ? b.areaGross.toLocaleString('de-CH') + ' m²' : '',
       children: floorsByBuilding[b.buildingId] || []
     });
   }
@@ -676,7 +676,7 @@ document.addEventListener('keydown', (e) => {
       opt.classList.add('language-switcher__option--active');
       opt.setAttribute('aria-selected', 'true');
 
-      const langMap = { 'Deutsch': 'DE', 'Fran\u00e7ais': 'FR', 'Italiano': 'IT', 'Rumantsch': 'RM' };
+      const langMap = { 'Deutsch': 'DE', 'Français': 'FR', 'Italiano': 'IT', 'Rumantsch': 'RM' };
       toggle.firstChild.textContent = langMap[opt.textContent] || opt.textContent.substring(0, 2).toUpperCase();
 
       wrapper.classList.remove('language-switcher--open');
