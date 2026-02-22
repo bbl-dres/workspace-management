@@ -1,32 +1,90 @@
 [
   {
-    "title": "Fokus-Arbeitsplatz",
-    "description": "Konzentriertes Arbeiten mit optimaler Akustik und erg\u00e4nzenden Elementen f\u00fcr ungest\u00f6rte Einzelarbeit. Schallabsorbierende Paneele, Sichtschutz und dimmbare Beleuchtung schaffen eine produktive Umgebung.",
-    "photo": "photo-1497366216548-37526070297c"
+    "module": "1",
+    "title": "Modul 1 \u2013 Einzel Arbeitsplatz",
+    "description": "Der Einzel Arbeitsplatz gestaltet sich als Schreibtischarbeitsplatz mit Drehstuhl. Als Teil einer Gruppe von h\u00f6chstens vier Schreibtischen befindet er sich im offenen Raum. H\u00f6henverstellbare Tische, Akustik-Tischaufs\u00e4tze und Sichtschutzpaneele schaffen eine produktive Umgebung. Alle Arbeitspl\u00e4tze sind allen Mitarbeitenden zug\u00e4nglich \u2013 es gibt keine zugewiesenen Pl\u00e4tze.",
+    "photo": "photo-1593642632559-0c6d3fc62b89",
+    "areaPerWorkspace": "3.0 m\u00b2",
+    "elements": ["Arbeitstisch liftmatisch h\u00f6henverstellbar", "Akustik-Tischaufsatz", "Drehstuhl", "IT-Ausstattung"]
   },
   {
-    "title": "Kollaborationszone",
-    "description": "Offene, flexibel m\u00f6blierte Bereiche f\u00fcr spontane Teamarbeit und geplante Workshops. Mobile Trennw\u00e4nde, Whiteboards und Stehtische f\u00f6rdern den kreativen Austausch.",
-    "photo": "photo-1497215842964-222b430dc094"
+    "module": "2",
+    "title": "Modul 2 \u2013 Team Arbeitsplatz",
+    "description": "Der Team Arbeitsplatz bietet Platz f\u00fcr 6 oder 8 Mitarbeiter, die in einem Team eine bestimmte Aufgabe bearbeiten. Ein elektrifizierter Gruppentisch erm\u00f6glicht die einfache und umgehende Nutzung. Der Team Arbeitsplatz befindet sich auf offener Fl\u00e4che, ist jedoch r\u00e4umlich von anderen Arbeitsbereichen separiert. Mobiler AV Screen, Whiteboard und Zubeh\u00f6r werden jeder Gruppe zugewiesen.",
+    "photo": "photo-1497215842964-222b430dc094",
+    "areaPerWorkspace": "25\u201335 m\u00b2",
+    "elements": ["Benchtisch 6er/8er", "Drehstuhl", "IT-Ausstattung", "Mobiles Whiteboard/Pinboard", "Trolley", "Mobiler AV Screen"]
   },
   {
-    "title": "Lounge & Empfang",
-    "description": "Repr\u00e4sentative R\u00e4ume mit Wohncharakter f\u00fcr Empfangs- und Wartebereiche. Hochwertige Polsterm\u00f6bel, Beistelltische und Pflanzen vermitteln eine einladende Atmosph\u00e4re.",
-    "photo": "photo-1524758631624-e2822e304c36"
+    "module": "3",
+    "title": "Modul 3 \u2013 Fokus Arbeitsplatz",
+    "description": "Der Fokus Arbeitsplatz befindet sich in einer ruhigen Umgebung \u2013 in der N\u00e4he ist kein lautes Sprechen und Telefonieren erlaubt. Mehrere Fokus Arbeitspl\u00e4tze k\u00f6nnen locker gruppiert werden, sind aber r\u00e4umlich von anderen Arbeitsbereichen zu separieren. Akustik-Trennw\u00e4nde und Einzelkojen sch\u00fctzen vor umliegenden Einfl\u00fcssen. Pflanzen und biophile Elemente werten das ruhige Arbeitsumfeld auf.",
+    "photo": "photo-1497366216548-37526070297c",
+    "areaPerWorkspace": "3.0 m\u00b2",
+    "elements": ["Arbeitstisch h\u00f6henverstellbar", "Akustik-Trennwand/Umbauung", "Drehstuhl", "Einzelkoje (optional)"]
   },
   {
-    "title": "Konferenz & Meeting",
-    "description": "Professionell ausgestattete Besprechungsr\u00e4ume f\u00fcr formelle Sitzungen. Medientechnik, ergonomische St\u00fchle und modulare Tischsysteme f\u00fcr verschiedene Gruppengr\u00f6ssen.",
-    "photo": "photo-1462826303086-329426d1aef5"
+    "module": "4",
+    "title": "Modul 4 \u2013 Formelle Sitzungen",
+    "description": "Formelle Sitzungen finden in geschlossenen R\u00e4umen statt. Diese sind f\u00fcr 4, 6 oder 8 Personen mit formellen Sitzungsm\u00f6beln ausgestattet, welche in ihrer Formensprache seri\u00f6s anmuten und auch \u00fcber eine l\u00e4ngere Sitzungsdauer als bequem empfunden werden. Teil dieses Moduls sind auch Besprechungsboxen f\u00fcr 2 oder 4 Personen als autarke Raum-in-Raum-L\u00f6sungen.",
+    "photo": "photo-1462826303086-329426d1aef5",
+    "areaPerWorkspace": "19\u201325 m\u00b2",
+    "elements": ["Sitzungstisch", "Konferenzstuhl", "Whiteboard magnetisch", "Besprechungsbox 2er/4er (optional)", "Caddy", "AV-Ausstattung"]
   },
   {
-    "title": "Flex-Desk",
-    "description": "Shared-Desk-Arbeitspl\u00e4tze mit pers\u00f6nlichen Schliessfachsystemen. Standardisierte Ausstattung f\u00fcr schnellen Wechsel, optimiert f\u00fcr Desk-Sharing und hybride Arbeitsmodelle.",
-    "photo": "photo-1593642632559-0c6d3fc62b89"
+    "module": "5",
+    "title": "Modul 5 \u2013 Telefon- & Videokonferenzbox",
+    "description": "Dieses Modul umfasst Raum-in-Raum-L\u00f6sungen f\u00fcr jeweils eine Person. Die gleichm\u00e4ssig verteilte Positionierung der Telefonboxen erlaubt sowohl dem Anrufer R\u00fcckzug f\u00fcr ein Telefonat als auch den Kollegen ungest\u00f6rtes Arbeiten. Video-Konferenzboxen erm\u00f6glichen zudem vertrauliche virtuelle Meetings mit integrierter Technik.",
+    "photo": "photo-1568992687947-868a62a9f521",
+    "areaPerWorkspace": "2.5\u20134.0 m\u00b2",
+    "elements": ["Telefonbox 1 Person", "Videokonferenzbox 1 Person", "Akustikausstattung", "Beleuchtung", "Bel\u00fcftung"]
   },
   {
-    "title": "Bibliothek & Archiv",
-    "description": "Ruhezonen mit Regalsystemen und Lesepl\u00e4tzen. Akustisch ged\u00e4mmte R\u00e4ume f\u00fcr konzentriertes Lesen und Recherche, kombiniert mit systematischen Ablagem\u00f6glichkeiten.",
-    "photo": "photo-1507842217343-583bb7270b66"
+    "module": "6",
+    "title": "Modul 6 \u2013 Informelle Sitzungen",
+    "description": "Informelle Sitzungen dienen der einfachen, aktiven Kommunikation mit schnellem Austausch, der nicht am Arbeitsplatz stattfinden soll. R\u00e4umlich immer etwas separiert von den Arbeitstischen, wird kleinen Gruppen von 4, 6 oder 8 Personen erm\u00f6glicht, sich unkompliziert zusammenzufinden, ohne lange Wege oder ein Sitzungszimmer buchen zu m\u00fcssen.",
+    "photo": "photo-1524758631624-e2822e304c36",
+    "areaPerWorkspace": "8\u201316 m\u00b2",
+    "elements": ["Stehtisch/Bistrotisch", "Hocker/Barhocker", "Loungem\u00f6bel", "Beistelltisch", "Akustikpaneel (optional)"]
+  },
+  {
+    "module": "7",
+    "title": "Modul 7 \u2013 Coffee Point",
+    "description": "Der Coffee Point befindet sich nach M\u00f6glichkeit im Zentrum der B\u00fcrofl\u00e4che, in direkter N\u00e4he zum Eingang. Haupts\u00e4chlich zur Nutzung w\u00e4hrend der Pausen und zur Erholung gestaltet, kann er auch als Ort f\u00fcr Austausch im kleinen Kreis genutzt werden. Eine Vielfalt von Sitz- und R\u00fcckzugsm\u00f6glichkeiten und eine lockere Formensprache schaffen Behaglichkeit.",
+    "photo": "photo-1555041469-a586c61ea9bc",
+    "areaPerWorkspace": "variabel",
+    "elements": ["Esstisch/Stehtisch", "St\u00fchle/Hocker", "Loungem\u00f6bel", "Kaffeemaschine/K\u00fcchenzeile", "Akustikpaneel", "Garderobe"]
+  },
+  {
+    "module": "8",
+    "title": "Modul 8 \u2013 Interaktive Sitzungen",
+    "description": "Interaktive Sitzungen finden in grossen geschlossenen R\u00e4umen statt. Sitzungszimmer dieses Typs sind flexibel m\u00f6bliert und k\u00f6nnen entsprechend der Veranstaltung ohne grossen Aufwand eingerichtet werden. Neben Whiteboard, mobilem AV Screen und Trolley sind die R\u00e4ume mit multimedialer Anlage ausgestattet, die sich dem flexiblen Charakter anpasst.",
+    "photo": "photo-1517502884422-41eaead166d4",
+    "areaPerWorkspace": "40\u201360 m\u00b2",
+    "elements": ["Klapptisch/Seminartisch", "Stapelstuhl", "Whiteboard/Pinboard", "Mobiler AV Screen", "Kreativraum-M\u00f6bel", "Trolley"]
+  },
+  {
+    "module": "9",
+    "title": "Modul 9 \u2013 Team Ablage",
+    "description": "Die Team Ablage bietet L\u00f6sungen zur Ablage f\u00fcr verschiedene Szenarien. Ordner k\u00f6nnen in offenen Ablagen verstaut werden, dekorative Elemente finden Platz in sowohl offenen als auch geschlossenen Elementen. Zur Archivierung oder Aufbewahrung anderer Utensilien bietet sich eine geschlossene Ablage an. Elemente dienen auch als Abgrenzung zwischen Arbeitsbereichen.",
+    "photo": "photo-1595428774223-ef52624120d2",
+    "areaPerWorkspace": "variabel",
+    "elements": ["Offenes Regal", "Geschlossener Schrank", "Sideboard", "Kombielement offen/geschlossen"]
+  },
+  {
+    "module": "10",
+    "title": "Modul 10 \u2013 Locker & Garderoben",
+    "description": "Nahe des Coffee Points und des Eingangs befinden sich Locker. Hier hat jeder Mitarbeiter eine pers\u00f6nliche, abschliessbare Ablage, welche die Organisation des Arbeitsablaufs unterst\u00fctzt. Da es keine zugewiesenen Schreibtische gibt, werden alle pers\u00f6nlichen Gegenst\u00e4nde im jeweiligen Locker aufbewahrt. Garderoben befinden sich als Schreinerarbeit in der N\u00e4he des Eingangs.",
+    "photo": "photo-1558618666-fcd25c85f82e",
+    "areaPerWorkspace": "variabel",
+    "elements": ["Schliessfach/Locker", "Garderobe (Schreinerarbeit)", "Sitzbank (optional)"]
+  },
+  {
+    "module": "11",
+    "title": "Modul 11 \u2013 Service Funktionen",
+    "description": "Damit Abfall so effektiv wie m\u00f6glich getrennt und zur Wiederverwertung in den Stoffkreislauf zur\u00fcckgef\u00fchrt werden kann, werden den Mitarbeitenden gen\u00fcgend Sammelstellen an den Arbeitspl\u00e4tzen und in den Entsorgungsstellen auf den Etagen zur Verf\u00fcgung gestellt. Je einfacher der Trennvorgang, desto unproblematischer die korrekte Abfalltrennung.",
+    "photo": "photo-1497215842964-222b430dc094",
+    "areaPerWorkspace": "variabel",
+    "elements": ["Abfalltrennsystem", "Recycling-Station", "Sammelstelle"]
   }
 ]

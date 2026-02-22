@@ -1856,11 +1856,11 @@ function occInitMap() {
   _editMode = false;
   _activeEditTool = null;
 
-  // Edit toggle button (top-center, shown in normal mode)
+  // Floorplan editor link (top-center, shown in normal mode)
   const editToggle = document.createElement('button');
   editToggle.className = 'rp-edit-toggle';
   editToggle.type = 'button';
-  editToggle.innerHTML = '<svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 3.5l5 5L7 18H2v-5L11.5 3.5z"/><path d="M10 5l5 5"/></svg><span>Inhalt Bearbeiten</span>';
+  editToggle.innerHTML = '<svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="2"/><path d="M2 8h16M8 2v16"/><path d="M11 11h4v4h-4z" fill="currentColor" opacity="0.15"/></svg><span>Grundriss Details</span>';
   container.appendChild(editToggle);
 
   // Edit banner (top-center, shown in edit mode)
@@ -1934,7 +1934,32 @@ function occInitMap() {
     clearFurniture();
   }
 
-  editToggle.addEventListener('click', openEditMode);
+  editToggle.addEventListener('click', () => {
+    const selId = state.occSelectedId;
+    if (!selId) return;
+    const found = occFindNode(selId);
+    if (!found) return;
+
+    let buildingId, floorId;
+    if (found.node.type === 'floor') {
+      floorId = selId;
+      const parentBuilding = found.path.find(n => n.type === 'building');
+      buildingId = parentBuilding ? parentBuilding.id : null;
+    } else if (found.node.type === 'building') {
+      buildingId = selId;
+      const floors = found.node.children || [];
+      floorId = floors.length > 0 ? floors[0].id : null;
+    }
+
+    if (buildingId && floorId) {
+      window.location.href = 'floorplan-editor/index.html#/' + buildingId + '/' + floorId;
+    }
+  });
+
+  // Only show the editor link when a building or floor is selected
+  const selNode = state.occSelectedId ? occFindNode(state.occSelectedId) : null;
+  editToggle.style.display = (selNode && (selNode.node.type === 'building' || selNode.node.type === 'floor')) ? '' : 'none';
+
   editBanner.querySelector('.rp-edit-banner__btn--cancel').addEventListener('click', closeEditMode);
   editBanner.querySelector('.rp-edit-banner__btn--save').addEventListener('click', () => {
     // TODO: persist edits

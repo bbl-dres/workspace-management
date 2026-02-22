@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grundriss Editor – Prototyp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/tokens.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ── HEADER BAR ──────────────────────────────────────────────────────── -->
+    <header class="fp-header">
+        <div class="fp-header__left">
+            <a id="backLink" href="../index.html" class="fp-header__back" title="Zurück zur Belegungsplanung">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <select id="buildingSelect" class="fp-header__select"></select>
+            <select id="floorSelect" class="fp-header__select"></select>
+        </div>
+        <div class="fp-header__center">
+            <span id="floorLabel" class="fp-header__label"></span>
+        </div>
+        <div class="fp-header__right">
+            <button class="fp-btn fp-btn--outline" id="btnEditor">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right:4px">
+                    <path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Open in Editor
+            </button>
+            <button class="fp-btn fp-btn--primary" id="btnPublish" style="display:none">
+                Publish
+            </button>
+            <button class="fp-btn fp-btn--outline" id="btnExitEditor" style="display:none">
+                Exit Editor
+            </button>
+            <button class="fp-btn fp-btn--icon" id="btnMore" title="More options">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="3" r="1.2" fill="currentColor"/>
+                    <circle cx="8" cy="8" r="1.2" fill="currentColor"/>
+                    <circle cx="8" cy="13" r="1.2" fill="currentColor"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- ── MAIN 3-PANEL LAYOUT ─────────────────────────────────────────────── -->
+    <main class="fp-main">
+
+        <!-- LEFT PANEL: Resources -->
+        <aside class="fp-panel fp-panel--left" id="leftPanel">
+            <div class="fp-panel__header">
+                <h2 class="fp-panel__title">Resources</h2>
+            </div>
+            <div class="fp-panel__search">
+                <div class="fp-search-wrap">
+                    <svg class="fp-search__icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/>
+                        <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                    <input type="search" id="resourceSearch" placeholder="Quick search" class="fp-search">
+                </div>
+                <button class="fp-color-btn" id="colorByBtn" title="Color by">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="5" cy="5" r="3.2" fill="#93C5FD" stroke="#3B82F6" stroke-width="0.7"/>
+                        <circle cx="11" cy="5" r="3.2" fill="#FCD34D" stroke="#F59E0B" stroke-width="0.7"/>
+                        <circle cx="8" cy="11" r="3.2" fill="#86EFAC" stroke="#22C55E" stroke-width="0.7"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Color-by Popover -->
+            <div class="fp-color-popover" id="colorPopover" hidden>
+                <div class="fp-color-popover__title">Color by</div>
+                <div class="fp-color-popover__options" id="colorOptions"></div>
+                <div class="fp-color-popover__legend" id="colorLegend"></div>
+            </div>
+            <div id="resourceList" class="fp-resource-list"></div>
+        </aside>
+
+        <!-- CENTER: Canvas + Toolbar -->
+        <section class="fp-canvas-section">
+
+            <!-- Floating Toolbar -->
+            <div class="fp-toolbar" id="toolbar">
+                <button data-tool="select" class="fp-toolbar__btn active" title="Select (V)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 2l9.5 5.5-4.2.7-.7 4.2L3 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button data-tool="pan" class="fp-toolbar__btn" title="Pan (H)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 1.5v7.5M8.5 3v7M11 4.5v5.5M3.5 5v5.5a3.5 3.5 0 003.5 3.5h2.5a3.5 3.5 0 003.5-3.5V4.5M3.5 5c0-1 .5-2 1.5-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="fp-toolbar__sep"></div>
+                <button data-tool="measure" class="fp-toolbar__btn" title="Measure (M)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 13L13 3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M5.5 10.5l-1 1M7.5 8.5l-1 1M9.5 6.5l-1.5 1.5M11.5 4.5l-1 1" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div class="fp-toolbar__sep"></div>
+                <button id="zoomIn" class="fp-toolbar__btn" title="Zoom In (+)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/>
+                        <path d="M7 5v4M5 7h4M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button id="zoomOut" class="fp-toolbar__btn" title="Zoom Out (-)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/>
+                        <path d="M5 7h4M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button id="fitView" class="fp-toolbar__btn" title="Fit View (F)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="fp-canvas-wrap" id="canvasWrap">
+                <canvas id="floorplan"></canvas>
+            </div>
+
+            <!-- Measurement Overlay -->
+            <div class="fp-measure-overlay" id="measureOverlay" hidden>
+                <span class="fp-measure-label" id="measureLabel"></span>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="fp-bottombar">
+                <div class="fp-view-toggle">
+                    <button class="fp-view-toggle__btn active" data-view="2d">2D</button>
+                    <button class="fp-view-toggle__btn" data-view="3d">3D</button>
+                </div>
+                <div class="fp-scale-bar" id="scaleBar">
+                    <div class="fp-scale-bar__line" id="scaleBarLine"></div>
+                    <span class="fp-scale-bar__label" id="scaleBarLabel">5 m</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: Properties -->
+        <aside class="fp-panel fp-panel--right" id="rightPanel">
+            <div id="propertiesContent" class="fp-panel__body"></div>
+        </aside>
+
+    </main>
+
+    <!-- ── SCRIPTS ─────────────────────────────────────────────────────────── -->
+    <script src="js/renderer.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

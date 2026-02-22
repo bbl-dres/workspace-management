@@ -85,7 +85,7 @@ function renderPlanning() {
     </div>
 
     <section class="section section--bg-alt">
-      <h2 class="section__title">Stilwelten</h2>
+      <h2 class="section__title">Multispace Module</h2>
       <div class="tile-grid">
         ${STILWELTEN.slice(0, 3).map(s => `
         <div class="card card--clickable" onclick="navigateTo('style-worlds')" role="button" tabindex="0">
@@ -101,7 +101,7 @@ function renderPlanning() {
         `).join('')}
       </div>
       <div class="section-link">
-        <a href="#/style-worlds" class="section-link__a" onclick="navigateTo('style-worlds');return false">Alle Stilwelten anzeigen &rarr;</a>
+        <a href="#/style-worlds" class="section-link__a" onclick="navigateTo('style-worlds');return false">Alle Module anzeigen &rarr;</a>
       </div>
     </section>
   `;
@@ -113,8 +113,8 @@ function renderStyleWorlds() {
     ${renderBreadcrumb(['Arbeitspl\u00e4tze gestalten', "navigateTo('planning')"], ['Stilwelten'])}
     <div class="container container--with-top-pad" id="mainContent">
       <div class="page-hero">
-        <h1 class="page-hero__title">Stilwelten</h1>
-        <p class="page-hero__subtitle">Vordefinierte Einrichtungskonzepte und B\u00fcro-Stile als Planungsgrundlage. Von konzentriertem Einzelarbeiten bis zur offenen Kollaborationszone.</p>
+        <h1 class="page-hero__title">Multispace Module</h1>
+        <p class="page-hero__subtitle">Standardisierte Raumausstattungsmodule gem\u00e4ss Handbuch Multispace des Bundesamts f\u00fcr Bauten und Logistik (BBL). 11 Module f\u00fcr die modulare Einrichtung von B\u00fcrofl\u00e4chen der Bundesverwaltung.</p>
       </div>
 
       <div class="tile-grid">
