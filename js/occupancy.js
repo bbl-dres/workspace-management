@@ -1957,10 +1957,10 @@ function occInitMap() {
     }
   });
 
-  // Show the editor link whenever a floor is selected
+  // Show the editor link whenever a floor or building is selected
   const selNode = state.occSelectedId ? occFindNode(state.occSelectedId) : null;
   const selType = selNode ? selNode.node.type : null;
-  editToggle.style.display = (selType === 'floor') ? '' : 'none';
+  editToggle.style.display = (selType === 'floor' || selType === 'building') ? '' : 'none';
 
   editBanner.querySelector('.rp-edit-banner__btn--cancel').addEventListener('click', closeEditMode);
   editBanner.querySelector('.rp-edit-banner__btn--save').addEventListener('click', () => {
@@ -2464,6 +2464,12 @@ function occUpdateView() {
     if (state.occTab === 'map' && liveMapContainer && _occMap && _occMap.getContainer() === liveMapContainer) {
       // Map is already live in this container — just pan/zoom, don't touch the DOM
       occUpdateMap();
+      // Update edit toggle visibility for the new selection
+      const editToggle = liveMapContainer.querySelector('.rp-edit-toggle');
+      if (editToggle) {
+        const selType = selected ? selected.node.type : null;
+        editToggle.style.display = (selType === 'floor' || selType === 'building') ? '' : 'none';
+      }
     } else {
       contentBody.innerHTML = occRenderContent(selected);
       const mapContainer = document.getElementById('rp-mapbox');
