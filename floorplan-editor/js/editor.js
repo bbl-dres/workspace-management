@@ -451,6 +451,9 @@ class FloorPlanEditor {
         // Don't capture if user is typing in an input
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
+        // Don't capture when in 3D/walk view mode (avoids conflicts with walk WASD)
+        if (typeof state !== 'undefined' && state.viewMode && state.viewMode !== '2d') return;
+
         switch (e.key) {
             case 'Escape':
                 // Clear measure first if active

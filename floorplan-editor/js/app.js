@@ -22,10 +22,12 @@ const state = {
 
     editMode: false,
     libraryCategory: 'all',  // Active category filter in library
+    viewMode: '2d',          // '2d' | '3d' | 'walk'
 };
 
 let renderer = null;
 let editor = null;
+let renderer3d = null;
 
 /* ── Utility ───────────────────────────────────────────────────────────── */
 
@@ -144,6 +146,81 @@ async function init() {
         populateFloorSelector();
         loadFloor(state.selectedFloorId);
     });
+
+    // Deferred 3D renderer init (renderer3d.js is an ES module, loads async)
+    (function init3DWhenReady() {
+        if (window.FloorPlan3DRenderer) {
+            renderer3d = new FloorPlan3DRenderer(document.getElementById('canvasWrap'));
+            renderer3d.init();
+            renderer3d.setColorSchemes(renderer.colorSchemes);
+            // Sync initial data
+            if (renderer.rooms.length || renderer.floorOutline) {
+                renderer3d.setData(renderer.rooms, renderer.assets, renderer.floorOutline);
+            }
+        } else {
+            setTimeout(init3DWhenReady, 50);
+        }
+    })();
+}
+
+/* ── View Mode Switching ──────────────────────────────────────────────── */
+
+function switchViewMode(mode) {
+    const prevMode = state.viewMode;
+    if (prevMode === mode) return;
+    state.viewMode = mode;
+
+    const canvas2d = document.getElementById('floorplan');
+    const canvas3d = renderer3d ? renderer3d.rendererGL.domElement : null;
+    const toolbar = document.getElementById('toolbar');
+    const scaleBar = document.getElementById('scaleBar');
+    const walkCrosshair = document.getElementById('walkCrosshair');
+    const walkInstructions = document.getElementById('walkInstructions');
+
+    // Update toggle buttons
+    document.querySelectorAll('.fp-view-toggle__btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === mode);
+    });
+
+    if (mode === '2d') {
+        canvas2d.style.display = 'block';
+        if (canvas3d) canvas3d.style.display = 'none';
+        if (renderer3d) renderer3d.stopAnimationLoop();
+        if (renderer3d && renderer3d.walkControls && renderer3d.walkControls.isLocked) {
+            renderer3d.walkControls.unlock();
+        }
+        renderer.draw();
+        toolbar.style.display = '';
+        scaleBar.style.display = '';
+        walkCrosshair.style.display = 'none';
+        walkInstructions.style.display = 'none';
+    } else {
+        // 3D or Walk
+        if (!renderer3d) return; // not yet loaded
+
+        canvas2d.style.display = 'none';
+        canvas3d.style.display = 'block';
+
+        // Sync color scheme
+        renderer3d.setColorScheme(renderer.activeSchemeId);
+
+        // Set camera mode
+        renderer3d.setMode(mode === 'walk' ? 'walk' : 'orbit');
+        renderer3d.startAnimationLoop();
+
+        // Hide 2D-only UI
+        toolbar.style.display = 'none';
+        scaleBar.style.display = 'none';
+
+        // Walk mode UI
+        if (mode === 'walk') {
+            walkCrosshair.style.display = 'block';
+            walkInstructions.style.display = 'block';
+        } else {
+            walkCrosshair.style.display = 'none';
+            walkInstructions.style.display = 'none';
+        }
+    }
 }
 
 /* ── Building / Floor Selectors ────────────────────────────────────────── */
@@ -177,6 +254,11 @@ function loadFloor(floorId) {
 
     // Feed renderer
     renderer.setData(rooms, assets, floorFeature);
+
+    // Sync 3D renderer
+    if (renderer3d) {
+        renderer3d.setData(rooms, assets, floorFeature);
+    }
 
     // Update UI panels
     renderLeftPanel();
@@ -997,11 +1079,10 @@ function bindUIEvents() {
     document.getElementById('btnEditor').addEventListener('click', () => enterEditMode());
     document.getElementById('btnExitEditor').addEventListener('click', () => exitEditMode());
 
-    // ── View toggle (2D/3D) ──
+    // ── View toggle (2D/3D/Walk) ──
     document.querySelectorAll('.fp-view-toggle__btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.fp-view-toggle__btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            switchViewMode(btn.dataset.view);
         });
     });
 
@@ -1030,6 +1111,7 @@ function bindUIEvents() {
         if (!btn) return;
         const schemeId = btn.dataset.scheme;
         renderer.setColorScheme(schemeId);
+        if (renderer3d) renderer3d.setColorScheme(schemeId);
         document.getElementById('colorByBtn').classList.toggle('active', schemeId !== 'none');
         renderColorPopover();
         const rooms = state.roomsGeo.features.filter(f => f.properties.floorId === state.selectedFloorId);

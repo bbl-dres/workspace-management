@@ -131,11 +131,16 @@
                 <span class="fp-measure-label" id="measureLabel"></span>
             </div>
 
+            <!-- Walk-mode overlays -->
+            <div class="fp-walk-crosshair" id="walkCrosshair"></div>
+            <div class="fp-walk-instructions" id="walkInstructions">Klick zum Starten &middot; WASD bewegen &middot; ESC beenden</div>
+
             <!-- Bottom Bar -->
             <div class="fp-bottombar">
                 <div class="fp-view-toggle">
                     <button class="fp-view-toggle__btn active" data-view="2d">2D</button>
                     <button class="fp-view-toggle__btn" data-view="3d">3D</button>
+                    <button class="fp-view-toggle__btn" data-view="walk">Walk</button>
                 </div>
                 <div class="fp-scale-bar" id="scaleBar">
                     <div class="fp-scale-bar__line" id="scaleBarLine"></div>
@@ -152,8 +157,17 @@
     </main>
 
     <!-- ── SCRIPTS ─────────────────────────────────────────────────────────── -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+    }
+    </script>
     <script src="js/renderer.js"></script>
     <script src="js/editor.js"></script>
+    <script type="module" src="js/renderer3d.js"></script>
     <script src="js/app.js"></script>
 
 </body>
