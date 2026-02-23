@@ -487,6 +487,25 @@ body {
     white-space: nowrap;
 }
 
+/* ── 3D Measure Labels ───────────────────────────────────────────────── */
+.fp-measure-3d-label {
+    position: absolute;
+    z-index: 6;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    background: rgba(37, 99, 235, 0.9);
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.fp-measure-3d-label--area {
+    background: rgba(37, 99, 235, 0.7);
+    font-weight: 600;
+}
+
 /* ── PROPERTIES PANEL ──────────────────────────────────────────────────── */
 .fp-props-section {
     padding: var(--space-md);
@@ -1264,4 +1283,36 @@ body.fp-edit-mode .fp-header {
     white-space: nowrap;
     pointer-events: none;
     display: none;
+}
+
+/* ── FOOTER ───────────────────────────────────────────────────────────── */
+.fp-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-3, 12px);
+    height: 28px;
+    background: var(--color-white, #fff);
+    border-top: 1px solid var(--color-border, #E5E7EB);
+    font-size: 11px;
+    color: var(--color-text-secondary, #6B7280);
+    flex-shrink: 0;
+}
+.fp-footer__left {
+    display: flex;
+    gap: 12px;
+}
+.fp-footer__left a {
+    color: var(--color-text-secondary, #6B7280);
+    text-decoration: none;
+}
+.fp-footer__left a:hover {
+    text-decoration: underline;
+}
+.fp-footer__center {
+    font-weight: 700;
+    color: #DC2626;
+}
+.fp-footer__right {
+    color: var(--color-text-tertiary, #9CA3AF);
 }

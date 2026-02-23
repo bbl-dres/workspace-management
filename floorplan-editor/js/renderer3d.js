@@ -51,9 +51,24 @@ class FloorPlan3DRenderer {
         this.selectedRoom = null;
         this.selectedAsset = null;
 
+        /* ── Tools ────────────────────────────────────────────────────── */
+        this.activeTool = 'select'; // 'select' | 'measure' | 'add'
+
+        /* ── Measure ──────────────────────────────────────────────────── */
+        this.measurePoints = [];       // Array of THREE.Vector3
+        this._measureGroup = null;
+        this._measureRubberLine = null;
+        this._measureLabelEls = [];
+        this._measureClosed = false;
+
+        /* ── Furniture Placement (mockup) ─────────────────────────────── */
+        this._placedMockups = [];      // Array of THREE.Mesh
+        this._ghostMesh = null;
+
         /* ── Raycaster ─────────────────────────────────────────────────── */
         this._raycaster = new THREE.Raycaster();
         this._mouse = new THREE.Vector2();
+        this._mouseDownPos = null;
 
         /* ── Animation ─────────────────────────────────────────────────── */
         this._animationId = null;
@@ -98,6 +113,10 @@ class FloorPlan3DRenderer {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0xECEEF1);
 
+        // Measure overlay group
+        this._measureGroup = new THREE.Group();
+        this.scene.add(this._measureGroup);
+
         // Cameras
         const w = rect.width || 1;
         const h = rect.height || 1;
@@ -122,7 +141,10 @@ class FloorPlan3DRenderer {
     }
 
     destroy() {
-        this._stopAnimationLoop();
+        this.stopAnimationLoop();
+        this._clearMeasure();
+        this.clearMockups();
+        this._removeGhost();
         if (this._resizeObserver) this._resizeObserver.disconnect();
         if (this.orbitControls) this.orbitControls.dispose();
         const canvas = this.rendererGL.domElement;
@@ -260,6 +282,9 @@ class FloorPlan3DRenderer {
         this.roomMeshes = [];
         this.wallMeshes = [];
         this.assetMeshes = [];
+        this._clearMeasure();
+        this.clearMockups();
+        this._removeGhost();
     }
 
     _buildScene() {
@@ -500,15 +525,24 @@ class FloorPlan3DRenderer {
        ================================================================== */
 
     _onMouseClick(event) {
-        // In walk mode, clicks are handled by mousedown/mousemove
         if (this.mode === 'walk') return;
 
+        // Ignore clicks that were actually drags (orbit rotation)
+        if (this._mouseDownPos) {
+            const d = Math.hypot(event.clientX - this._mouseDownPos.x, event.clientY - this._mouseDownPos.y);
+            if (d > 5) return;
+        }
+
+        // Route to active tool handler
+        if (this.activeTool === 'measure') { this._onMeasureClick(event); return; }
+        if (this.activeTool === 'add')     { this._onAddClick(event); return; }
+
+        // ── Select tool ──
         const rect = this.rendererGL.domElement.getBoundingClientRect();
         this._mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         this._mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         this._raycaster.setFromCamera(this._mouse, this.camera);
 
-        // Check assets first (priority), then rooms + walls
         const assetObjs = this.assetMeshes.map(m => m.mesh);
         const roomObjs = this.roomMeshes.map(m => m.mesh);
         const wallObjs = this.wallMeshes.map(m => m.mesh);
@@ -534,8 +568,6 @@ class FloorPlan3DRenderer {
         }
 
         this._applySelectionHighlight();
-
-        // Dispatch event compatible with 2D editor
         window.dispatchEvent(new CustomEvent('fp-selection-change', { detail: hit }));
     }
 
@@ -599,35 +631,325 @@ class FloorPlan3DRenderer {
     }
 
     /* ==================================================================
+       Tool Switching
+       ================================================================== */
+
+    setTool(tool) {
+        this.activeTool = tool;
+        if (tool !== 'measure') this._clearMeasure();
+        if (tool === 'add') this._createGhost();
+        else this._removeGhost();
+        this._updateCursor();
+    }
+
+    _updateCursor() {
+        const canvas = this.rendererGL.domElement;
+        if (this.activeTool === 'measure') canvas.style.cursor = 'crosshair';
+        else if (this.activeTool === 'add') canvas.style.cursor = 'copy';
+        else canvas.style.cursor = '';
+    }
+
+    /* ==================================================================
+       Raycast Helper
+       ================================================================== */
+
+    /** Raycast mouse event against floor + room surfaces; returns world point or null */
+    _raycastFloor(event) {
+        const rect = this.rendererGL.domElement.getBoundingClientRect();
+        this._mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        this._mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        this._raycaster.setFromCamera(this._mouse, this.camera);
+
+        const targets = [];
+        if (this.floorMesh) targets.push(this.floorMesh);
+        for (const { mesh } of this.roomMeshes) targets.push(mesh);
+
+        const hits = this._raycaster.intersectObjects(targets);
+        return hits.length > 0 ? hits[0].point : null;
+    }
+
+    /* ==================================================================
+       Measure Tool
+       ================================================================== */
+
+    _onMeasureClick(event) {
+        const point = this._raycastFloor(event);
+        if (!point) return;
+
+        // If previous measure is closed, start fresh
+        if (this._measureClosed) this._clearMeasure();
+
+        const stored = point.clone();
+        stored.y = 0.01;
+
+        // Close polygon if clicking near first point (3+ points)
+        if (this.measurePoints.length >= 3) {
+            const first = this.measurePoints[0];
+            const projected = first.clone().project(this.camera);
+            const rect = this.rendererGL.domElement.getBoundingClientRect();
+            const sx = (projected.x + 1) / 2 * rect.width;
+            const sy = (-projected.y + 1) / 2 * rect.height;
+            const dist = Math.hypot(event.clientX - rect.left - sx, event.clientY - rect.top - sy);
+            if (dist < 14) {
+                this._measureClosed = true;
+                this._rebuildMeasureVisuals();
+                return;
+            }
+        }
+
+        this.measurePoints.push(stored);
+        this._rebuildMeasureVisuals();
+    }
+
+    _clearMeasure() {
+        this.measurePoints = [];
+        this._measureClosed = false;
+        this._measureRubberLine = null;
+        // Clear 3D visuals
+        while (this._measureGroup && this._measureGroup.children.length > 0) {
+            const child = this._measureGroup.children[0];
+            this._measureGroup.remove(child);
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+        }
+        // Clear labels
+        for (const el of this._measureLabelEls) el.remove();
+        this._measureLabelEls = [];
+    }
+
+    _rebuildMeasureVisuals() {
+        // Clear current visuals
+        this._measureRubberLine = null;
+        while (this._measureGroup.children.length > 0) {
+            const child = this._measureGroup.children[0];
+            this._measureGroup.remove(child);
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+        }
+        for (const el of this._measureLabelEls) el.remove();
+        this._measureLabelEls = [];
+
+        const pts = this.measurePoints;
+        if (pts.length === 0) return;
+
+        // ── Lines between placed points ──
+        const linePts = [...pts];
+        if (this._measureClosed && pts.length >= 3) linePts.push(pts[0]);
+
+        if (linePts.length >= 2) {
+            const geo = new THREE.BufferGeometry().setFromPoints(linePts);
+            const mat = new THREE.LineBasicMaterial({ color: 0x2563EB });
+            this._measureGroup.add(new THREE.Line(geo, mat));
+        }
+
+        // ── Point markers ──
+        const sphereGeo = new THREE.SphereGeometry(0.08, 8, 8);
+        const sphereMat = new THREE.MeshBasicMaterial({ color: 0x2563EB });
+        for (const p of pts) {
+            const sphere = new THREE.Mesh(sphereGeo.clone(), sphereMat.clone());
+            sphere.position.copy(p);
+            this._measureGroup.add(sphere);
+        }
+
+        // ── Rubber-band line (from last point to cursor) ──
+        if (!this._measureClosed && pts.length > 0) {
+            const last = pts[pts.length - 1];
+            const geo = new THREE.BufferGeometry().setFromPoints([last.clone(), last.clone()]);
+            const mat = new THREE.LineBasicMaterial({ color: 0x2563EB, transparent: true, opacity: 0.5 });
+            this._measureRubberLine = new THREE.Line(geo, mat);
+            this._measureGroup.add(this._measureRubberLine);
+        }
+
+        // ── Segment distance labels ──
+        const segments = [];
+        for (let i = 0; i < pts.length - 1; i++) segments.push([pts[i], pts[i + 1]]);
+        if (this._measureClosed && pts.length >= 3) segments.push([pts[pts.length - 1], pts[0]]);
+
+        for (const [a, b] of segments) {
+            const mid = new THREE.Vector3().addVectors(a, b).multiplyScalar(0.5);
+            const dist = a.distanceTo(b);
+            const label = document.createElement('div');
+            label.className = 'fp-measure-3d-label';
+            label.textContent = dist.toFixed(2) + ' m';
+            this.container.appendChild(label);
+            this._measureLabelEls.push(label);
+            label._worldPos = mid;
+        }
+
+        // ── Area label (if closed) ──
+        if (this._measureClosed && pts.length >= 3) {
+            let area = 0;
+            for (let i = 0; i < pts.length; i++) {
+                const j = (i + 1) % pts.length;
+                area += pts[i].x * pts[j].z;
+                area -= pts[j].x * pts[i].z;
+            }
+            area = Math.abs(area) / 2;
+            const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+            const cz = pts.reduce((s, p) => s + p.z, 0) / pts.length;
+            const label = document.createElement('div');
+            label.className = 'fp-measure-3d-label fp-measure-3d-label--area';
+            label.textContent = area.toFixed(1) + ' m\u00B2';
+            this.container.appendChild(label);
+            this._measureLabelEls.push(label);
+            label._worldPos = new THREE.Vector3(cx, 0.01, cz);
+        }
+    }
+
+    _updateMeasureLabels() {
+        if (this._measureLabelEls.length === 0) return;
+        const rect = this.rendererGL.domElement.getBoundingClientRect();
+        for (const label of this._measureLabelEls) {
+            const projected = label._worldPos.clone().project(this.camera);
+            if (projected.z > 1) { label.style.display = 'none'; continue; }
+            label.style.display = '';
+            label.style.left = ((projected.x + 1) / 2 * rect.width) + 'px';
+            label.style.top = ((-projected.y + 1) / 2 * rect.height) + 'px';
+        }
+    }
+
+    /* ==================================================================
+       Furniture Placement (mockup — no data persistence)
+       ================================================================== */
+
+    _onAddClick(event) {
+        const point = this._raycastFloor(event);
+        if (!point) return;
+
+        const w = 0.6, h = 0.75, d = 0.6;
+        const geometry = new THREE.BoxGeometry(w, h, d);
+        const material = new THREE.MeshStandardMaterial({
+            color: 0x93C5FD, roughness: 0.6, metalness: 0.1,
+            transparent: true, opacity: 0.85,
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(point.x, h / 2, point.z);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.scene.add(mesh);
+        this._placedMockups.push(mesh);
+    }
+
+    _createGhost() {
+        if (this._ghostMesh) return;
+        const geometry = new THREE.BoxGeometry(0.6, 0.75, 0.6);
+        const material = new THREE.MeshStandardMaterial({
+            color: 0x3B82F6, transparent: true, opacity: 0.35, roughness: 0.6,
+        });
+        this._ghostMesh = new THREE.Mesh(geometry, material);
+        this._ghostMesh.position.y = 0.375;
+        this._ghostMesh.visible = false;
+        this.scene.add(this._ghostMesh);
+    }
+
+    _removeGhost() {
+        if (!this._ghostMesh) return;
+        this.scene.remove(this._ghostMesh);
+        this._ghostMesh.geometry.dispose();
+        this._ghostMesh.material.dispose();
+        this._ghostMesh = null;
+    }
+
+    clearMockups() {
+        for (const mesh of this._placedMockups) {
+            this.scene.remove(mesh);
+            mesh.geometry.dispose();
+            mesh.material.dispose();
+        }
+        this._placedMockups = [];
+    }
+
+    /* ==================================================================
+       Zoom helpers (for toolbar buttons)
+       ================================================================== */
+
+    zoomIn() {
+        const dir = new THREE.Vector3().subVectors(this.orbitControls.target, this.orbitCamera.position);
+        this.orbitCamera.position.addScaledVector(dir, 0.2);
+        this.orbitControls.update();
+    }
+
+    zoomOut() {
+        const dir = new THREE.Vector3().subVectors(this.orbitControls.target, this.orbitCamera.position);
+        this.orbitCamera.position.addScaledVector(dir, -0.2);
+        this.orbitControls.update();
+    }
+
+    /* ==================================================================
        Walk Mode Controls (hold left mouse to look, WASD to move)
        ================================================================== */
 
     _onMouseDown(e) {
-        if (this.mode !== 'walk' || e.button !== 0) return;
-        this._walkLookActive = true;
-        this._walkLastMouse.x = e.clientX;
-        this._walkLastMouse.y = e.clientY;
-        e.preventDefault();
+        if (e.button !== 0) return;
+        this._mouseDownPos = { x: e.clientX, y: e.clientY };
+
+        if (this.mode === 'walk') {
+            this._walkLookActive = true;
+            this._walkLastMouse.x = e.clientX;
+            this._walkLastMouse.y = e.clientY;
+            e.preventDefault();
+        }
     }
 
     _onMouseMove(e) {
-        if (!this._walkLookActive) return;
-        const dx = e.clientX - this._walkLastMouse.x;
-        const dy = e.clientY - this._walkLastMouse.y;
-        this._walkLastMouse.x = e.clientX;
-        this._walkLastMouse.y = e.clientY;
+        // Walk mode: drag to look
+        if (this._walkLookActive) {
+            const dx = e.clientX - this._walkLastMouse.x;
+            const dy = e.clientY - this._walkLastMouse.y;
+            this._walkLastMouse.x = e.clientX;
+            this._walkLastMouse.y = e.clientY;
 
-        const sensitivity = 0.003;
-        this._walkEuler.yaw -= dx * sensitivity;
-        this._walkEuler.pitch -= dy * sensitivity;
-        this._walkEuler.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this._walkEuler.pitch));
+            const sensitivity = 0.003;
+            this._walkEuler.yaw -= dx * sensitivity;
+            this._walkEuler.pitch -= dy * sensitivity;
+            this._walkEuler.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this._walkEuler.pitch));
 
-        this.walkCamera.rotation.y = this._walkEuler.yaw;
-        this.walkCamera.rotation.x = this._walkEuler.pitch;
+            this.walkCamera.rotation.y = this._walkEuler.yaw;
+            this.walkCamera.rotation.x = this._walkEuler.pitch;
+            return;
+        }
+
+        if (this.mode !== 'orbit') return;
+
+        // Check if mouse is over the 3D canvas
+        const rect = this.rendererGL.domElement.getBoundingClientRect();
+        const isOver = e.clientX >= rect.left && e.clientX <= rect.right &&
+                       e.clientY >= rect.top && e.clientY <= rect.bottom;
+        if (!isOver) {
+            if (this._ghostMesh) this._ghostMesh.visible = false;
+            return;
+        }
+
+        // Measure rubber-band line
+        if (this.activeTool === 'measure' && this.measurePoints.length > 0
+            && !this._measureClosed && this._measureRubberLine) {
+            const point = this._raycastFloor(e);
+            if (point) {
+                const pos = this._measureRubberLine.geometry.attributes.position.array;
+                pos[3] = point.x;
+                pos[4] = 0.01;
+                pos[5] = point.z;
+                this._measureRubberLine.geometry.attributes.position.needsUpdate = true;
+            }
+        }
+
+        // Ghost preview for add tool
+        if (this.activeTool === 'add' && this._ghostMesh) {
+            const point = this._raycastFloor(e);
+            if (point) {
+                this._ghostMesh.position.set(point.x, 0.375, point.z);
+                this._ghostMesh.visible = true;
+            } else {
+                this._ghostMesh.visible = false;
+            }
+        }
     }
 
     _onMouseUp(e) {
-        if (e.button === 0) this._walkLookActive = false;
+        if (e.button === 0) {
+            this._walkLookActive = false;
+            this._mouseDownPos = null;
+        }
     }
 
     _onKeyDown(e) {
@@ -691,6 +1013,7 @@ class FloorPlan3DRenderer {
         }
 
         this.rendererGL.render(this.scene, this.camera);
+        this._updateMeasureLabels();
     }
 
     startAnimationLoop() {

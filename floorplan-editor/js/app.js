@@ -186,14 +186,14 @@ function switchViewMode(mode) {
         canvas2d.style.display = 'block';
         if (canvas3d) canvas3d.style.display = 'none';
         if (renderer3d) renderer3d.stopAnimationLoop();
-        if (renderer3d && renderer3d.walkControls && renderer3d.walkControls.isLocked) {
-            renderer3d.walkControls.unlock();
-        }
         renderer.draw();
         toolbar.style.display = '';
         scaleBar.style.display = '';
         walkCrosshair.style.display = 'none';
         walkInstructions.style.display = 'none';
+        renderToolbar();
+        // Restore left panel visibility in 2D
+        document.getElementById('leftPanel').style.display = '';
     } else {
         // 3D or Walk
         if (!renderer3d) return; // not yet loaded
@@ -208,17 +208,23 @@ function switchViewMode(mode) {
         renderer3d.setMode(mode === 'walk' ? 'walk' : 'orbit');
         renderer3d.startAnimationLoop();
 
-        // Hide 2D-only UI
-        toolbar.style.display = 'none';
         scaleBar.style.display = 'none';
 
-        // Walk mode UI
-        if (mode === 'walk') {
-            walkCrosshair.style.display = 'block';
-            walkInstructions.style.display = 'block';
-        } else {
+        if (mode === '3d') {
+            toolbar.style.display = '';
+            renderToolbar();
             walkCrosshair.style.display = 'none';
             walkInstructions.style.display = 'none';
+            // In edit mode, hide left panel by default in 3D
+            if (state.editMode) {
+                document.getElementById('leftPanel').style.display = 'none';
+            }
+            renderer3d.setTool('select');
+        } else {
+            // Walk mode
+            toolbar.style.display = 'none';
+            walkCrosshair.style.display = 'block';
+            walkInstructions.style.display = 'block';
         }
     }
 }
@@ -295,8 +301,13 @@ function enterEditMode() {
     // Tell editor
     editor.setEditMode(true);
 
-    // Default to select tool
-    editor.setTool('select');
+    if (state.viewMode === '3d') {
+        // In 3D edit mode, hide left panel by default (shown when Hinzufügen clicked)
+        document.getElementById('leftPanel').style.display = 'none';
+        if (renderer3d) renderer3d.setTool('select');
+    } else {
+        editor.setTool('select');
+    }
 }
 
 function exitEditMode() {
@@ -318,11 +329,18 @@ function exitEditMode() {
     // Switch left panel
     renderLeftPanel();
 
+    // Always show left panel in view mode
+    document.getElementById('leftPanel').style.display = '';
+
     // Tell editor
     editor.setEditMode(false);
-
-    // Default to select tool
     editor.setTool('select');
+
+    // Clear 3D edit state
+    if (renderer3d) {
+        renderer3d.clearMockups();
+        renderer3d.setTool('select');
+    }
 
     // Reset properties
     const floorFeature = state.floorsGeo.features.find(f => f.properties.floorId === state.selectedFloorId);
@@ -351,8 +369,55 @@ const ICON = {
 
 function renderToolbar() {
     const toolbar = document.getElementById('toolbar');
+    const is3D = state.viewMode === '3d';
 
-    if (state.editMode) {
+    if (is3D && state.editMode) {
+        // ── 3D Edit mode toolbar ──
+        toolbar.innerHTML = `
+            <button class="fp-toolbar__btn fp-toolbar__btn--label" data-tool="add" title="Element hinzufügen">
+                ${ICON.add} Hinzufügen
+            </button>
+            <button class="fp-toolbar__btn active" data-tool="select" title="Auswählen (V)">
+                ${ICON.cursor}
+            </button>
+            <div class="fp-toolbar__sep"></div>
+            <button data-tool="measure" class="fp-toolbar__btn" title="Messen (M)">
+                ${ICON.measure}
+            </button>
+            <div class="fp-toolbar__sep"></div>
+            <button id="zoomIn" class="fp-toolbar__btn" title="Vergrössern (+)">
+                ${ICON.zoomIn}
+            </button>
+            <button id="zoomOut" class="fp-toolbar__btn" title="Verkleinern (-)">
+                ${ICON.zoomOut}
+            </button>
+            <button id="fitView" class="fp-toolbar__btn" title="Ansicht anpassen (F)">
+                ${ICON.fit}
+            </button>
+        `;
+    } else if (is3D) {
+        // ── 3D View mode toolbar ──
+        toolbar.innerHTML = `
+            <button data-tool="select" class="fp-toolbar__btn active" title="Auswählen (V)">
+                ${ICON.cursor}
+            </button>
+            <div class="fp-toolbar__sep"></div>
+            <button data-tool="measure" class="fp-toolbar__btn" title="Messen (M)">
+                ${ICON.measure}
+            </button>
+            <div class="fp-toolbar__sep"></div>
+            <button id="zoomIn" class="fp-toolbar__btn" title="Vergrössern (+)">
+                ${ICON.zoomIn}
+            </button>
+            <button id="zoomOut" class="fp-toolbar__btn" title="Verkleinern (-)">
+                ${ICON.zoomOut}
+            </button>
+            <button id="fitView" class="fp-toolbar__btn" title="Ansicht anpassen (F)">
+                ${ICON.fit}
+            </button>
+        `;
+    } else if (state.editMode) {
+        // ── 2D Edit mode toolbar ──
         toolbar.innerHTML = `
             <button class="fp-toolbar__btn fp-toolbar__btn--label" data-tool="add" title="Element hinzufügen" disabled>
                 ${ICON.add} Hinzufügen
@@ -391,6 +456,7 @@ function renderToolbar() {
             </button>
         `;
     } else {
+        // ── 2D View mode toolbar ──
         toolbar.innerHTML = `
             <button data-tool="select" class="fp-toolbar__btn active" title="Auswählen (V)">
                 ${ICON.cursor}
@@ -1061,18 +1127,41 @@ function bindUIEvents() {
         if (toolBtn && !toolBtn.disabled) {
             document.querySelectorAll('.fp-toolbar__btn[data-tool]').forEach(b => b.classList.remove('active'));
             toolBtn.classList.add('active');
-            editor.setTool(toolBtn.dataset.tool);
+
+            const tool = toolBtn.dataset.tool;
+
+            if (state.viewMode === '3d' && renderer3d) {
+                renderer3d.setTool(tool);
+                // Toggle left panel for 'add' tool in edit mode
+                if (state.editMode) {
+                    document.getElementById('leftPanel').style.display = (tool === 'add') ? '' : 'none';
+                }
+            } else {
+                editor.setTool(tool);
+            }
             return;
         }
 
         const zoomInBtn = e.target.closest('#zoomIn');
-        if (zoomInBtn) { editor.zoomIn(); return; }
+        if (zoomInBtn) {
+            if (state.viewMode === '3d' && renderer3d) renderer3d.zoomIn();
+            else editor.zoomIn();
+            return;
+        }
 
         const zoomOutBtn = e.target.closest('#zoomOut');
-        if (zoomOutBtn) { editor.zoomOut(); return; }
+        if (zoomOutBtn) {
+            if (state.viewMode === '3d' && renderer3d) renderer3d.zoomOut();
+            else editor.zoomOut();
+            return;
+        }
 
         const fitBtn = e.target.closest('#fitView');
-        if (fitBtn) { renderer.fitView(); return; }
+        if (fitBtn) {
+            if (state.viewMode === '3d' && renderer3d) renderer3d.fitViewOrbit();
+            else renderer.fitView();
+            return;
+        }
     });
 
     // ── Edit mode buttons ──
