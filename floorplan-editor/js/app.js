@@ -1150,6 +1150,10 @@ function bindUIEvents() {
                 renderer.selectedRoom = room;
                 renderer.selectedAsset = null;
                 renderer.zoomToFeature(room);
+                if (renderer3d && state.viewMode !== '2d') {
+                    renderer3d.selectRoom(room);
+                    renderer3d.zoomToFeature(room);
+                }
                 window.dispatchEvent(new CustomEvent('fp-selection-change', {
                     detail: { type: 'room', feature: room }
                 }));
@@ -1166,6 +1170,10 @@ function bindUIEvents() {
                 renderer.selectedAsset = asset;
                 renderer.selectedRoom = null;
                 renderer.zoomToFeature(asset);
+                if (renderer3d && state.viewMode !== '2d') {
+                    renderer3d.selectAsset(asset);
+                    renderer3d.zoomToFeature(asset);
+                }
                 window.dispatchEvent(new CustomEvent('fp-selection-change', {
                     detail: { type: 'asset', feature: asset }
                 }));
@@ -1179,6 +1187,7 @@ function bindUIEvents() {
             renderer.selectedRoom = null;
             renderer.selectedAsset = null;
             renderer.draw();
+            if (renderer3d && state.viewMode !== '2d') renderer3d.clearSelection();
             window.dispatchEvent(new CustomEvent('fp-selection-change', { detail: null }));
             return;
         }
@@ -1191,6 +1200,10 @@ function bindUIEvents() {
                 renderer.selectedAsset = asset;
                 renderer.selectedRoom = null;
                 renderer.zoomToFeature(asset);
+                if (renderer3d && state.viewMode !== '2d') {
+                    renderer3d.selectAsset(asset);
+                    renderer3d.zoomToFeature(asset);
+                }
                 window.dispatchEvent(new CustomEvent('fp-selection-change', {
                     detail: { type: 'asset', feature: asset }
                 }));

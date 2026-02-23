@@ -7,7 +7,6 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
 class FloorPlan3DRenderer {
 
@@ -23,10 +22,10 @@ class FloorPlan3DRenderer {
 
         /* ── Controls ──────────────────────────────────────────────────── */
         this.orbitControls = null;
-        this.walkControls = null;
         this.walkKeys = { forward: false, backward: false, left: false, right: false };
-        this._walkVelocity = new THREE.Vector3();
-        this._walkDirection = new THREE.Vector3();
+        this._walkLookActive = false;
+        this._walkEuler = { yaw: 0, pitch: 0 };
+        this._walkLastMouse = { x: 0, y: 0 };
 
         /* ── Mode ──────────────────────────────────────────────────────── */
         this.mode = 'orbit'; // 'orbit' | 'walk'
@@ -40,12 +39,11 @@ class FloorPlan3DRenderer {
         /* ── Color Schemes (reference to 2D renderer's schemes) ──────── */
         this.colorSchemes = null;
         this.activeSchemeId = 'none';
-        this.neutralColor = { fill: '#FFFFFF', stroke: '#CBD5E1' };
+        this.neutralColor = { fill: '#FFFFFF', stroke: '#000000' };
 
         /* ── Scene object tracking ─────────────────────────────────────── */
         this.roomMeshes = [];   // { mesh, feature }
-        this.wallMeshes = [];   // { mesh, feature }
-        this.capMeshes = [];    // { mesh, feature }
+        this.wallMeshes = [];   // { mesh (LineLoop), feature }
         this.assetMeshes = [];  // { mesh, feature }
         this.floorMesh = null;
 
@@ -68,6 +66,9 @@ class FloorPlan3DRenderer {
         this._boundOnClick = this._onMouseClick.bind(this);
         this._boundKeyDown = this._onKeyDown.bind(this);
         this._boundKeyUp = this._onKeyUp.bind(this);
+        this._boundMouseDown = this._onMouseDown.bind(this);
+        this._boundMouseMove = this._onMouseMove.bind(this);
+        this._boundMouseUp = this._onMouseUp.bind(this);
     }
 
     /* ==================================================================
@@ -109,6 +110,9 @@ class FloorPlan3DRenderer {
 
         // Events
         canvas.addEventListener('click', this._boundOnClick);
+        canvas.addEventListener('mousedown', this._boundMouseDown);
+        document.addEventListener('mousemove', this._boundMouseMove);
+        document.addEventListener('mouseup', this._boundMouseUp);
         document.addEventListener('keydown', this._boundKeyDown);
         document.addEventListener('keyup', this._boundKeyUp);
 
@@ -121,9 +125,11 @@ class FloorPlan3DRenderer {
         this._stopAnimationLoop();
         if (this._resizeObserver) this._resizeObserver.disconnect();
         if (this.orbitControls) this.orbitControls.dispose();
-        if (this.walkControls) this.walkControls.dispose();
         const canvas = this.rendererGL.domElement;
         canvas.removeEventListener('click', this._boundOnClick);
+        canvas.removeEventListener('mousedown', this._boundMouseDown);
+        document.removeEventListener('mousemove', this._boundMouseMove);
+        document.removeEventListener('mouseup', this._boundMouseUp);
         document.removeEventListener('keydown', this._boundKeyDown);
         document.removeEventListener('keyup', this._boundKeyUp);
         this.rendererGL.dispose();
@@ -227,10 +233,6 @@ class FloorPlan3DRenderer {
             const colors = this._getColorForRoom(feature);
             mesh.material.color.set(colors.stroke);
         }
-        for (const { mesh, feature } of this.capMeshes) {
-            const colors = this._getColorForRoom(feature);
-            mesh.material.color.set(colors.fill);
-        }
     }
 
     /* ==================================================================
@@ -248,7 +250,6 @@ class FloorPlan3DRenderer {
         };
         dispose(this.roomMeshes);
         dispose(this.wallMeshes);
-        dispose(this.capMeshes);
         dispose(this.assetMeshes);
         if (this.floorMesh) {
             this.scene.remove(this.floorMesh);
@@ -258,7 +259,6 @@ class FloorPlan3DRenderer {
         }
         this.roomMeshes = [];
         this.wallMeshes = [];
-        this.capMeshes = [];
         this.assetMeshes = [];
     }
 
@@ -266,7 +266,7 @@ class FloorPlan3DRenderer {
         if (!this.projection) return;
         this._buildFloorPlane();
         this._buildRoomFloors();
-        this._buildWalls();
+        this._buildRoomOutlines();
         this._buildFurniture();
         this.fitViewOrbit();
     }
@@ -315,73 +315,28 @@ class FloorPlan3DRenderer {
         }
     }
 
-    _buildWalls() {
+    _buildRoomOutlines() {
         for (const room of this.rooms) {
             const coords = room.geometry.coordinates[0];
-            const baseH = 0;
-            const topH = (room.properties.topHeight || 3.5) - (room.properties.baseHeight || 0);
             const colors = this._getColorForRoom(room);
 
-            // Wall material (semi-transparent)
-            const wallMat = new THREE.MeshStandardMaterial({
-                color: new THREE.Color(colors.stroke),
-                roughness: 0.6,
-                metalness: 0.1,
-                transparent: true,
-                opacity: 0.85,
-                side: THREE.DoubleSide,
-            });
-
-            // Build all wall quads for this room
-            const n = coords.length - 1; // closed polygon: last == first
-            const positions = [];
-            const indices = [];
-
-            for (let i = 0; i < n; i++) {
-                const j = (i + 1) % n;
-                const p1 = this._geoTo3D(coords[i][0], coords[i][1]);
-                const p2 = this._geoTo3D(coords[j][0], coords[j][1]);
-
-                const vi = positions.length / 3;
-                positions.push(
-                    p1.x, baseH, p1.z,
-                    p2.x, baseH, p2.z,
-                    p2.x, topH, p2.z,
-                    p1.x, topH, p1.z,
-                );
-                indices.push(vi, vi + 1, vi + 2, vi, vi + 2, vi + 3);
+            // Build a line loop for the room outline on the floor
+            const points = [];
+            for (let i = 0; i < coords.length; i++) {
+                const p = this._geoTo3D(coords[i][0], coords[i][1]);
+                points.push(new THREE.Vector3(p.x, 0.005, -p.z));
             }
 
-            const wallGeom = new THREE.BufferGeometry();
-            wallGeom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-            wallGeom.setIndex(indices);
-            wallGeom.computeVertexNormals();
-
-            const wallMesh = new THREE.Mesh(wallGeom, wallMat);
-            wallMesh.castShadow = true;
-            wallMesh.receiveShadow = true;
-            wallMesh.userData = { type: 'wall', feature: room };
-            this.scene.add(wallMesh);
-            this.wallMeshes.push({ mesh: wallMesh, feature: room });
-
-            // Semi-transparent ceiling cap
-            const capShape = this._coordsToShape(coords);
-            const capGeom = new THREE.ShapeGeometry(capShape);
-            capGeom.rotateX(-Math.PI / 2);
-
-            const capMat = new THREE.MeshStandardMaterial({
-                color: new THREE.Color(colors.fill),
-                transparent: true,
-                opacity: 0.25,
-                side: THREE.DoubleSide,
-                roughness: 0.9,
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({
+                color: new THREE.Color(colors.stroke),
+                linewidth: 1,
             });
 
-            const capMesh = new THREE.Mesh(capGeom, capMat);
-            capMesh.position.y = topH;
-            capMesh.userData = { type: 'cap', feature: room };
-            this.scene.add(capMesh);
-            this.capMeshes.push({ mesh: capMesh, feature: room });
+            const line = new THREE.LineLoop(geometry, material);
+            line.userData = { type: 'wall', feature: room };
+            this.scene.add(line);
+            this.wallMeshes.push({ mesh: line, feature: room });
         }
     }
 
@@ -469,8 +424,7 @@ class FloorPlan3DRenderer {
     _initWalkCamera(w, h) {
         this.walkCamera = new THREE.PerspectiveCamera(65, w / h, 0.1, 500);
         this.walkCamera.position.set(0, 1.6, 0);
-
-        this.walkControls = new PointerLockControls(this.walkCamera, this.rendererGL.domElement);
+        this.walkCamera.rotation.order = 'YXZ';
     }
 
     fitViewOrbit() {
@@ -485,6 +439,38 @@ class FloorPlan3DRenderer {
         this.orbitControls.update();
     }
 
+    /** Smoothly zoom orbit camera to focus on a GeoJSON feature */
+    zoomToFeature(feature) {
+        if (!this.projection || !feature) return;
+        const coords = feature.geometry.coordinates[0];
+
+        // Calculate bounding box in 3D world coords
+        // Note: _coordsToShape + rotateX(-PI/2) negates Z, so use -p.z here
+        let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+        for (const [lon, lat] of coords) {
+            const p = this._geoTo3D(lon, lat);
+            const z = -p.z;
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (z < minZ) minZ = z;
+            if (z > maxZ) maxZ = z;
+        }
+
+        const cx = (minX + maxX) / 2;
+        const cz = (minZ + maxZ) / 2;
+        const sizeX = maxX - minX;
+        const sizeZ = maxZ - minZ;
+        const maxSize = Math.max(sizeX, sizeZ, 1);
+
+        // Distance that keeps the feature nicely framed
+        const distance = maxSize * 2.5;
+
+        // Animate camera to look at feature center from above-right
+        this.orbitControls.target.set(cx, 0, cz);
+        this.orbitCamera.position.set(cx + distance * 0.5, distance * 0.6, cz + distance * 0.5);
+        this.orbitControls.update();
+    }
+
     /* ==================================================================
        Mode Switching
        ================================================================== */
@@ -495,13 +481,17 @@ class FloorPlan3DRenderer {
         if (mode === 'orbit') {
             this.camera = this.orbitCamera;
             this.orbitControls.enabled = true;
-            if (this.walkControls.isLocked) this.walkControls.unlock();
+            this._walkLookActive = false;
         } else if (mode === 'walk') {
             // Place walk camera at center of floor, eye height
             this.walkCamera.position.set(0, 1.6, 0);
+            this._walkEuler.yaw = 0;
+            this._walkEuler.pitch = 0;
+            this.walkCamera.rotation.set(0, 0, 0);
             this.camera = this.walkCamera;
             this.orbitControls.enabled = false;
             this.walkKeys = { forward: false, backward: false, left: false, right: false };
+            this._walkLookActive = false;
         }
     }
 
@@ -510,13 +500,8 @@ class FloorPlan3DRenderer {
        ================================================================== */
 
     _onMouseClick(event) {
-        // In walk mode, clicking locks/unlocks pointer
-        if (this.mode === 'walk') {
-            if (!this.walkControls.isLocked) {
-                this.walkControls.lock();
-            }
-            return;
-        }
+        // In walk mode, clicks are handled by mousedown/mousemove
+        if (this.mode === 'walk') return;
 
         const rect = this.rendererGL.domElement.getBoundingClientRect();
         this._mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -579,9 +564,10 @@ class FloorPlan3DRenderer {
             mesh.material.color.set(colors.fill);
             mesh.material.emissive.setHex(0x000000);
         }
-        // Reset walls
-        for (const { mesh } of this.wallMeshes) {
-            mesh.material.emissive.setHex(0x000000);
+        // Reset wall outlines (LineBasicMaterial — no emissive)
+        for (const { mesh, feature } of this.wallMeshes) {
+            const colors = this._getColorForRoom(feature);
+            mesh.material.color.set(colors.stroke);
         }
         // Reset assets
         for (const { mesh } of this.assetMeshes) {
@@ -597,8 +583,7 @@ class FloorPlan3DRenderer {
             }
             for (const { mesh, feature } of this.wallMeshes) {
                 if (feature === this.selectedRoom) {
-                    mesh.material.emissive.set(0x2563EB);
-                    mesh.material.emissiveIntensity = 0.15;
+                    mesh.material.color.set(0x2563EB);
                 }
             }
         }
@@ -614,8 +599,36 @@ class FloorPlan3DRenderer {
     }
 
     /* ==================================================================
-       Walk Mode Controls
+       Walk Mode Controls (hold left mouse to look, WASD to move)
        ================================================================== */
+
+    _onMouseDown(e) {
+        if (this.mode !== 'walk' || e.button !== 0) return;
+        this._walkLookActive = true;
+        this._walkLastMouse.x = e.clientX;
+        this._walkLastMouse.y = e.clientY;
+        e.preventDefault();
+    }
+
+    _onMouseMove(e) {
+        if (!this._walkLookActive) return;
+        const dx = e.clientX - this._walkLastMouse.x;
+        const dy = e.clientY - this._walkLastMouse.y;
+        this._walkLastMouse.x = e.clientX;
+        this._walkLastMouse.y = e.clientY;
+
+        const sensitivity = 0.003;
+        this._walkEuler.yaw -= dx * sensitivity;
+        this._walkEuler.pitch -= dy * sensitivity;
+        this._walkEuler.pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this._walkEuler.pitch));
+
+        this.walkCamera.rotation.y = this._walkEuler.yaw;
+        this.walkCamera.rotation.x = this._walkEuler.pitch;
+    }
+
+    _onMouseUp(e) {
+        if (e.button === 0) this._walkLookActive = false;
+    }
 
     _onKeyDown(e) {
         if (this.mode !== 'walk') return;
@@ -638,19 +651,26 @@ class FloorPlan3DRenderer {
     }
 
     _updateWalkControls(delta) {
-        if (this.mode !== 'walk' || !this.walkControls.isLocked) return;
+        if (this.mode !== 'walk') return;
+
+        const forward = Number(this.walkKeys.forward) - Number(this.walkKeys.backward);
+        const right = Number(this.walkKeys.right) - Number(this.walkKeys.left);
+        if (forward === 0 && right === 0) return;
 
         const speed = 5.0; // m/s
-        this._walkDirection.z = Number(this.walkKeys.forward) - Number(this.walkKeys.backward);
-        this._walkDirection.x = Number(this.walkKeys.right) - Number(this.walkKeys.left);
-        this._walkDirection.normalize();
 
-        if (this.walkKeys.forward || this.walkKeys.backward) {
-            this.walkControls.moveForward(this._walkDirection.z * speed * delta);
-        }
-        if (this.walkKeys.left || this.walkKeys.right) {
-            this.walkControls.moveRight(this._walkDirection.x * speed * delta);
-        }
+        // Forward direction from camera (projected onto XZ plane)
+        const dir = new THREE.Vector3();
+        this.walkCamera.getWorldDirection(dir);
+        dir.y = 0;
+        dir.normalize();
+
+        // Right vector
+        const rightDir = new THREE.Vector3();
+        rightDir.crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize();
+
+        this.walkCamera.position.addScaledVector(dir, forward * speed * delta);
+        this.walkCamera.position.addScaledVector(rightDir, right * speed * delta);
 
         // Lock Y to eye height
         this.walkCamera.position.y = 1.6;
