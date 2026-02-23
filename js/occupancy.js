@@ -1957,9 +1957,10 @@ function occInitMap() {
     }
   });
 
-  // Only show the editor link when a building or floor is selected
+  // Show the editor link whenever a floor is selected
   const selNode = state.occSelectedId ? occFindNode(state.occSelectedId) : null;
-  editToggle.style.display = (selNode && (selNode.node.type === 'building' || selNode.node.type === 'floor')) ? '' : 'none';
+  const selType = selNode ? selNode.node.type : null;
+  editToggle.style.display = (selType === 'floor') ? '' : 'none';
 
   editBanner.querySelector('.rp-edit-banner__btn--cancel').addEventListener('click', closeEditMode);
   editBanner.querySelector('.rp-edit-banner__btn--save').addEventListener('click', () => {
