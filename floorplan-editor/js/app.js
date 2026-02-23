@@ -138,6 +138,9 @@ async function init() {
     // Listen for asset moves (live property update)
     window.addEventListener('fp-asset-moved', onAssetMoved);
 
+    // Listen for asset placement (add tool)
+    window.addEventListener('fp-asset-placed', onAssetPlaced);
+
     // Listen for browser back/forward
     window.addEventListener('hashchange', () => {
         parseHash();
@@ -1019,6 +1022,63 @@ function onSelectionChange(e) {
     } else if (hit.type === 'asset') {
         renderAssetProperties(hit.feature);
     }
+}
+
+/* ── Asset Placement ───────────────────────────────────────────────── */
+
+let _placedAssetCounter = 0;
+
+function createAssetFeature(lon, lat) {
+    _placedAssetCounter++;
+    const id = `a-placed-${String(_placedAssetCounter).padStart(3, '0')}`;
+    const p = renderer.projection;
+    const halfW = 0.3; // 0.6m / 2
+    const halfD = 0.3; // 0.6m / 2
+    const dLon = halfW / p.metersPerDegreeLon;
+    const dLat = halfD / p.metersPerDegreeLat;
+
+    return {
+        type: 'Feature',
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[
+                [lon - dLon, lat - dLat],
+                [lon + dLon, lat - dLat],
+                [lon + dLon, lat + dLat],
+                [lon - dLon, lat + dLat],
+                [lon - dLon, lat - dLat],
+            ]]
+        },
+        properties: {
+            assetId: id,
+            name: 'Neues Möbel',
+            categoryId: 'buerostuehle',
+            buildingId: state.selectedBuildingId,
+            floorId: state.selectedFloorId,
+            roomId: '',
+            status: 'Active',
+            condition: 'Gut',
+            brand: '',
+            inventoryNumber: '',
+            centroid: [lon, lat],
+            baseHeight: 0,
+            topHeight: 0.75,
+            acquisitionDate: new Date().toISOString().split('T')[0],
+            acquisitionCost: 0,
+        }
+    };
+}
+
+function onAssetPlaced(e) {
+    const { lon, lat } = e.detail;
+    const feature = createAssetFeature(lon, lat);
+
+    // Add to global state
+    state.assetsGeo.features.push(feature);
+
+    // Add to both renderers
+    renderer.addAsset(feature);
+    if (renderer3d) renderer3d.addAsset(feature);
 }
 
 /* ── Asset Moved Handler (live property updates during gizmo drag) ──── */

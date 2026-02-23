@@ -192,6 +192,11 @@ class FloorPlanRenderer {
         this.fitView();
     }
 
+    addAsset(feature) {
+        this.assets.push(feature);
+        this.draw();
+    }
+
     /* ── Node Update (Archilogic drawNodeUpdate pattern) ───────────────── */
 
     drawNodeUpdate(nodeId, style) {

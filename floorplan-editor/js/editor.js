@@ -67,6 +67,7 @@ class FloorPlanEditor {
         switch (this.activeTool) {
             case 'pan':     this.canvas.style.cursor = 'grab'; break;
             case 'measure': this.canvas.style.cursor = 'crosshair'; break;
+            case 'add':     this.canvas.style.cursor = 'copy'; break;
             default:        this.canvas.style.cursor = 'default';
         }
     }
@@ -124,6 +125,7 @@ class FloorPlanEditor {
     _rotateAsset(deltaRadians) {
         const asset = this.renderer.selectedAsset;
         if (!asset) return;
+        const p = this.renderer.projection;
 
         // Compute centroid from polygon coords
         const coords = asset.geometry.coordinates[0];
@@ -140,10 +142,13 @@ class FloorPlanEditor {
         const sin = Math.sin(deltaRadians);
 
         for (const coord of coords) {
-            const dx = coord[0] - cLon;
-            const dy = coord[1] - cLat;
-            coord[0] = cLon + dx * cos - dy * sin;
-            coord[1] = cLat + dx * sin + dy * cos;
+            // Convert to meters, rotate, convert back (avoids skew from non-uniform lon/lat scale)
+            const mx = (coord[0] - cLon) * p.metersPerDegreeLon;
+            const my = (coord[1] - cLat) * p.metersPerDegreeLat;
+            const rx = mx * cos - my * sin;
+            const ry = mx * sin + my * cos;
+            coord[0] = cLon + rx / p.metersPerDegreeLon;
+            coord[1] = cLat + ry / p.metersPerDegreeLat;
         }
 
         // Update centroid property if present
@@ -257,6 +262,11 @@ class FloorPlanEditor {
                         this.isPanning = true;
                         this.canvas.style.cursor = 'grabbing';
                     }
+                    // In add mode, drag on empty space = pan
+                    if (this.activeTool === 'add' && !this.isPanning) {
+                        this.isPanning = true;
+                        this.canvas.style.cursor = 'grabbing';
+                    }
                 }
             }
 
@@ -341,6 +351,17 @@ class FloorPlanEditor {
                 window.dispatchEvent(new CustomEvent('fp-selection-change', {
                     detail: hit
                 }));
+            } else if (this.activeTool === 'add') {
+                // Place furniture at click position
+                const local = this.renderer.screenToLocal(pos.x, pos.y);
+                const p = this.renderer.projection;
+                if (p) {
+                    const lon = local.x / p.metersPerDegreeLon + p.centerLon;
+                    const lat = -local.y / p.metersPerDegreeLat + p.centerLat;
+                    window.dispatchEvent(new CustomEvent('fp-asset-placed', {
+                        detail: { lon, lat }
+                    }));
+                }
             } else if (this.activeTool === 'measure') {
                 // Multi-point measure: click adds a point
                 if (this.renderer.measureClosed) {

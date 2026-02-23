@@ -56,7 +56,7 @@ class FloorPlan3DRenderer {
         this._gizmoGroup = null;
         this._gizmoAction = null;      // 'x-axis' | 'z-axis' | 'center' | 'rotate' | null
         this._gizmoStartAngle = null;
-        this._gizmoDragPlane = null;    // Invisible horizontal plane for raycasting
+        this._gizmoDragPlane = null;    // THREE.Plane (mathematical, not a mesh)
         this._gizmoDragStart = null;    // THREE.Vector3
         this._gizmoJustReleased = false;
 
@@ -846,6 +846,7 @@ class FloorPlan3DRenderer {
     _rotateAsset3D(deltaRadians) {
         const asset = this.selectedAsset;
         if (!asset) return;
+        const p = this.projection;
 
         const coords = asset.geometry.coordinates[0];
         const n = coords.length - 1;
@@ -860,10 +861,13 @@ class FloorPlan3DRenderer {
         const cos = Math.cos(deltaRadians);
         const sin = Math.sin(deltaRadians);
         for (const coord of coords) {
-            const dx = coord[0] - cLon;
-            const dy = coord[1] - cLat;
-            coord[0] = cLon + dx * cos - dy * sin;
-            coord[1] = cLat + dx * sin + dy * cos;
+            // Convert to meters, rotate, convert back (avoids skew from non-uniform lon/lat scale)
+            const mx = (coord[0] - cLon) * p.metersPerDegreeLon;
+            const my = (coord[1] - cLat) * p.metersPerDegreeLat;
+            const rx = mx * cos - my * sin;
+            const ry = mx * sin + my * cos;
+            coord[0] = cLon + rx / p.metersPerDegreeLon;
+            coord[1] = cLat + ry / p.metersPerDegreeLat;
         }
         if (asset.properties.centroid) {
             asset.properties.centroid[0] = cLon;
@@ -1066,18 +1070,21 @@ class FloorPlan3DRenderer {
         const point = this._raycastFloor(event);
         if (!point) return;
 
-        const w = 0.6, h = 0.75, d = 0.6;
-        const geometry = new THREE.BoxGeometry(w, h, d);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0x93C5FD, roughness: 0.6, metalness: 0.1,
-            transparent: true, opacity: 0.85,
-        });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(point.x, h / 2, point.z);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        this.scene.add(mesh);
-        this._placedMockups.push(mesh);
+        // Convert 3D world position to WGS84 lon/lat
+        const p = this.projection;
+        const lon = point.x / p.metersPerDegreeLon + p.centerLon;
+        const lat = -point.z / p.metersPerDegreeLat + p.centerLat;
+
+        window.dispatchEvent(new CustomEvent('fp-asset-placed', {
+            detail: { lon, lat }
+        }));
+    }
+
+    addAsset(feature) {
+        this.assets.push(feature);
+        const entry = this._buildSingleAsset(feature);
+        this.scene.add(entry.mesh);
+        this.assetMeshes.push(entry);
     }
 
     _createGhost() {
@@ -1158,18 +1165,14 @@ class FloorPlan3DRenderer {
                 this._gizmoAction = hits[0].object.userData.gizmoAction;
                 this.orbitControls.enabled = false;
 
-                // Create invisible horizontal drag plane at gizmo Y position
-                const planeGeo = new THREE.PlaneGeometry(1000, 1000);
-                const planeMat = new THREE.MeshBasicMaterial({ visible: false });
-                this._gizmoDragPlane = new THREE.Mesh(planeGeo, planeMat);
-                this._gizmoDragPlane.rotation.x = -Math.PI / 2;
-                this._gizmoDragPlane.position.y = this._gizmoGroup.position.y;
-                this.scene.add(this._gizmoDragPlane);
+                // Create mathematical horizontal plane at gizmo Y (no mesh needed)
+                const gizmoY = this._gizmoGroup.position.y;
+                this._gizmoDragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -gizmoY);
 
                 // Record initial intersection point on the drag plane
-                const planeHits = this._raycaster.intersectObject(this._gizmoDragPlane);
-                if (planeHits.length > 0) {
-                    this._gizmoDragStart = planeHits[0].point.clone();
+                const startPt = new THREE.Vector3();
+                if (this._raycaster.ray.intersectPlane(this._gizmoDragPlane, startPt)) {
+                    this._gizmoDragStart = startPt;
                 }
 
                 if (this._gizmoAction === 'rotate') {
@@ -1212,9 +1215,8 @@ class FloorPlan3DRenderer {
             this._mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
             this._raycaster.setFromCamera(this._mouse, this.camera);
 
-            const hits = this._raycaster.intersectObject(this._gizmoDragPlane);
-            if (hits.length === 0) return;
-            const pt = hits[0].point;
+            const pt = new THREE.Vector3();
+            if (!this._raycaster.ray.intersectPlane(this._gizmoDragPlane, pt)) return;
 
             if (this._gizmoAction === 'rotate') {
                 const center = this._gizmoGroup.position;
@@ -1303,12 +1305,7 @@ class FloorPlan3DRenderer {
                 this._gizmoAction = null;
                 this._gizmoStartAngle = null;
                 this._gizmoDragStart = null;
-                if (this._gizmoDragPlane) {
-                    this.scene.remove(this._gizmoDragPlane);
-                    this._gizmoDragPlane.geometry.dispose();
-                    this._gizmoDragPlane.material.dispose();
-                    this._gizmoDragPlane = null;
-                }
+                this._gizmoDragPlane = null;
                 this.orbitControls.enabled = true;
                 this.rendererGL.domElement.style.cursor = '';
                 // Prevent the subsequent click event from deselecting
