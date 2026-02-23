@@ -51,6 +51,15 @@ class FloorPlan3DRenderer {
         this.selectedRoom = null;
         this.selectedAsset = null;
 
+        /* ── Edit Mode & Gizmo ────────────────────────────────────────── */
+        this.editMode = false;
+        this._gizmoGroup = null;
+        this._gizmoAction = null;      // 'x-axis' | 'z-axis' | 'center' | 'rotate' | null
+        this._gizmoStartAngle = null;
+        this._gizmoDragPlane = null;    // Invisible horizontal plane for raycasting
+        this._gizmoDragStart = null;    // THREE.Vector3
+        this._gizmoJustReleased = false;
+
         /* ── Tools ────────────────────────────────────────────────────── */
         this.activeTool = 'select'; // 'select' | 'measure' | 'add'
 
@@ -145,6 +154,7 @@ class FloorPlan3DRenderer {
         this._clearMeasure();
         this.clearMockups();
         this._removeGhost();
+        this._removeGizmo();
         if (this._resizeObserver) this._resizeObserver.disconnect();
         if (this.orbitControls) this.orbitControls.dispose();
         const canvas = this.rendererGL.domElement;
@@ -285,6 +295,7 @@ class FloorPlan3DRenderer {
         this._clearMeasure();
         this.clearMockups();
         this._removeGhost();
+        this._removeGizmo();
     }
 
     _buildScene() {
@@ -365,41 +376,45 @@ class FloorPlan3DRenderer {
         }
     }
 
+    _buildSingleAsset(asset) {
+        const coords = asset.geometry.coordinates[0];
+        const shape = this._coordsToShape(coords);
+
+        const furnitureHeight = Math.max(
+            (asset.properties.topHeight || 0) - (asset.properties.baseHeight || 0),
+            0.1
+        );
+
+        const geometry = new THREE.ExtrudeGeometry(shape, {
+            steps: 1,
+            depth: furnitureHeight,
+            bevelEnabled: false,
+        });
+        geometry.rotateX(-Math.PI / 2);
+
+        const cat = asset.properties.categoryId;
+        const isChair = ['buerostuehle', 'konferenzstuehle', 'besucherstuehle'].includes(cat);
+        const isLamp = cat === 'stehleuchten';
+
+        const material = new THREE.MeshStandardMaterial({
+            color: isLamp ? 0x94A3B8 : (isChair ? 0x64748B : 0x475569),
+            roughness: 0.7,
+            metalness: 0.2,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.y = 0;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.userData = { type: 'asset', feature: asset };
+        return { mesh, feature: asset };
+    }
+
     _buildFurniture() {
         for (const asset of this.assets) {
-            const coords = asset.geometry.coordinates[0];
-            const shape = this._coordsToShape(coords);
-
-            const furnitureHeight = Math.max(
-                (asset.properties.topHeight || 0) - (asset.properties.baseHeight || 0),
-                0.1
-            );
-
-            const geometry = new THREE.ExtrudeGeometry(shape, {
-                steps: 1,
-                depth: furnitureHeight,
-                bevelEnabled: false,
-            });
-            // ExtrudeGeometry extrudes along Z; rotate so extrusion goes along Y (up)
-            geometry.rotateX(-Math.PI / 2);
-
-            const cat = asset.properties.categoryId;
-            const isChair = ['buerostuehle', 'konferenzstuehle', 'besucherstuehle'].includes(cat);
-            const isLamp = cat === 'stehleuchten';
-
-            const material = new THREE.MeshStandardMaterial({
-                color: isLamp ? 0x94A3B8 : (isChair ? 0x64748B : 0x475569),
-                roughness: 0.7,
-                metalness: 0.2,
-            });
-
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.y = 0;
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            mesh.userData = { type: 'asset', feature: asset };
-            this.scene.add(mesh);
-            this.assetMeshes.push({ mesh, feature: asset });
+            const entry = this._buildSingleAsset(asset);
+            this.scene.add(entry.mesh);
+            this.assetMeshes.push(entry);
         }
     }
 
@@ -526,6 +541,7 @@ class FloorPlan3DRenderer {
 
     _onMouseClick(event) {
         if (this.mode === 'walk') return;
+        if (this._gizmoJustReleased) return;
 
         // Ignore clicks that were actually drags (orbit rotation)
         if (this._mouseDownPos) {
@@ -542,6 +558,13 @@ class FloorPlan3DRenderer {
         this._mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         this._mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         this._raycaster.setFromCamera(this._mouse, this.camera);
+
+        // Skip selection if click was on gizmo
+        if (this._gizmoGroup) {
+            const gizmoChildren = [];
+            this._gizmoGroup.traverse(child => { if (child.isMesh) gizmoChildren.push(child); });
+            if (this._raycaster.intersectObjects(gizmoChildren).length > 0) return;
+        }
 
         const assetObjs = this.assetMeshes.map(m => m.mesh);
         const roomObjs = this.roomMeshes.map(m => m.mesh);
@@ -628,6 +651,227 @@ class FloorPlan3DRenderer {
                 }
             }
         }
+
+        // Show/hide gizmo based on edit mode + selection
+        if (this.editMode && this.selectedAsset && this.activeTool === 'select') {
+            this._buildGizmo();
+        } else {
+            this._removeGizmo();
+        }
+    }
+
+    /* ==================================================================
+       Edit Mode
+       ================================================================== */
+
+    setEditMode(editMode) {
+        this.editMode = editMode;
+        if (!editMode) {
+            this._removeGizmo();
+        } else if (this.selectedAsset && this.activeTool === 'select') {
+            this._buildGizmo();
+        }
+    }
+
+    /* ==================================================================
+       3D Gizmo (Move / Rotate)
+       ================================================================== */
+
+    _getAssetCentroid3D(asset) {
+        const coords = asset.geometry.coordinates[0];
+        const n = coords.length - 1; // skip closing duplicate
+        let cLon = 0, cLat = 0;
+        for (let i = 0; i < n; i++) {
+            cLon += coords[i][0];
+            cLat += coords[i][1];
+        }
+        cLon /= n;
+        cLat /= n;
+        const p = this._geoTo3D(cLon, cLat);
+        // Note: _coordsToShape uses (p.x, p.z), then rotateX(-PI/2) maps to (x, 0, -z)
+        return new THREE.Vector3(p.x, 0.005, -p.z);
+    }
+
+    _buildGizmo() {
+        this._removeGizmo();
+        if (!this.selectedAsset) return;
+
+        const center = this._getAssetCentroid3D(this.selectedAsset);
+        const group = new THREE.Group();
+        group.position.copy(center);
+
+        const RING_R = 0.5;
+        const ARROW_LEN = 0.35;
+        const CONE_R = 0.03;
+        const CONE_H = 0.08;
+        const CENTER_R = 0.06;
+
+        // Shared materials (unlit, always-on-top)
+        const makeMat = (color) => new THREE.MeshBasicMaterial({
+            color, depthTest: false, transparent: true, opacity: 0.9,
+        });
+        const xColor = 0x3B82F6;  // blue
+        const zColor = 0xF59E0B;  // orange
+        const ringColor = 0x374151; // dark gray
+        const whiteColor = 0xFFFFFF;
+
+        // ── Outer ring (rotation handle) ──
+        const ringGeo = new THREE.RingGeometry(RING_R - 0.025, RING_R + 0.025, 48);
+        const ringMat = makeMat(ringColor);
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = -Math.PI / 2; // lay flat
+        ring.renderOrder = 999;
+        ring.userData.gizmoAction = 'rotate';
+        group.add(ring);
+
+        // ── X-axis arrow (blue, pointing +X) ──
+        // Shaft
+        const xShaftGeo = new THREE.CylinderGeometry(0.015, 0.015, ARROW_LEN, 8);
+        const xShaftMat = makeMat(xColor);
+        const xShaft = new THREE.Mesh(xShaftGeo, xShaftMat);
+        xShaft.rotation.z = -Math.PI / 2; // rotate cylinder to point along X
+        xShaft.position.set(ARROW_LEN / 2 + 0.06, 0, 0);
+        xShaft.renderOrder = 999;
+        xShaft.userData.gizmoAction = 'x-axis';
+        group.add(xShaft);
+        // Cone (arrowhead)
+        const xConeGeo = new THREE.ConeGeometry(CONE_R, CONE_H, 8);
+        const xConeMat = makeMat(xColor);
+        const xCone = new THREE.Mesh(xConeGeo, xConeMat);
+        xCone.rotation.z = -Math.PI / 2;
+        xCone.position.set(ARROW_LEN + 0.06 + CONE_H / 2, 0, 0);
+        xCone.renderOrder = 999;
+        xCone.userData.gizmoAction = 'x-axis';
+        group.add(xCone);
+
+        // ── Z-axis arrow (orange, pointing +Z) ──
+        const zShaftGeo = new THREE.CylinderGeometry(0.015, 0.015, ARROW_LEN, 8);
+        const zShaftMat = makeMat(zColor);
+        const zShaft = new THREE.Mesh(zShaftGeo, zShaftMat);
+        zShaft.rotation.x = Math.PI / 2; // rotate cylinder to point along Z
+        zShaft.position.set(0, 0, ARROW_LEN / 2 + 0.06);
+        zShaft.renderOrder = 999;
+        zShaft.userData.gizmoAction = 'z-axis';
+        group.add(zShaft);
+        const zConeGeo = new THREE.ConeGeometry(CONE_R, CONE_H, 8);
+        const zConeMat = makeMat(zColor);
+        const zCone = new THREE.Mesh(zConeGeo, zConeMat);
+        zCone.rotation.x = Math.PI / 2;
+        zCone.position.set(0, 0, ARROW_LEN + 0.06 + CONE_H / 2);
+        zCone.renderOrder = 999;
+        zCone.userData.gizmoAction = 'z-axis';
+        group.add(zCone);
+
+        // ── Center handle (white sphere) ──
+        const centerGeo = new THREE.SphereGeometry(CENTER_R, 16, 16);
+        const centerMat = makeMat(whiteColor);
+        centerMat.opacity = 1;
+        const centerHandle = new THREE.Mesh(centerGeo, centerMat);
+        centerHandle.renderOrder = 999;
+        centerHandle.userData.gizmoAction = 'center';
+        group.add(centerHandle);
+
+        // ── Rotate handle (small white sphere at +Z edge of ring) ──
+        const rotHandleGeo = new THREE.SphereGeometry(0.04, 12, 12);
+        const rotHandleMat = makeMat(whiteColor);
+        rotHandleMat.opacity = 1;
+        const rotHandle = new THREE.Mesh(rotHandleGeo, rotHandleMat);
+        rotHandle.position.set(0, 0, RING_R);
+        rotHandle.renderOrder = 999;
+        rotHandle.userData.gizmoAction = 'rotate';
+        group.add(rotHandle);
+
+        this._gizmoGroup = group;
+        this.scene.add(group);
+    }
+
+    _removeGizmo() {
+        if (!this._gizmoGroup) return;
+        this._gizmoGroup.traverse(child => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+        });
+        this.scene.remove(this._gizmoGroup);
+        this._gizmoGroup = null;
+    }
+
+    _updateGizmoPosition() {
+        if (!this._gizmoGroup || !this.selectedAsset) return;
+        const center = this._getAssetCentroid3D(this.selectedAsset);
+        this._gizmoGroup.position.copy(center);
+    }
+
+    _rebuildAssetMesh(asset) {
+        // Find and remove old mesh
+        const idx = this.assetMeshes.findIndex(e => e.feature === asset);
+        if (idx !== -1) {
+            const old = this.assetMeshes[idx];
+            this.scene.remove(old.mesh);
+            old.mesh.geometry.dispose();
+            old.mesh.material.dispose();
+            this.assetMeshes.splice(idx, 1);
+        }
+        // Build new mesh
+        const entry = this._buildSingleAsset(asset);
+        this.scene.add(entry.mesh);
+        this.assetMeshes.push(entry);
+        // Re-apply highlight
+        entry.mesh.material.emissive.set(0x2563EB);
+        entry.mesh.material.emissiveIntensity = 0.5;
+    }
+
+    _moveAsset3D(dx, dz) {
+        const asset = this.selectedAsset;
+        if (!asset) return;
+        const p = this.projection;
+
+        // 3D world delta → GeoJSON delta
+        const dLon = dx / p.metersPerDegreeLon;
+        const dLat = -dz / p.metersPerDegreeLat; // negate: +Z in 3D = -lat due to Z flip
+
+        const coords = asset.geometry.coordinates[0];
+        for (const coord of coords) {
+            coord[0] += dLon;
+            coord[1] += dLat;
+        }
+        if (asset.properties.centroid) {
+            asset.properties.centroid[0] += dLon;
+            asset.properties.centroid[1] += dLat;
+        }
+
+        this._rebuildAssetMesh(asset);
+        this._updateGizmoPosition();
+    }
+
+    _rotateAsset3D(deltaRadians) {
+        const asset = this.selectedAsset;
+        if (!asset) return;
+
+        const coords = asset.geometry.coordinates[0];
+        const n = coords.length - 1;
+        let cLon = 0, cLat = 0;
+        for (let i = 0; i < n; i++) {
+            cLon += coords[i][0];
+            cLat += coords[i][1];
+        }
+        cLon /= n;
+        cLat /= n;
+
+        const cos = Math.cos(deltaRadians);
+        const sin = Math.sin(deltaRadians);
+        for (const coord of coords) {
+            const dx = coord[0] - cLon;
+            const dy = coord[1] - cLat;
+            coord[0] = cLon + dx * cos - dy * sin;
+            coord[1] = cLat + dx * sin + dy * cos;
+        }
+        if (asset.properties.centroid) {
+            asset.properties.centroid[0] = cLon;
+            asset.properties.centroid[1] = cLat;
+        }
+
+        this._rebuildAssetMesh(asset);
+        this._updateGizmoPosition();
     }
 
     /* ==================================================================
@@ -639,6 +883,12 @@ class FloorPlan3DRenderer {
         if (tool !== 'measure') this._clearMeasure();
         if (tool === 'add') this._createGhost();
         else this._removeGhost();
+        // Show gizmo only in select tool + edit mode
+        if (tool === 'select' && this.editMode && this.selectedAsset) {
+            this._buildGizmo();
+        } else {
+            this._removeGizmo();
+        }
         this._updateCursor();
     }
 
@@ -888,6 +1138,50 @@ class FloorPlan3DRenderer {
             this._walkLastMouse.x = e.clientX;
             this._walkLastMouse.y = e.clientY;
             e.preventDefault();
+            return;
+        }
+
+        // ── Gizmo hit test ──
+        if (this.mode === 'orbit' && this.editMode && this.activeTool === 'select'
+            && this.selectedAsset && this._gizmoGroup) {
+            const rect = this.rendererGL.domElement.getBoundingClientRect();
+            this._mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            this._mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            this._raycaster.setFromCamera(this._mouse, this.camera);
+
+            const gizmoChildren = [];
+            this._gizmoGroup.traverse(child => {
+                if (child.isMesh) gizmoChildren.push(child);
+            });
+            const hits = this._raycaster.intersectObjects(gizmoChildren);
+            if (hits.length > 0 && hits[0].object.userData.gizmoAction) {
+                this._gizmoAction = hits[0].object.userData.gizmoAction;
+                this.orbitControls.enabled = false;
+
+                // Create invisible horizontal drag plane at gizmo Y position
+                const planeGeo = new THREE.PlaneGeometry(1000, 1000);
+                const planeMat = new THREE.MeshBasicMaterial({ visible: false });
+                this._gizmoDragPlane = new THREE.Mesh(planeGeo, planeMat);
+                this._gizmoDragPlane.rotation.x = -Math.PI / 2;
+                this._gizmoDragPlane.position.y = this._gizmoGroup.position.y;
+                this.scene.add(this._gizmoDragPlane);
+
+                // Record initial intersection point on the drag plane
+                const planeHits = this._raycaster.intersectObject(this._gizmoDragPlane);
+                if (planeHits.length > 0) {
+                    this._gizmoDragStart = planeHits[0].point.clone();
+                }
+
+                if (this._gizmoAction === 'rotate') {
+                    const center = this._gizmoGroup.position;
+                    const pt = this._gizmoDragStart || new THREE.Vector3();
+                    this._gizmoStartAngle = Math.atan2(pt.z - center.z, pt.x - center.x);
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
         }
     }
 
@@ -911,6 +1205,41 @@ class FloorPlan3DRenderer {
 
         if (this.mode !== 'orbit') return;
 
+        // ── Gizmo dragging ──
+        if (this._gizmoAction && this._gizmoDragPlane && this._gizmoDragStart) {
+            const rect = this.rendererGL.domElement.getBoundingClientRect();
+            this._mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            this._mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            this._raycaster.setFromCamera(this._mouse, this.camera);
+
+            const hits = this._raycaster.intersectObject(this._gizmoDragPlane);
+            if (hits.length === 0) return;
+            const pt = hits[0].point;
+
+            if (this._gizmoAction === 'rotate') {
+                const center = this._gizmoGroup.position;
+                const angle = Math.atan2(pt.z - center.z, pt.x - center.x);
+                const delta = angle - this._gizmoStartAngle;
+                this._gizmoStartAngle = angle;
+                this._rotateAsset3D(-delta);
+                window.dispatchEvent(new CustomEvent('fp-asset-moved', { detail: this.selectedAsset }));
+            } else {
+                const dx = pt.x - this._gizmoDragStart.x;
+                const dz = pt.z - this._gizmoDragStart.z;
+                this._gizmoDragStart.copy(pt);
+
+                if (this._gizmoAction === 'x-axis') {
+                    this._moveAsset3D(dx, 0);
+                } else if (this._gizmoAction === 'z-axis') {
+                    this._moveAsset3D(0, dz);
+                } else if (this._gizmoAction === 'center') {
+                    this._moveAsset3D(dx, dz);
+                }
+                window.dispatchEvent(new CustomEvent('fp-asset-moved', { detail: this.selectedAsset }));
+            }
+            return;
+        }
+
         // Check if mouse is over the 3D canvas
         const rect = this.rendererGL.domElement.getBoundingClientRect();
         const isOver = e.clientX >= rect.left && e.clientX <= rect.right &&
@@ -918,6 +1247,28 @@ class FloorPlan3DRenderer {
         if (!isOver) {
             if (this._ghostMesh) this._ghostMesh.visible = false;
             return;
+        }
+
+        // ── Gizmo hover cursor ──
+        if (this.editMode && this.activeTool === 'select' && this._gizmoGroup) {
+            this._mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            this._mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            this._raycaster.setFromCamera(this._mouse, this.camera);
+
+            const gizmoChildren = [];
+            this._gizmoGroup.traverse(child => { if (child.isMesh) gizmoChildren.push(child); });
+            const gizmoHits = this._raycaster.intersectObjects(gizmoChildren);
+            if (gizmoHits.length > 0 && gizmoHits[0].object.userData.gizmoAction) {
+                const action = gizmoHits[0].object.userData.gizmoAction;
+                const canvas = this.rendererGL.domElement;
+                if (action === 'x-axis') canvas.style.cursor = 'ew-resize';
+                else if (action === 'z-axis') canvas.style.cursor = 'ns-resize';
+                else if (action === 'center') canvas.style.cursor = 'move';
+                else if (action === 'rotate') canvas.style.cursor = 'grab';
+                return;
+            } else {
+                this.rendererGL.domElement.style.cursor = '';
+            }
         }
 
         // Measure rubber-band line
@@ -947,6 +1298,23 @@ class FloorPlan3DRenderer {
 
     _onMouseUp(e) {
         if (e.button === 0) {
+            // Release gizmo drag
+            if (this._gizmoAction) {
+                this._gizmoAction = null;
+                this._gizmoStartAngle = null;
+                this._gizmoDragStart = null;
+                if (this._gizmoDragPlane) {
+                    this.scene.remove(this._gizmoDragPlane);
+                    this._gizmoDragPlane.geometry.dispose();
+                    this._gizmoDragPlane.material.dispose();
+                    this._gizmoDragPlane = null;
+                }
+                this.orbitControls.enabled = true;
+                this.rendererGL.domElement.style.cursor = '';
+                // Prevent the subsequent click event from deselecting
+                this._gizmoJustReleased = true;
+                requestAnimationFrame(() => { this._gizmoJustReleased = false; });
+            }
             this._walkLookActive = false;
             this._mouseDownPos = null;
         }

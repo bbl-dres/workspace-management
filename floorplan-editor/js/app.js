@@ -185,15 +185,22 @@ function switchViewMode(mode) {
     if (mode === '2d') {
         canvas2d.style.display = 'block';
         if (canvas3d) canvas3d.style.display = 'none';
-        if (renderer3d) renderer3d.stopAnimationLoop();
+        if (renderer3d) {
+            renderer3d.stopAnimationLoop();
+            renderer3d.setEditMode(false);
+        }
         renderer.draw();
         toolbar.style.display = '';
         scaleBar.style.display = '';
         walkCrosshair.style.display = 'none';
         walkInstructions.style.display = 'none';
         renderToolbar();
-        // Restore left panel visibility in 2D
-        document.getElementById('leftPanel').style.display = '';
+        // In edit mode, hide left panel (shown when Hinzufügen clicked)
+        if (state.editMode) {
+            document.getElementById('leftPanel').style.display = 'none';
+        } else {
+            document.getElementById('leftPanel').style.display = '';
+        }
     } else {
         // 3D or Walk
         if (!renderer3d) return; // not yet loaded
@@ -201,8 +208,9 @@ function switchViewMode(mode) {
         canvas2d.style.display = 'none';
         canvas3d.style.display = 'block';
 
-        // Sync color scheme
+        // Sync color scheme and edit mode
         renderer3d.setColorScheme(renderer.activeSchemeId);
+        renderer3d.setEditMode(state.editMode);
 
         // Set camera mode
         renderer3d.setMode(mode === 'walk' ? 'walk' : 'orbit');
@@ -215,7 +223,7 @@ function switchViewMode(mode) {
             renderToolbar();
             walkCrosshair.style.display = 'none';
             walkInstructions.style.display = 'none';
-            // In edit mode, hide left panel by default in 3D
+            // In edit mode, hide left panel (shown when Hinzufügen clicked)
             if (state.editMode) {
                 document.getElementById('leftPanel').style.display = 'none';
             }
@@ -300,13 +308,14 @@ function enterEditMode() {
 
     // Tell editor
     editor.setEditMode(true);
+    editor.setTool('select');
 
-    if (state.viewMode === '3d') {
-        // In 3D edit mode, hide left panel by default (shown when Hinzufügen clicked)
-        document.getElementById('leftPanel').style.display = 'none';
-        if (renderer3d) renderer3d.setTool('select');
-    } else {
-        editor.setTool('select');
+    // Hide left panel by default in edit mode (shown when Hinzufügen clicked)
+    document.getElementById('leftPanel').style.display = 'none';
+
+    if (renderer3d) {
+        renderer3d.setEditMode(true);
+        renderer3d.setTool('select');
     }
 }
 
@@ -338,6 +347,7 @@ function exitEditMode() {
 
     // Clear 3D edit state
     if (renderer3d) {
+        renderer3d.setEditMode(false);
         renderer3d.clearMockups();
         renderer3d.setTool('select');
     }
@@ -369,10 +379,9 @@ const ICON = {
 
 function renderToolbar() {
     const toolbar = document.getElementById('toolbar');
-    const is3D = state.viewMode === '3d';
 
-    if (is3D && state.editMode) {
-        // ── 3D Edit mode toolbar ──
+    if (state.editMode) {
+        // ── Edit mode toolbar (same for 2D and 3D) ──
         toolbar.innerHTML = `
             <button class="fp-toolbar__btn fp-toolbar__btn--label" data-tool="add" title="Element hinzufügen">
                 ${ICON.add} Hinzufügen
@@ -395,74 +404,11 @@ function renderToolbar() {
                 ${ICON.fit}
             </button>
         `;
-    } else if (is3D) {
-        // ── 3D View mode toolbar ──
-        toolbar.innerHTML = `
-            <button data-tool="select" class="fp-toolbar__btn active" title="Auswählen (V)">
-                ${ICON.cursor}
-            </button>
-            <div class="fp-toolbar__sep"></div>
-            <button data-tool="measure" class="fp-toolbar__btn" title="Messen (M)">
-                ${ICON.measure}
-            </button>
-            <div class="fp-toolbar__sep"></div>
-            <button id="zoomIn" class="fp-toolbar__btn" title="Vergrössern (+)">
-                ${ICON.zoomIn}
-            </button>
-            <button id="zoomOut" class="fp-toolbar__btn" title="Verkleinern (-)">
-                ${ICON.zoomOut}
-            </button>
-            <button id="fitView" class="fp-toolbar__btn" title="Ansicht anpassen (F)">
-                ${ICON.fit}
-            </button>
-        `;
-    } else if (state.editMode) {
-        // ── 2D Edit mode toolbar ──
-        toolbar.innerHTML = `
-            <button class="fp-toolbar__btn fp-toolbar__btn--label" data-tool="add" title="Element hinzufügen" disabled>
-                ${ICON.add} Hinzufügen
-            </button>
-            <button class="fp-toolbar__btn" data-tool="text" title="Text (T)" disabled>
-                ${ICON.text}
-            </button>
-            <button class="fp-toolbar__btn" data-tool="draw" title="Zeichnen (D)" disabled>
-                ${ICON.draw}
-            </button>
-            <button class="fp-toolbar__btn active" data-tool="select" title="Auswählen (V)">
-                ${ICON.cursor}
-            </button>
-            <button class="fp-toolbar__btn" data-tool="furniture" title="Mobiliar" disabled>
-                ${ICON.furniture}
-            </button>
-            <div class="fp-toolbar__sep"></div>
-            <button class="fp-toolbar__btn fp-toolbar__btn--disabled" id="undoBtn" title="Rückgängig (Ctrl+Z)" disabled>
-                ${ICON.undo}
-            </button>
-            <button class="fp-toolbar__btn fp-toolbar__btn--disabled" id="redoBtn" title="Wiederholen (Ctrl+Y)" disabled>
-                ${ICON.redo}
-            </button>
-            <button data-tool="measure" class="fp-toolbar__btn" title="Messen (M)">
-                ${ICON.measure}
-            </button>
-            <div class="fp-toolbar__sep"></div>
-            <button id="zoomIn" class="fp-toolbar__btn" title="Vergrössern (+)">
-                ${ICON.zoomIn}
-            </button>
-            <button id="zoomOut" class="fp-toolbar__btn" title="Verkleinern (-)">
-                ${ICON.zoomOut}
-            </button>
-            <button id="fitView" class="fp-toolbar__btn" title="Ansicht anpassen (F)">
-                ${ICON.fit}
-            </button>
-        `;
     } else {
-        // ── 2D View mode toolbar ──
+        // ── View mode toolbar (same for 2D and 3D) ──
         toolbar.innerHTML = `
             <button data-tool="select" class="fp-toolbar__btn active" title="Auswählen (V)">
                 ${ICON.cursor}
-            </button>
-            <button data-tool="pan" class="fp-toolbar__btn" title="Verschieben (H)">
-                ${ICON.pan}
             </button>
             <div class="fp-toolbar__sep"></div>
             <button data-tool="measure" class="fp-toolbar__btn" title="Messen (M)">
@@ -746,8 +692,8 @@ function renderFloorProperties(floorFeature, rooms, assets) {
             </div>
             <div class="fp-metrics-grid">
                 <div class="fp-metric">
-                    <span class="fp-metric__label">Fläche</span>
-                    <span class="fp-metric__value">${floor.areaGross} <span class="fp-metric__unit">m²</span></span>
+                    <span class="fp-metric__label">Fläche NGF</span>
+                    <span class="fp-metric__value">${totalArea} <span class="fp-metric__unit">m²</span></span>
                 </div>
                 <div class="fp-metric">
                     <span class="fp-metric__label">Arbeitsplätze</span>
@@ -1130,14 +1076,15 @@ function bindUIEvents() {
 
             const tool = toolBtn.dataset.tool;
 
+            // Route to appropriate renderer
             if (state.viewMode === '3d' && renderer3d) {
                 renderer3d.setTool(tool);
-                // Toggle left panel for 'add' tool in edit mode
-                if (state.editMode) {
-                    document.getElementById('leftPanel').style.display = (tool === 'add') ? '' : 'none';
-                }
-            } else {
-                editor.setTool(tool);
+            }
+            editor.setTool(tool);
+
+            // Toggle left panel for 'add' tool in edit mode (both 2D and 3D)
+            if (state.editMode) {
+                document.getElementById('leftPanel').style.display = (tool === 'add') ? '' : 'none';
             }
             return;
         }
