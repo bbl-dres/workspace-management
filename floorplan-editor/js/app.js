@@ -32,9 +32,11 @@ let renderer3d = null;
 /* ── Utility ───────────────────────────────────────────────────────────── */
 
 function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }
 
 /* ── Data Loading ──────────────────────────────────────────────────────── */
@@ -269,6 +271,24 @@ function loadFloor(floorId) {
     const rooms = state.roomsGeo.features.filter(f => f.properties.floorId === floorId);
     const assets = state.assetsGeo.features.filter(f => f.properties.floorId === floorId);
 
+    // Enrich assets with visual properties from product catalog
+    for (const asset of assets) {
+        const pid = asset.properties.productId;
+        if (pid != null) {
+            const product = state.products.find(p => p.id === pid);
+            if (product) {
+                asset.properties._product = product;
+                asset.properties._model3dUrl = product.model3d ? '../assets/' + product.model3d : null;
+                asset.properties._name = product.name;
+                asset.properties._brand = product.brand;
+                asset.properties._categoryId = product.subcategory || product.category;
+                asset.properties._height = (product.dimensions?.height || 75) / 100; // cm→m
+                asset.properties._color3d = product.color3d || '#475569';
+                asset.properties._shape2d = product.shape2d || 'rect';
+            }
+        }
+    }
+
     // Feed renderer
     renderer.setData(rooms, assets, floorFeature);
 
@@ -475,7 +495,7 @@ function renderRoomItem(room, assetsByRoom, opts) {
                     ${assets.map(a => `
                         <div class="fp-resource-asset ${nested ? 'fp-resource-asset--nested' : ''}" data-asset-id="${escapeHtml(a.properties.assetId)}">
                             <span class="fp-resource-asset__icon">◆</span>
-                            <span class="fp-resource-asset__name">${escapeHtml(a.properties.name)}</span>
+                            <span class="fp-resource-asset__name">${escapeHtml(a.properties._name || a.properties.name)}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -581,8 +601,9 @@ const CATEGORY_LABELS = {
     sichtschutz: 'Sichtschutz',
 };
 
-function getProductImageUrl(photoId) {
-    return `https://images.unsplash.com/${photoId}?w=120&h=120&fit=crop&auto=format`;
+function getProductImageUrl(photoPath) {
+    if (!photoPath) return null;
+    return '../assets/' + photoPath;
 }
 
 function renderLibraryContent() {
@@ -626,7 +647,7 @@ function renderLibraryContent() {
         html += `
             <div class="fp-library-item" data-category="${escapeHtml(product.category)}" data-product-id="${product.id}" draggable="true">
                 <div class="fp-library-item__preview">
-                    <img src="${imgUrl}" alt="${escapeHtml(product.name)}" loading="lazy">
+                    <img src="${imgUrl}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" width="120" height="80">
                 </div>
                 ${product.isNew ? '<span class="fp-library-item__badge">New</span>' : ''}
                 <span class="fp-library-item__name">${escapeHtml(product.name)}</span>
@@ -817,7 +838,7 @@ function renderRoomProperties(room) {
                 <div class="fp-asset-list">
                     ${roomAssets.map(a => `
                         <div class="fp-asset-item" data-asset-id="${escapeHtml(a.properties.assetId)}">
-                            <span class="fp-asset-item__name">${escapeHtml(a.properties.name)}</span>
+                            <span class="fp-asset-item__name">${escapeHtml(a.properties._name || a.properties.name)}</span>
                             <span class="fp-asset-item__status fp-asset-item__status--${a.properties.condition.toLowerCase()}">${escapeHtml(a.properties.condition)}</span>
                         </div>
                     `).join('')}
@@ -842,7 +863,7 @@ function renderAssetProperties(asset) {
         <div class="fp-props-section">
             <span class="fp-props-back" id="propsBack">← Geschoss</span>
             <div class="fp-props-section__header" style="margin-top:8px">
-                <h3>${escapeHtml(p.name)}</h3>
+                <h3>${escapeHtml(p._name || p.name)}</h3>
             </div>
         </div>
 
@@ -861,11 +882,11 @@ function renderAssetProperties(asset) {
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Marke</span>
-                    <span class="fp-attr__value">${escapeHtml(p.brand)}</span>
+                    <span class="fp-attr__value">${escapeHtml(p._brand || p.brand)}</span>
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Kategorie</span>
-                    <span class="fp-attr__value">${escapeHtml(p.categoryId)}</span>
+                    <span class="fp-attr__value">${escapeHtml(p._categoryId || p.categoryId)}</span>
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Status</span>
@@ -913,7 +934,7 @@ function renderEditableAssetProperties(asset) {
         <div class="fp-props-section">
             <span class="fp-props-back" id="propsBack">← Geschoss</span>
             <div class="fp-props-section__header" style="margin-top:8px">
-                <h3>${escapeHtml(p.name)}</h3>
+                <h3>${escapeHtml(p._name || p.name)}</h3>
             </div>
         </div>
 
@@ -952,7 +973,7 @@ function renderEditableAssetProperties(asset) {
                 </div>
                 <div class="fp-edit-field fp-edit-field--full">
                     <label class="fp-edit-field__label">Name</label>
-                    <input type="text" class="fp-edit-field__input" value="${escapeHtml(p.name)}">
+                    <input type="text" class="fp-edit-field__input" value="${escapeHtml(p._name || p.name)}">
                 </div>
             </div>
         </div>
@@ -964,11 +985,11 @@ function renderEditableAssetProperties(asset) {
             <div class="fp-attrs">
                 <div class="fp-attr">
                     <span class="fp-attr__label">Marke</span>
-                    <span class="fp-attr__value">${escapeHtml(p.brand)}</span>
+                    <span class="fp-attr__value">${escapeHtml(p._brand || p.brand)}</span>
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Kategorie</span>
-                    <span class="fp-attr__value">${escapeHtml(p.categoryId)}</span>
+                    <span class="fp-attr__value">${escapeHtml(p._categoryId || p.categoryId)}</span>
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Status</span>
@@ -1028,16 +1049,21 @@ function onSelectionChange(e) {
 
 let _placedAssetCounter = 0;
 
-function createAssetFeature(lon, lat) {
+function createAssetFeature(lon, lat, productId) {
     _placedAssetCounter++;
     const id = `a-placed-${String(_placedAssetCounter).padStart(3, '0')}`;
-    const p = renderer.projection;
-    const halfW = 0.3; // 0.6m / 2
-    const halfD = 0.3; // 0.6m / 2
-    const dLon = halfW / p.metersPerDegreeLon;
-    const dLat = halfD / p.metersPerDegreeLat;
+    const proj = renderer.projection;
 
-    return {
+    // Use product dimensions if available, else default 0.6×0.6m
+    const product = productId ? state.products.find(pr => pr.id === productId) : null;
+    const dimW = product?.dimensions?.width ? product.dimensions.width / 100 : 0.6;
+    const dimD = product?.dimensions?.depth ? product.dimensions.depth / 100 : 0.6;
+    const halfW = dimW / 2;
+    const halfD = dimD / 2;
+    const dLon = halfW / proj.metersPerDegreeLon;
+    const dLat = halfD / proj.metersPerDegreeLat;
+
+    const feature = {
         type: 'Feature',
         geometry: {
             type: 'Polygon',
@@ -1051,22 +1077,38 @@ function createAssetFeature(lon, lat) {
         },
         properties: {
             assetId: id,
-            name: 'Neues Möbel',
-            categoryId: 'buerostuehle',
+            productId: productId || null,
+            name: product ? product.name : 'Neues Möbel',
+            categoryId: product ? (product.subcategory || product.category) : 'buerostuehle',
             buildingId: state.selectedBuildingId,
             floorId: state.selectedFloorId,
             roomId: '',
-            status: 'Active',
+            status: 'Aktiv',
             condition: 'Gut',
-            brand: '',
+            brand: product ? product.brand : '',
             inventoryNumber: '',
             centroid: [lon, lat],
+            groundElevation: 0,
             baseHeight: 0,
-            topHeight: 0.75,
+            topHeight: product?.dimensions?.height ? product.dimensions.height / 100 : 0.75,
             acquisitionDate: new Date().toISOString().split('T')[0],
             acquisitionCost: 0,
         }
     };
+
+    // Enrich with product visual properties (same as loadFloor enrichment)
+    if (product) {
+        feature.properties._product = product;
+        feature.properties._model3dUrl = product.model3d ? '../assets/' + product.model3d : null;
+        feature.properties._name = product.name;
+        feature.properties._brand = product.brand;
+        feature.properties._categoryId = product.subcategory || product.category;
+        feature.properties._height = (product.dimensions?.height || 75) / 100;
+        feature.properties._color3d = product.color3d || '#475569';
+        feature.properties._shape2d = product.shape2d || 'rect';
+    }
+
+    return feature;
 }
 
 function onAssetPlaced(e) {

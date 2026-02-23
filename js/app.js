@@ -16,6 +16,51 @@ let PLANUNGSBEISPIELE = [];
 let CAD_SECTIONS = [];
 let LOCATIONS = { id: 'ch', label: 'Schweiz', type: 'country', count: 0, children: [] };
 
+// ---- Lookup Maps (built after data load) ----
+let PRODUCT_MAP = new Map();   // id → product
+let BUILDING_MAP = new Map();  // buildingId → building
+let FLOOR_MAP = new Map();     // floorId → floor
+
+// ---- Pre-computed category counts ----
+let _productCountCache = new Map();   // catId → count
+let _furnitureCountCache = new Map(); // catId → count
+
+function _buildLookupMaps() {
+  PRODUCT_MAP = new Map(PRODUCTS.map(p => [p.id, p]));
+  BUILDING_MAP = new Map(BUILDINGS.map(b => [b.buildingId, b]));
+  FLOOR_MAP = new Map(FLOORS.map(f => [f.floorId, f]));
+}
+
+function _buildCategoryCountCaches() {
+  _productCountCache.clear();
+  _furnitureCountCache.clear();
+  // Product counts
+  _productCountCache.set('alle', PRODUCTS.length);
+  const catIds = _collectAllCategoryIds(CATEGORIES);
+  for (const catId of catIds) {
+    const ids = getAllSubcategoryIds(catId);
+    const idSet = new Set(ids);
+    _productCountCache.set(catId, PRODUCTS.filter(p => idSet.has(p.category) || idSet.has(p.subcategory)).length);
+  }
+  // Furniture counts
+  const available = FURNITURE_ITEMS.filter(f => f.status === 'Zur Abgabe');
+  _furnitureCountCache.set('alle', available.length);
+  for (const catId of catIds) {
+    const ids = getAllSubcategoryIds(catId);
+    const idSet = new Set(ids);
+    _furnitureCountCache.set(catId, available.filter(f => idSet.has(f.categoryId)).length);
+  }
+}
+
+function _collectAllCategoryIds(cats) {
+  const ids = [];
+  for (const c of cats) {
+    ids.push(c.id);
+    if (c.children) ids.push(..._collectAllCategoryIds(c.children));
+  }
+  return ids;
+}
+
 async function loadData() {
   const [catRes, prodRes, siteRes, bldRes, flrRes, roomRes, assetsRes, furnRes, modRes, planRes, cadRes] = await Promise.all([
     fetch('data/categories.json'),
@@ -66,7 +111,9 @@ async function loadData() {
     rooms: roomsByFloor[f.properties.floorId] || []
   }));
 
+  _buildLookupMaps();
   buildLocationTree();
+  _buildCategoryCountCaches();
 }
 
 function buildLocationTree() {
@@ -218,7 +265,7 @@ function getCartCount() {
 
 function getCartTotal() {
   return state.cart.reduce((sum, item) => {
-    const p = PRODUCTS.find(x => x.id === item.productId);
+    const p = PRODUCT_MAP.get(item.productId);
     return sum + (p ? p.price * item.quantity : 0);
   }, 0);
 }
@@ -297,16 +344,11 @@ function getAllSubcategoryIds(catId) {
 }
 
 function countProductsInCategory(catId) {
-  if (catId === 'alle') return PRODUCTS.length;
-  const ids = getAllSubcategoryIds(catId);
-  return PRODUCTS.filter(p => ids.includes(p.category) || ids.includes(p.subcategory)).length;
+  return _productCountCache.get(catId) ?? 0;
 }
 
 function countFurnitureInCategory(catId) {
-  const available = FURNITURE_ITEMS.filter(f => f.status === 'Zur Abgabe');
-  if (catId === 'alle') return available.length;
-  const ids = getAllSubcategoryIds(catId);
-  return available.filter(f => ids.includes(f.categoryId)).length;
+  return _furnitureCountCache.get(catId) ?? 0;
 }
 
 // ---- BREADCRUMB HELPER ----
@@ -343,8 +385,8 @@ function filterProducts() {
   let filtered = [...PRODUCTS];
 
   if (state.activeCategory !== 'alle') {
-    const ids = getAllSubcategoryIds(state.activeCategory);
-    filtered = filtered.filter(p => ids.includes(p.category) || ids.includes(p.subcategory));
+    const idSet = new Set(getAllSubcategoryIds(state.activeCategory));
+    filtered = filtered.filter(p => idSet.has(p.category) || idSet.has(p.subcategory));
   }
 
   if (state.searchQuery.trim()) {
@@ -382,8 +424,8 @@ function filterFurnitureItems() {
   let filtered = FURNITURE_ITEMS.filter(f => f.status === 'Zur Abgabe');
 
   if (state.activeCategory !== 'alle') {
-    const ids = getAllSubcategoryIds(state.activeCategory);
-    filtered = filtered.filter(f => ids.includes(f.categoryId));
+    const idSet = new Set(getAllSubcategoryIds(state.activeCategory));
+    filtered = filtered.filter(f => idSet.has(f.categoryId));
   }
 
   if (state.searchQuery) {

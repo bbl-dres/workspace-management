@@ -348,8 +348,12 @@ with price and availability.
 | `currency`       | string     | ✓        | ISO currency code (default `"CHF"`)                | Währung                |
 | `isNew`          | boolean    |          | Marked as "New"                                    | Neu                    |
 | `isCircular`     | boolean    |          | Used furniture (circular economy)                  | Kreislaufwirtschaft    |
-| `imageUrl`       | string     |          | Product image URL                                  | Produktbild-URL        |
-| `dimensions`     | Dimensions |          | Dimensions (W×D×H cm)                              | Abmessungen            |
+| `photo`          | string     |          | Product image path relative to `assets/` (e.g. `"images/barhocker-dietiker-ono.jpg"`) | Produktbild-Pfad |
+| `photos`         | string[]   |          | Gallery image paths relative to `assets/` (optional) | Galerie-Bilder    |
+| `dimensions`     | Dimensions |          | Dimensions (W×D×H cm) — used by floorplan editor for placement sizing and 3D extrusion height | Abmessungen            |
+| `color3d`        | string     |          | Hex color for 3D extruded fallback geometry (e.g. `"#64748B"`) | 3D-Farbe          |
+| `shape2d`        | enum       |          | 2D floor plan shape: `"circle"` \| `"rect"` \| `"diamond"` | 2D-Form            |
+| `model3d`        | string     | ✓        | GLB/glTF model path relative to `assets/` (e.g. `"3d/barhocker.glb"`); empty string = fallback to extruded geometry | 3D-Modell-Pfad  |
 | `weight`         | number     |          | Weight in kg                                       | Gewicht                |
 | `material`       | string     |          | Primary material (e.g. `"Fabric Anthracite"`)      | Hauptmaterial          |
 | `color`          | string     |          | Color                                              | Farbe                  |
@@ -371,9 +375,24 @@ with price and availability.
 | On request              | Auf Anfrage             |
 | Unavailable             | Nicht verfügbar         |
 
+**Asset directory structure:**
+```
+assets/
+├── 3d/          ← GLB/glTF 3D models referenced by model3d
+└── images/      ← Product images referenced by photo/photos
+```
+
+All asset paths in products.json are relative to the `assets/` directory.
+Code in root-level pages resolves as `assets/{path}`, while the floorplan
+editor (in `floorplan-editor/`) resolves as `../assets/{path}`.
+
 **Prototype mapping:** Direct 1:1 correspondence to `products.json`.
-The fields `dimensions`, `weight`, `material`, `color`, `articleNumber`,
-`leadTimeDays` are extensions beyond the current prototype.
+The fields `dimensions`, `color3d`, `shape2d`, and `model3d` are implemented
+in the floorplan editor — products define visual geometry (dimensions, color,
+shape, 3D model) and assets reference products via `productId`. The `model3d`
+field is present on all products; empty string triggers fallback to extruded
+geometry in the 3D viewer. The fields `weight`, `material`, `color`,
+`articleNumber`, `leadTimeDays` are extensions beyond the current prototype.
 
 ---
 
@@ -436,6 +455,26 @@ assigned room). `data/assets.geojson` is the single source of truth for all inve
 items (61 items). Each asset feature includes a `centroid` property `[lng, lat]` for
 future drag-to-reposition editing. Assets are displayed on the map at zoom >= 18.
 Items are linked to their spatial location via `buildingId`, `floorId`, and `roomId`.
+
+**Product-driven enrichment:** All 61 assets have a `productId` set, linking them
+to a Product in `data/products.json`. At load time, the floorplan editor enriches
+each asset with derived `_*` properties from its product:
+
+| Enriched Property | Source | Description |
+|-------------------|--------|-------------|
+| `_product`        | Product object | Full product reference |
+| `_model3dUrl`     | `product.model3d` | Resolved GLB model URL |
+| `_name`           | `product.name` | Display name |
+| `_brand`          | `product.brand` | Brand |
+| `_categoryId`     | `product.subcategory \|\| product.category` | Category ID |
+| `_height`         | `product.dimensions.height / 100` | Height in meters for 3D extrusion |
+| `_color3d`        | `product.color3d` | Hex color for 3D fallback geometry |
+| `_shape2d`        | `product.shape2d` | 2D floor plan shape |
+
+Renderers use enriched `_*` properties with fallback to raw asset properties
+(e.g. `_name || name`) for backward compatibility. The raw fields `name`, `brand`,
+`categoryId`, `baseHeight`, `topHeight` are retained in assets.geojson because
+the occupancy page reads them directly via Mapbox GL expressions.
 
 ---
 

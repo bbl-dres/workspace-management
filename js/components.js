@@ -4,9 +4,11 @@
 
 // Utility
 function escapeHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 // Icons
@@ -26,10 +28,24 @@ const ICONS = {
   misc: `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.9"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>`
 };
 
+function resolveProductImage(path) {
+  if (!path) return null;
+  return 'assets/' + path;
+}
+
+function resolveProductThumb(path) {
+  if (!path) return null;
+  // images/foo.jpg → images/thumbs/foo.jpg
+  const parts = path.split('/');
+  const filename = parts.pop();
+  return 'assets/' + parts.join('/') + '/thumbs/' + filename;
+}
+
 function getProductImage(product) {
-  const photoId = product.photo;
-  if (photoId) {
-    return `<img src="https://images.unsplash.com/${photoId}?w=600&h=400&fit=crop&auto=format&q=80" srcset="https://images.unsplash.com/${photoId}?w=400&h=267&fit=crop&auto=format&q=80 400w, https://images.unsplash.com/${photoId}?w=600&h=400&fit=crop&auto=format&q=80 600w, https://images.unsplash.com/${photoId}?w=800&h=533&fit=crop&auto=format&q=80 800w" sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 280px" alt="${product.name}" loading="lazy">`;
+  const photoPath = product.photo;
+  if (photoPath) {
+    const thumb = resolveProductThumb(photoPath);
+    return `<img src="${thumb}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" width="300" height="200">`;
   }
   return getProductIcon(product);
 }
@@ -96,7 +112,7 @@ function renderCarousel(photos, altText, badgeHtml) {
         <div class="carousel__viewport">
           <div class="carousel__track">
             <div class="carousel__slide carousel__slide--active">
-              <img src="https://images.unsplash.com/${photos[0]}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(altText)}" loading="lazy">
+              <img src="${resolveProductImage(photos[0])}" alt="${escapeHtml(altText)}" loading="lazy" decoding="async">
             </div>
           </div>
         </div>
@@ -106,7 +122,7 @@ function renderCarousel(photos, altText, badgeHtml) {
   }
   const slides = photos.map((photo, i) => `
     <div class="carousel__slide${i === 0 ? ' carousel__slide--active' : ''}" data-index="${i}">
-      <img src="https://images.unsplash.com/${photo}?w=600&h=450&fit=crop&auto=format&q=80" alt="${escapeHtml(altText)} – Bild ${i + 1}" loading="lazy">
+      <img src="${resolveProductImage(photo)}" alt="${escapeHtml(altText)} – Bild ${i + 1}" ${i === 0 ? '' : 'loading="lazy" '}decoding="async">
     </div>
   `).join('');
   const bullets = photos.map((_, i) => `

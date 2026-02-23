@@ -10,16 +10,20 @@
     "condition": "Gut",
     "description": "Modell 64, guter Zustand, gereinigt. Armlehnen höhenverstellbar, Lordosenstütze intakt.",
     "acquisitionDate": "2019-03-15",
-    "acquisitionCost": 890.00,
-    "price": 45.00,
+    "acquisitionCost": 890,
+    "price": 45,
     "currency": "CHF",
     "buildingId": "b-001",
     "floorId": "b-001-2",
     "roomId": "b-001-2-205",
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2023-004521",
-    "photo": "photo-1580480055273-228ff5388ef8",
-    "photos": ["photo-1580480055273-228ff5388ef8", "photo-1598300042247-d088f8ab3a91", "photo-1616627547584-bf28cee262db"],
+    "photo": "images/circular-giroflex-buerostuhl-64.jpg",
+    "photos": [
+      "images/circular-giroflex-buerostuhl-64.jpg",
+      "images/circular-giroflex-buerostuhl-64-2.jpg",
+      "images/circular-giroflex-buerostuhl-64-3.jpg"
+    ],
     "listedAt": "2025-11-10"
   },
   {
@@ -33,16 +37,20 @@
     "condition": "Akzeptabel",
     "description": "2 Felder, 3 Reihen, lichtgrau. Leichte Gebrauchsspuren an den Kanten, Struktur einwandfrei.",
     "acquisitionDate": "2016-07-22",
-    "acquisitionCost": 2450.00,
-    "price": 380.00,
+    "acquisitionCost": 2450,
+    "price": 380,
     "currency": "CHF",
     "buildingId": "b-002",
     "floorId": "b-002-1",
     "roomId": "b-002-1-112",
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2022-003187",
-    "photo": "photo-1555041469-a586c61ea9bc",
-    "photos": ["photo-1555041469-a586c61ea9bc", "photo-1595428774223-ef52624120d2", "photo-1493663284031-b7e3aefcae8e"],
+    "photo": "images/circular-usm-haller-regal.jpg",
+    "photos": [
+      "images/circular-usm-haller-regal.jpg",
+      "images/circular-usm-haller-regal-2.jpg",
+      "images/circular-usm-haller-regal-3.jpg"
+    ],
     "listedAt": "2025-10-28"
   },
   {
@@ -56,8 +64,8 @@
     "condition": "Gut",
     "description": "Stoff grau, leichte Abnutzung an der Sitzfläche. Stapelbar, 4 Stück verfügbar.",
     "acquisitionDate": "2020-01-10",
-    "acquisitionCost": 320.00,
-    "price": 35.00,
+    "acquisitionCost": 320,
+    "price": 35,
     "currency": "CHF",
     "quantity": 4,
     "buildingId": "b-003",
@@ -65,8 +73,11 @@
     "roomId": "b-003-eg-EG08",
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2024-005890",
-    "photo": "photo-1506439773649-6e0eb8cfb237",
-    "photos": ["photo-1506439773649-6e0eb8cfb237", "photo-1561677978-583a8c7a4b43"],
+    "photo": "images/circular-vitra-besucherstuhl-03.jpg",
+    "photos": [
+      "images/circular-vitra-besucherstuhl-03.jpg",
+      "images/circular-vitra-besucherstuhl-03-2.jpg"
+    ],
     "listedAt": "2025-12-01"
   },
   {
@@ -80,16 +91,20 @@
     "condition": "Gut",
     "description": "140×70 cm, höhenverstellbar (mechanisch), Tischplatte Eiche natur. Guter Zustand, minimale Kratzer.",
     "acquisitionDate": "2017-09-05",
-    "acquisitionCost": 1200.00,
-    "price": 120.00,
+    "acquisitionCost": 1200,
+    "price": 120,
     "currency": "CHF",
     "buildingId": "b-010",
     "floorId": "b-010-1",
     "roomId": "b-010-1-103",
     "organizationId": "org-bazg",
     "qrCode": "https://bbl.admin.ch/inv/INV-2021-002456",
-    "photo": "photo-1518455027359-f3f8164ba6bd",
-    "photos": ["photo-1518455027359-f3f8164ba6bd", "photo-1593642632559-0c6d3fc62b89", "photo-1611269154421-4e27233ac5c7"],
+    "photo": "images/circular-lista-office-schreibtisch.jpg",
+    "photos": [
+      "images/circular-lista-office-schreibtisch.jpg",
+      "images/circular-lista-office-schreibtisch-2.jpg",
+      "images/circular-lista-office-schreibtisch-3.jpg"
+    ],
     "listedAt": "2025-09-15"
   },
   {
@@ -103,16 +118,19 @@
     "condition": "Akzeptabel",
     "description": "Funktionstüchtig, leichte Kratzer am Fuss. Leuchtmittel (E27) nicht inbegriffen.",
     "acquisitionDate": "2018-04-20",
-    "acquisitionCost": 380.00,
-    "price": 80.00,
+    "acquisitionCost": 380,
+    "price": 80,
     "currency": "CHF",
     "buildingId": "b-001",
     "floorId": "b-001-3",
     "roomId": "b-001-3-302",
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2023-004890",
-    "photo": "photo-1573164713988-8665fc963095",
-    "photos": ["photo-1573164713988-8665fc963095", "photo-1513506003901-1e6a229e2d15"],
+    "photo": "images/circular-artemide-tolomeo-schreibtischleuchte.jpg",
+    "photos": [
+      "images/circular-artemide-tolomeo-schreibtischleuchte.jpg",
+      "images/circular-artemide-tolomeo-schreibtischleuchte-2.jpg"
+    ],
     "listedAt": "2025-11-22"
   },
   {
@@ -126,8 +144,8 @@
     "condition": "Sehr gut",
     "description": "Stoff blau, kaum Gebrauchsspuren. 4 Stück verfügbar, stapelbar.",
     "acquisitionDate": "2021-06-14",
-    "acquisitionCost": 450.00,
-    "price": 25.00,
+    "acquisitionCost": 450,
+    "price": 25,
     "currency": "CHF",
     "quantity": 4,
     "buildingId": "b-020",
@@ -135,8 +153,12 @@
     "roomId": "b-020-1-108",
     "organizationId": "org-bazg",
     "qrCode": "https://bbl.admin.ch/inv/INV-2022-003501",
-    "photo": "photo-1581539250439-c96689b516dd",
-    "photos": ["photo-1581539250439-c96689b516dd", "photo-1592078615290-033ee584e267", "photo-1567538096630-e0c55bd6374c"],
+    "photo": "images/circular-sedus-konferenzstuhl-on-spot.jpg",
+    "photos": [
+      "images/circular-sedus-konferenzstuhl-on-spot.jpg",
+      "images/circular-sedus-konferenzstuhl-on-spot-2.jpg",
+      "images/circular-sedus-konferenzstuhl-on-spot-3.jpg"
+    ],
     "listedAt": "2025-10-05"
   },
   {
@@ -150,16 +172,19 @@
     "condition": "Gut",
     "description": "3 Schubladen, reinweiss, Rollen einwandfrei. Leichte Kratzer an der Oberseite.",
     "acquisitionDate": "2019-11-30",
-    "acquisitionCost": 680.00,
-    "price": 190.00,
+    "acquisitionCost": 680,
+    "price": 190,
     "currency": "CHF",
     "buildingId": "b-030",
     "floorId": "b-030-2",
     "roomId": "b-030-2-201",
     "organizationId": "org-bbl",
     "qrCode": "https://bbl.admin.ch/inv/INV-2023-004102",
-    "photo": "photo-1555041469-a586c61ea9bc",
-    "photos": ["photo-1555041469-a586c61ea9bc", "photo-1493663284031-b7e3aefcae8e"],
+    "photo": "images/circular-usm-inos-rollkorpus.jpg",
+    "photos": [
+      "images/circular-usm-inos-rollkorpus.jpg",
+      "images/circular-usm-inos-rollkorpus-2.jpg"
+    ],
     "listedAt": "2025-12-10"
   }
 ]

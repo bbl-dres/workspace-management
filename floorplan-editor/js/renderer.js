@@ -157,6 +157,9 @@ class FloorPlanRenderer {
             'empfangsmoebel':     'rect',
         };
 
+        /* ── Draw Batching ─────────────────────────────────────────────── */
+        this._drawScheduled = false;
+
         /* ── Resize Observer ───────────────────────────────────────────── */
         this._resizeObserver = new ResizeObserver(() => this._handleResize());
     }
@@ -170,6 +173,17 @@ class FloorPlanRenderer {
 
     destroy() {
         this._resizeObserver.disconnect();
+    }
+
+    /** Batched draw — coalesces multiple draw requests into one per frame */
+    requestDraw() {
+        if (!this._drawScheduled) {
+            this._drawScheduled = true;
+            requestAnimationFrame(() => {
+                this._drawScheduled = false;
+                this.draw();
+            });
+        }
     }
 
     /* ── Data Loading (Scene Graph) ────────────────────────────────────── */
@@ -202,7 +216,7 @@ class FloorPlanRenderer {
     drawNodeUpdate(nodeId, style) {
         // Future: allow per-node style overrides
         // For now, re-render handles this via hover/selected state
-        this.draw();
+        this.requestDraw();
     }
 
     /* ── Projection ────────────────────────────────────────────────────── */
@@ -299,7 +313,7 @@ class FloorPlanRenderer {
     setColorScheme(schemeId) {
         if (this.colorSchemes[schemeId]) {
             this.activeSchemeId = schemeId;
-            this.draw();
+            this.requestDraw();
         }
     }
 
@@ -563,8 +577,7 @@ class FloorPlanRenderer {
 
         const cx = (minX + maxX) / 2;
         const cy = (minY + maxY) / 2;
-        const category = asset.properties.categoryId;
-        const shape = this.assetShapes[category] || 'rect';
+        const shape = asset.properties._shape2d || this.assetShapes[asset.properties.categoryId] || 'rect';
 
         // Colors
         const fill = isSelected ? '#2563EB' : (isHovered ? '#475569' : '#64748B');
@@ -619,7 +632,7 @@ class FloorPlanRenderer {
             ctx.textBaseline = 'bottom';
             ctx.font = '500 9px "Noto Sans", sans-serif';
             ctx.fillStyle = '#1E40AF';
-            ctx.fillText(asset.properties.name, cx, minY - 6);
+            ctx.fillText(asset.properties._name || asset.properties.name, cx, minY - 6);
         }
     }
 

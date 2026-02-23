@@ -34,7 +34,14 @@
       "Bash(python3:*)",
       "Bash(comm:*)",
       "Bash(grep:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(paste:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Read(//c/Users/DavidRasner/Documents/GitHub/workspace-management/**)",
+      "Bash(magick:*)",
+      "Bash(convert:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

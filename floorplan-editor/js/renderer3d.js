@@ -7,6 +7,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 class FloorPlan3DRenderer {
 
@@ -54,6 +55,7 @@ class FloorPlan3DRenderer {
         /* ── Edit Mode & Gizmo ────────────────────────────────────────── */
         this.editMode = false;
         this._gizmoGroup = null;
+        this._gizmoMeshes = [];         // Cached array of gizmo child meshes (avoids traverse per frame)
         this._gizmoAction = null;      // 'x-axis' | 'z-axis' | 'center' | 'rotate' | null
         this._gizmoStartAngle = null;
         this._gizmoDragPlane = null;    // THREE.Plane (mathematical, not a mesh)
@@ -73,6 +75,10 @@ class FloorPlan3DRenderer {
         /* ── Furniture Placement (mockup) ─────────────────────────────── */
         this._placedMockups = [];      // Array of THREE.Mesh
         this._ghostMesh = null;
+
+        /* ── GLB Model Loading ─────────────────────────────────────────── */
+        this._gltfLoader = new GLTFLoader();
+        this._modelCache = new Map();  // modelUrl → THREE.Group (cloneable template)
 
         /* ── Raycaster ─────────────────────────────────────────────────── */
         this._raycaster = new THREE.Raycaster();
@@ -272,7 +278,7 @@ class FloorPlan3DRenderer {
        ================================================================== */
 
     _clearScene() {
-        const dispose = (arr) => {
+        const disposeSimple = (arr) => {
             for (const { mesh } of arr) {
                 this.scene.remove(mesh);
                 mesh.geometry.dispose();
@@ -280,9 +286,13 @@ class FloorPlan3DRenderer {
                 else mesh.material.dispose();
             }
         };
-        dispose(this.roomMeshes);
-        dispose(this.wallMeshes);
-        dispose(this.assetMeshes);
+        disposeSimple(this.roomMeshes);
+        disposeSimple(this.wallMeshes);
+        // Assets may be GLB groups — use _disposeMesh which traverses children
+        for (const { mesh } of this.assetMeshes) {
+            this.scene.remove(mesh);
+            this._disposeMesh(mesh);
+        }
         if (this.floorMesh) {
             this.scene.remove(this.floorMesh);
             this.floorMesh.geometry.dispose();
@@ -377,13 +387,29 @@ class FloorPlan3DRenderer {
     }
 
     _buildSingleAsset(asset) {
+        const modelUrl = asset.properties._model3dUrl;
+
+        // If asset has a GLB model URL, try to use it
+        if (modelUrl) {
+            const cached = this._modelCache.get(modelUrl);
+            if (cached) {
+                return this._createModelInstance(asset, cached);
+            }
+            // Build extruded placeholder, start async load
+            const placeholder = this._buildExtrudedAsset(asset);
+            this._loadAndSwapModel(asset, modelUrl);
+            return placeholder;
+        }
+
+        return this._buildExtrudedAsset(asset);
+    }
+
+    _buildExtrudedAsset(asset) {
         const coords = asset.geometry.coordinates[0];
         const shape = this._coordsToShape(coords);
 
-        const furnitureHeight = Math.max(
-            (asset.properties.topHeight || 0) - (asset.properties.baseHeight || 0),
-            0.1
-        );
+        const furnitureHeight = asset.properties._height
+            || Math.max((asset.properties.topHeight || 0) - (asset.properties.baseHeight || 0), 0.1);
 
         const geometry = new THREE.ExtrudeGeometry(shape, {
             steps: 1,
@@ -392,12 +418,9 @@ class FloorPlan3DRenderer {
         });
         geometry.rotateX(-Math.PI / 2);
 
-        const cat = asset.properties.categoryId;
-        const isChair = ['buerostuehle', 'konferenzstuehle', 'besucherstuehle'].includes(cat);
-        const isLamp = cat === 'stehleuchten';
-
+        const colorHex = asset.properties._color3d || '#475569';
         const material = new THREE.MeshStandardMaterial({
-            color: isLamp ? 0x94A3B8 : (isChair ? 0x64748B : 0x475569),
+            color: new THREE.Color(colorHex),
             roughness: 0.7,
             metalness: 0.2,
         });
@@ -416,6 +439,151 @@ class FloorPlan3DRenderer {
             this.scene.add(entry.mesh);
             this.assetMeshes.push(entry);
         }
+    }
+
+    /* ==================================================================
+       GLB Model Loading
+       ================================================================== */
+
+    async _loadAndSwapModel(asset, modelUrl) {
+        try {
+            // Avoid duplicate loads
+            if (this._modelCache.has(modelUrl)) {
+                this._swapToModel(asset, this._modelCache.get(modelUrl));
+                return;
+            }
+
+            const gltf = await this._gltfLoader.loadAsync(modelUrl);
+            this._modelCache.set(modelUrl, gltf.scene);
+            this._swapToModel(asset, gltf.scene);
+        } catch (err) {
+            console.warn('GLB model not found, keeping extruded shape:', modelUrl);
+        }
+    }
+
+    _swapToModel(asset, cachedScene) {
+        const idx = this.assetMeshes.findIndex(e => e.feature === asset);
+        if (idx === -1) return; // asset was removed (floor changed)
+
+        // Remove old placeholder
+        const old = this.assetMeshes[idx];
+        this.scene.remove(old.mesh);
+        this._disposeMesh(old.mesh);
+
+        // Create model instance from cache
+        const entry = this._createModelInstance(asset, cachedScene);
+        this.scene.add(entry.mesh);
+        this.assetMeshes[idx] = entry;
+
+        // Re-apply selection highlight if this asset is selected
+        if (this.selectedAsset === asset) {
+            this._applySelectionHighlight();
+        }
+    }
+
+    _createModelInstance(asset, cachedScene) {
+        const clone = cachedScene.clone(true);
+
+        // Deep-clone materials so selection highlight doesn't affect all instances
+        clone.traverse(child => {
+            if (child.isMesh && child.material) {
+                child.material = child.material.clone();
+            }
+        });
+
+        // Compute asset bounding box in 3D world coords
+        const assetBBox = this._getAssetBBox(asset);
+        const assetHeight = asset.properties._height
+            || Math.max((asset.properties.topHeight || 0) - (asset.properties.baseHeight || 0), 0.1);
+
+        // Compute model bounding box
+        const modelBox = new THREE.Box3().setFromObject(clone);
+        const modelSize = modelBox.getSize(new THREE.Vector3());
+        const modelCenter = modelBox.getCenter(new THREE.Vector3());
+
+        // Scale model to fit asset dimensions (uniform scale)
+        const scaleX = modelSize.x > 0 ? assetBBox.width / modelSize.x : 1;
+        const scaleY = modelSize.y > 0 ? assetHeight / modelSize.y : 1;
+        const scaleZ = modelSize.z > 0 ? assetBBox.depth / modelSize.z : 1;
+        const scale = Math.min(scaleX, scaleY, scaleZ);
+        clone.scale.set(scale, scale, scale);
+
+        // Center the model at origin (offset by its own center)
+        clone.position.set(
+            -modelCenter.x * scale,
+            -modelBox.min.y * scale, // place bottom on floor
+            -modelCenter.z * scale
+        );
+
+        // Wrap in a group for positioning and rotation
+        const group = new THREE.Group();
+        group.add(clone);
+
+        // Position at asset centroid
+        const centroid = this._getAssetCentroid3D(asset);
+        group.position.copy(centroid);
+        group.position.y = 0; // on the floor
+
+        // Compute orientation from polygon first edge
+        const angle = this._getAssetOrientation(asset);
+        group.rotation.y = angle;
+
+        // Enable shadows and set userData on all meshes
+        group.traverse(child => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                child.userData = { type: 'asset', feature: asset, isGLB: true };
+            }
+        });
+        group.userData = { type: 'asset', feature: asset, isGLB: true };
+
+        return { mesh: group, feature: asset };
+    }
+
+    _getAssetBBox(asset) {
+        const coords = asset.geometry.coordinates[0];
+        let minX = Infinity, maxX = -Infinity;
+        let minZ = Infinity, maxZ = -Infinity;
+        for (const [lon, lat] of coords) {
+            const p = this._geoTo3D(lon, lat);
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (p.z < minZ) minZ = p.z;
+            if (p.z > maxZ) maxZ = p.z;
+        }
+        return {
+            width: maxX - minX,
+            depth: maxZ - minZ,
+        };
+    }
+
+    _getAssetOrientation(asset) {
+        const coords = asset.geometry.coordinates[0];
+        if (coords.length < 2) return 0;
+        const p0 = this._geoTo3D(coords[0][0], coords[0][1]);
+        const p1 = this._geoTo3D(coords[1][0], coords[1][1]);
+        // First edge angle in XZ plane (Z is negated in world coords)
+        return Math.atan2(-(p1.z - p0.z), p1.x - p0.x);
+    }
+
+    _disposeMesh(obj) {
+        if (obj.geometry) {
+            obj.geometry.dispose();
+        }
+        if (obj.material) {
+            if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+            else obj.material.dispose();
+        }
+        obj.traverse(child => {
+            if (child !== obj) {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                    else child.material.dispose();
+                }
+            }
+        });
     }
 
     /* ==================================================================
@@ -560,10 +728,8 @@ class FloorPlan3DRenderer {
         this._raycaster.setFromCamera(this._mouse, this.camera);
 
         // Skip selection if click was on gizmo
-        if (this._gizmoGroup) {
-            const gizmoChildren = [];
-            this._gizmoGroup.traverse(child => { if (child.isMesh) gizmoChildren.push(child); });
-            if (this._raycaster.intersectObjects(gizmoChildren).length > 0) return;
+        if (this._gizmoGroup && this._gizmoMeshes.length > 0) {
+            if (this._raycaster.intersectObjects(this._gizmoMeshes).length > 0) return;
         }
 
         const assetObjs = this.assetMeshes.map(m => m.mesh);
@@ -571,7 +737,7 @@ class FloorPlan3DRenderer {
         const wallObjs = this.wallMeshes.map(m => m.mesh);
 
         let hit = null;
-        const assetHits = this._raycaster.intersectObjects(assetObjs);
+        const assetHits = this._raycaster.intersectObjects(assetObjs, true);
         if (assetHits.length > 0) {
             const feature = assetHits[0].object.userData.feature;
             hit = { type: 'asset', feature };
@@ -624,9 +790,9 @@ class FloorPlan3DRenderer {
             const colors = this._getColorForRoom(feature);
             mesh.material.color.set(colors.stroke);
         }
-        // Reset assets
+        // Reset assets (traverse for GLB groups)
         for (const { mesh } of this.assetMeshes) {
-            mesh.material.emissive.setHex(0x000000);
+            this._setMeshEmissive(mesh, 0x000000, 0);
         }
 
         if (this.selectedRoom) {
@@ -646,8 +812,7 @@ class FloorPlan3DRenderer {
         if (this.selectedAsset) {
             for (const { mesh, feature } of this.assetMeshes) {
                 if (feature === this.selectedAsset) {
-                    mesh.material.emissive.set(0x2563EB);
-                    mesh.material.emissiveIntensity = 0.5;
+                    this._setMeshEmissive(mesh, 0x2563EB, 0.5);
                 }
             }
         }
@@ -782,6 +947,9 @@ class FloorPlan3DRenderer {
         group.add(rotHandle);
 
         this._gizmoGroup = group;
+        // Cache child meshes for fast raycasting (avoids traverse on every mouse event)
+        this._gizmoMeshes = [];
+        group.traverse(child => { if (child.isMesh) this._gizmoMeshes.push(child); });
         this.scene.add(group);
     }
 
@@ -793,6 +961,7 @@ class FloorPlan3DRenderer {
         });
         this.scene.remove(this._gizmoGroup);
         this._gizmoGroup = null;
+        this._gizmoMeshes = [];
     }
 
     _updateGizmoPosition() {
@@ -807,17 +976,30 @@ class FloorPlan3DRenderer {
         if (idx !== -1) {
             const old = this.assetMeshes[idx];
             this.scene.remove(old.mesh);
-            old.mesh.geometry.dispose();
-            old.mesh.material.dispose();
+            this._disposeMesh(old.mesh);
             this.assetMeshes.splice(idx, 1);
         }
-        // Build new mesh
+        // Build new mesh (uses cached GLB if available, otherwise ExtrudeGeometry)
         const entry = this._buildSingleAsset(asset);
         this.scene.add(entry.mesh);
         this.assetMeshes.push(entry);
-        // Re-apply highlight
-        entry.mesh.material.emissive.set(0x2563EB);
-        entry.mesh.material.emissiveIntensity = 0.5;
+        // Re-apply highlight (traverse for GLB groups)
+        this._setMeshEmissive(entry.mesh, 0x2563EB, 0.5);
+    }
+
+    _setMeshEmissive(obj, color, intensity) {
+        if (obj.material && obj.material.emissive) {
+            obj.material.emissive.setHex(color);
+            obj.material.emissiveIntensity = intensity;
+        }
+        if (obj.children) {
+            obj.traverse(child => {
+                if (child.isMesh && child.material && child.material.emissive) {
+                    child.material.emissive.setHex(color);
+                    child.material.emissiveIntensity = intensity;
+                }
+            });
+        }
     }
 
     _moveAsset3D(dx, dz) {
@@ -839,7 +1021,12 @@ class FloorPlan3DRenderer {
             asset.properties.centroid[1] += dLat;
         }
 
-        this._rebuildAssetMesh(asset);
+        // During drag: translate the mesh directly (fast, no geometry rebuild)
+        const entry = this.assetMeshes.find(e => e.feature === asset);
+        if (entry) {
+            entry.mesh.position.x += dx;
+            entry.mesh.position.z += dz;
+        }
         this._updateGizmoPosition();
     }
 
@@ -1156,11 +1343,7 @@ class FloorPlan3DRenderer {
             this._mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
             this._raycaster.setFromCamera(this._mouse, this.camera);
 
-            const gizmoChildren = [];
-            this._gizmoGroup.traverse(child => {
-                if (child.isMesh) gizmoChildren.push(child);
-            });
-            const hits = this._raycaster.intersectObjects(gizmoChildren);
+            const hits = this._raycaster.intersectObjects(this._gizmoMeshes);
             if (hits.length > 0 && hits[0].object.userData.gizmoAction) {
                 this._gizmoAction = hits[0].object.userData.gizmoAction;
                 this.orbitControls.enabled = false;
@@ -1257,9 +1440,7 @@ class FloorPlan3DRenderer {
             this._mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
             this._raycaster.setFromCamera(this._mouse, this.camera);
 
-            const gizmoChildren = [];
-            this._gizmoGroup.traverse(child => { if (child.isMesh) gizmoChildren.push(child); });
-            const gizmoHits = this._raycaster.intersectObjects(gizmoChildren);
+            const gizmoHits = this._raycaster.intersectObjects(this._gizmoMeshes);
             if (gizmoHits.length > 0 && gizmoHits[0].object.userData.gizmoAction) {
                 const action = gizmoHits[0].object.userData.gizmoAction;
                 const canvas = this.rendererGL.domElement;
@@ -1302,12 +1483,18 @@ class FloorPlan3DRenderer {
         if (e.button === 0) {
             // Release gizmo drag
             if (this._gizmoAction) {
+                const wasMoveAction = this._gizmoAction === 'x-axis' || this._gizmoAction === 'z-axis' || this._gizmoAction === 'center';
                 this._gizmoAction = null;
                 this._gizmoStartAngle = null;
                 this._gizmoDragStart = null;
                 this._gizmoDragPlane = null;
                 this.orbitControls.enabled = true;
                 this.rendererGL.domElement.style.cursor = '';
+                // Commit: rebuild mesh geometry to match updated GeoJSON coords
+                if (wasMoveAction && this.selectedAsset) {
+                    this._rebuildAssetMesh(this.selectedAsset);
+                    this._updateGizmoPosition();
+                }
                 // Prevent the subsequent click event from deselecting
                 this._gizmoJustReleased = true;
                 requestAnimationFrame(() => { this._gizmoJustReleased = false; });

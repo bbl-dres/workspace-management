@@ -103,7 +103,7 @@ function renderProductCard(p) {
 
 // ---- PRODUCT DETAIL ----
 function renderProductDetail(id) {
-  const p = PRODUCTS.find(x => x.id === id);
+  const p = PRODUCT_MAP.get(id);
   if (!p) {
     return `
       ${renderBreadcrumb(['Produktkatalog', "navigateTo('shop')"], ['Nicht gefunden'])}
@@ -169,12 +169,12 @@ function renderProductDetail(id) {
 
 // ---- FURNITURE CARD ----
 function renderFurnitureCard(f) {
-  const building = BUILDINGS.find(b => b.buildingId === f.buildingId);
+  const building = BUILDING_MAP.get(f.buildingId);
   const locationLabel = building ? building.name : '';
   return `
     <div class="card card--product" onclick="navigateTo('item','${f.itemId}')" tabindex="0" role="button" aria-label="${escapeHtml(f.name)}">
       <div class="card__image card__image--placeholder">
-        ${f.photo ? `<img src="https://images.unsplash.com/${f.photo}?w=400&h=300&fit=crop&auto=format&q=80" alt="${escapeHtml(f.name)}" loading="lazy">` : ICONS.placeholder}
+        ${f.photo ? `<img src="${resolveProductThumb(f.photo)}" alt="${escapeHtml(f.name)}" loading="lazy" decoding="async" width="300" height="200">` : ICONS.placeholder}
         <span class="badge badge--circular">Gebraucht</span>
       </div>
       <div class="card__body">
@@ -192,7 +192,7 @@ function renderFurnitureCard(f) {
 
 // ---- FURNITURE DETAIL ----
 function renderFurnitureDetail(itemId) {
-  const f = FURNITURE_ITEMS.find(x => x.itemId === itemId);
+  const f = FURNITURE_ITEMS.find(x => x.itemId === itemId); // small array, no map needed
 
   // Fallback: look up in inventory (ASSETS_GEO) if not a circular item
   if (!f) {
@@ -216,8 +216,8 @@ function renderFurnitureDetail(itemId) {
     const a = assetFeature.properties;
     const catLabel = getCategoryLabel(a.categoryId) || '';
     const parentCat = getParentCategory(a.categoryId);
-    const building = BUILDINGS.find(b => b.buildingId === a.buildingId);
-    const floor = FLOORS.find(fl => fl.floorId === a.floorId);
+    const building = BUILDING_MAP.get(a.buildingId);
+    const floor = FLOOR_MAP.get(a.floorId);
     const locationParts = [];
     if (building) locationParts.push(building.name);
     if (floor) locationParts.push(floor.name);
@@ -231,7 +231,7 @@ function renderFurnitureDetail(itemId) {
     const statusClass = statusLabel === 'Aktiv' ? 'badge--active' : 'badge--circular';
 
     // Try to find a matching product for photos
-    const product = a.productId ? PRODUCTS.find(p => p.id === a.productId) : null;
+    const product = a.productId ? PRODUCT_MAP.get(a.productId) : null;
     const photos = product ? getItemPhotos(product) : [];
     const badgeHtml = '<span class="badge ' + statusClass + ' carousel__badge">' + escapeHtml(statusLabel) + '</span>';
 
@@ -271,8 +271,8 @@ function renderFurnitureDetail(itemId) {
 
   const catLabel = getCategoryLabel(f.categoryId) || '';
   const parentCat = getParentCategory(f.categoryId);
-  const building = BUILDINGS.find(b => b.buildingId === f.buildingId);
-  const floor = FLOORS.find(fl => fl.floorId === f.floorId);
+  const building = BUILDING_MAP.get(f.buildingId);
+  const floor = FLOOR_MAP.get(f.floorId);
   const locationParts = [];
   if (building) locationParts.push(building.name);
   if (floor) locationParts.push(floor.name);
@@ -403,11 +403,11 @@ function renderCircular() {
 // ---- SHOPPING CART ----
 function renderCart() {
   const cartItems = state.cart.map((item, i) => {
-    const p = PRODUCTS.find(x => x.id === item.productId);
+    const p = PRODUCT_MAP.get(item.productId);
     if (!p) return '';
     const lineTotal = p.price * item.quantity;
     const imgHtml = p.photo
-      ? `<img src="https://images.unsplash.com/${p.photo}?w=120&h=80&fit=crop&auto=format&q=80" alt="${escapeHtml(p.name)}">`
+      ? `<img src="${resolveProductThumb(p.photo)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="80" height="80">`
       : getProductIcon(p);
     return `
       <div class="cart-item">
@@ -430,7 +430,7 @@ function renderCart() {
   }).join('');
 
   const total = getCartTotal();
-  const currency = state.cart.length > 0 ? (PRODUCTS.find(x => x.id === state.cart[0].productId)?.currency || 'CHF') : 'CHF';
+  const currency = state.cart.length > 0 ? (PRODUCT_MAP.get(state.cart[0].productId)?.currency || 'CHF') : 'CHF';
 
   const step1Active = state.cartStep === 1;
   const step2Active = state.cartStep === 2;
@@ -655,9 +655,12 @@ function attachProductDetailEvents() {
 }
 
 function attachShopEvents() {
-  // Category tree
-  document.querySelectorAll('.cat-item__row').forEach(row => {
-    row.addEventListener('click', () => {
+  // Category tree — single delegated listener on the tree container
+  const catTree = document.querySelector('.cat-tree');
+  if (catTree) {
+    catTree.addEventListener('click', (e) => {
+      const row = e.target.closest('.cat-item__row');
+      if (!row) return;
       const catId = row.dataset.catId;
       const cat = findCategory(catId);
       const hasChildren = cat && cat.children && cat.children.length > 0;
@@ -672,13 +675,16 @@ function attachShopEvents() {
       render();
     });
 
-    row.addEventListener('keydown', (e) => {
+    catTree.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        row.click();
+        const row = e.target.closest('.cat-item__row');
+        if (row) {
+          e.preventDefault();
+          row.click();
+        }
       }
     });
-  });
+  }
 
   // Search with debounce
   const searchInput = document.getElementById('searchInput');

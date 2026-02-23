@@ -130,7 +130,7 @@
         "groundElevation": 540.3,
         "baseHeight": 3.5,
         "topHeight": 4.25,
-        "productId": null
+        "productId": 57
       },
       "geometry": {
         "type": "Polygon",
@@ -183,7 +183,7 @@
         "groundElevation": 540.3,
         "baseHeight": 3.5,
         "topHeight": 3.8,
-        "productId": null
+        "productId": 37
       },
       "geometry": {
         "type": "Polygon",
@@ -236,7 +236,7 @@
         "groundElevation": 540.3,
         "baseHeight": 3.5,
         "topHeight": 5,
-        "productId": null
+        "productId": 10
       },
       "geometry": {
         "type": "Polygon",
@@ -289,7 +289,7 @@
         "groundElevation": 540.3,
         "baseHeight": 3.5,
         "topHeight": 4.4,
-        "productId": null
+        "productId": 43
       },
       "geometry": {
         "type": "Polygon",
@@ -342,7 +342,7 @@
         "groundElevation": 540.3,
         "baseHeight": 3.5,
         "topHeight": 3.9,
-        "productId": null
+        "productId": 48
       },
       "geometry": {
         "type": "Polygon",
@@ -448,7 +448,7 @@
         "groundElevation": 540.3,
         "baseHeight": 7,
         "topHeight": 7.75,
-        "productId": null
+        "productId": 57
       },
       "geometry": {
         "type": "Polygon",
@@ -501,7 +501,7 @@
         "groundElevation": 540.3,
         "baseHeight": 7,
         "topHeight": 7.3,
-        "productId": null
+        "productId": 40
       },
       "geometry": {
         "type": "Polygon",
@@ -554,7 +554,7 @@
         "groundElevation": 540.3,
         "baseHeight": 7,
         "topHeight": 7.5,
-        "productId": null
+        "productId": 12
       },
       "geometry": {
         "type": "Polygon",
@@ -607,7 +607,7 @@
         "groundElevation": 540.3,
         "baseHeight": 7,
         "topHeight": 7.45,
-        "productId": null
+        "productId": 55
       },
       "geometry": {
         "type": "Polygon",
@@ -660,7 +660,7 @@
         "groundElevation": 543,
         "baseHeight": 0,
         "topHeight": 0.45,
-        "productId": null
+        "productId": 54
       },
       "geometry": {
         "type": "Polygon",
@@ -713,7 +713,7 @@
         "groundElevation": 543,
         "baseHeight": 0,
         "topHeight": 0.45,
-        "productId": null
+        "productId": 54
       },
       "geometry": {
         "type": "Polygon",
@@ -766,7 +766,7 @@
         "groundElevation": 543,
         "baseHeight": 0,
         "topHeight": 0.6,
-        "productId": null
+        "productId": 32
       },
       "geometry": {
         "type": "Polygon",
@@ -819,7 +819,7 @@
         "groundElevation": 543,
         "baseHeight": 3.5,
         "topHeight": 3.9,
-        "productId": null
+        "productId": 50
       },
       "geometry": {
         "type": "Polygon",
@@ -872,7 +872,7 @@
         "groundElevation": 436.6,
         "baseHeight": 0,
         "topHeight": 0.75,
-        "productId": null
+        "productId": 57
       },
       "geometry": {
         "type": "Polygon",
@@ -925,7 +925,7 @@
         "groundElevation": 436.6,
         "baseHeight": 0,
         "topHeight": 0.3,
-        "productId": null
+        "productId": 37
       },
       "geometry": {
         "type": "Polygon",
@@ -978,7 +978,7 @@
         "groundElevation": 436.6,
         "baseHeight": 3.5,
         "topHeight": 3.8,
-        "productId": null
+        "productId": 47
       },
       "geometry": {
         "type": "Polygon",
@@ -1031,7 +1031,7 @@
         "groundElevation": 436.6,
         "baseHeight": 3.5,
         "topHeight": 3.95,
-        "productId": null
+        "productId": 53
       },
       "geometry": {
         "type": "Polygon",
@@ -1096,7 +1096,7 @@
           "photo-1611269154421-4e27233ac5c7"
         ],
         "listedAt": "2025-09-15",
-        "productId": null
+        "productId": 57
       },
       "geometry": {
         "type": "Polygon",
@@ -1149,7 +1149,7 @@
         "groundElevation": 277.8,
         "baseHeight": 0,
         "topHeight": 0.9,
-        "productId": null
+        "productId": 46
       },
       "geometry": {
         "type": "Polygon",
@@ -1202,7 +1202,7 @@
         "groundElevation": 277.8,
         "baseHeight": 3.5,
         "topHeight": 5,
-        "productId": null
+        "productId": 14
       },
       "geometry": {
         "type": "Polygon",
@@ -1255,7 +1255,7 @@
         "groundElevation": 277.8,
         "baseHeight": 3.5,
         "topHeight": 3.9,
-        "productId": null
+        "productId": 51
       },
       "geometry": {
         "type": "Polygon",
@@ -1321,7 +1321,7 @@
         ],
         "listedAt": "2025-10-05",
         "quantity": 4,
-        "productId": null
+        "productId": 54
       },
       "geometry": {
         "type": "Polygon",
@@ -1374,7 +1374,7 @@
         "groundElevation": 435.6,
         "baseHeight": 0,
         "topHeight": 0.45,
-        "productId": null
+        "productId": 3
       },
       "geometry": {
         "type": "Polygon",
@@ -1427,7 +1427,7 @@
         "groundElevation": 435.6,
         "baseHeight": 0,
         "topHeight": 0.3,
-        "productId": null
+        "productId": 39
       },
       "geometry": {
         "type": "Polygon",
@@ -1480,7 +1480,7 @@
         "groundElevation": 435.6,
         "baseHeight": 7,
         "topHeight": 7.75,
-        "productId": null
+        "productId": 24
       },
       "geometry": {
         "type": "Polygon",
@@ -1544,7 +1544,7 @@
           "photo-1493663284031-b7e3aefcae8e"
         ],
         "listedAt": "2025-12-10",
-        "productId": null
+        "productId": 32
       },
       "geometry": {
         "type": "Polygon",
@@ -1597,7 +1597,7 @@
         "groundElevation": 435.6,
         "baseHeight": 7,
         "topHeight": 7.45,
-        "productId": null
+        "productId": 52
       },
       "geometry": {
         "type": "Polygon",
@@ -1650,7 +1650,7 @@
         "groundElevation": 540.3,
         "baseHeight": 10.5,
         "topHeight": 10.9,
-        "productId": null
+        "productId": 41
       },
       "geometry": {
         "type": "Polygon",
@@ -1703,7 +1703,7 @@
         "groundElevation": 540.3,
         "baseHeight": 10.5,
         "topHeight": 10.95,
-        "productId": null
+        "productId": 56
       },
       "geometry": {
         "type": "Polygon",
@@ -1821,7 +1821,7 @@
         "groundElevation": 402.8,
         "baseHeight": 0,
         "topHeight": 0.4,
-        "productId": null
+        "productId": 49
       },
       "geometry": {
         "type": "Polygon",
@@ -1874,7 +1874,7 @@
         "groundElevation": 402.8,
         "baseHeight": 0,
         "topHeight": 0.9,
-        "productId": null
+        "productId": 44
       },
       "geometry": {
         "type": "Polygon",
@@ -1927,7 +1927,7 @@
         "groundElevation": 540.3,
         "baseHeight": 0,
         "topHeight": 1.5,
-        "productId": null
+        "productId": 10
       },
       "geometry": {
         "type": "Polygon",
@@ -1980,7 +1980,7 @@
         "groundElevation": 540.3,
         "baseHeight": 0,
         "topHeight": 0.4,
-        "productId": null
+        "productId": 42
       },
       "geometry": {
         "type": "Polygon",
@@ -2033,7 +2033,7 @@
         "groundElevation": 543,
         "baseHeight": 7,
         "topHeight": 7.45,
-        "productId": null
+        "productId": 53
       },
       "geometry": {
         "type": "Polygon",
@@ -2086,7 +2086,7 @@
         "groundElevation": 543,
         "baseHeight": 7,
         "topHeight": 7.75,
-        "productId": null
+        "productId": 57
       },
       "geometry": {
         "type": "Polygon",
@@ -2139,7 +2139,7 @@
         "groundElevation": 543,
         "baseHeight": 7,
         "topHeight": 7.3,
-        "productId": null
+        "productId": 38
       },
       "geometry": {
         "type": "Polygon",
@@ -2192,7 +2192,7 @@
         "groundElevation": 530.6,
         "baseHeight": 0,
         "topHeight": 0.45,
-        "productId": null
+        "productId": 52
       },
       "geometry": {
         "type": "Polygon",
@@ -2245,7 +2245,7 @@
         "groundElevation": 530.6,
         "baseHeight": 0,
         "topHeight": 0.6,
-        "productId": null
+        "productId": 32
       },
       "geometry": {
         "type": "Polygon",
@@ -2298,7 +2298,7 @@
         "groundElevation": 530.6,
         "baseHeight": 7,
         "topHeight": 7.45,
-        "productId": null
+        "productId": 56
       },
       "geometry": {
         "type": "Polygon",
@@ -2351,7 +2351,7 @@
         "groundElevation": 530.6,
         "baseHeight": 7,
         "topHeight": 7.75,
-        "productId": null
+        "productId": 57
       },
       "geometry": {
         "type": "Polygon",
@@ -2404,7 +2404,7 @@
         "groundElevation": 530.6,
         "baseHeight": 7,
         "topHeight": 7.5,
-        "productId": null
+        "productId": 12
       },
       "geometry": {
         "type": "Polygon",
@@ -2457,7 +2457,7 @@
         "groundElevation": 530.6,
         "baseHeight": 10.5,
         "topHeight": 10.95,
-        "productId": null
+        "productId": 54
       },
       "geometry": {
         "type": "Polygon",
@@ -2510,7 +2510,7 @@
         "groundElevation": 530.6,
         "baseHeight": 10.5,
         "topHeight": 10.8,
-        "productId": null
+        "productId": 40
       },
       "geometry": {
         "type": "Polygon",
@@ -2563,7 +2563,7 @@
         "groundElevation": 436.6,
         "baseHeight": 7,
         "topHeight": 7.45,
-        "productId": null
+        "productId": 3
       },
       "geometry": {
         "type": "Polygon",
@@ -2616,7 +2616,7 @@
         "groundElevation": 436.6,
         "baseHeight": 7,
         "topHeight": 8.5,
-        "productId": null
+        "productId": 14
       },
       "geometry": {
         "type": "Polygon",
@@ -2669,7 +2669,7 @@
         "groundElevation": 436.6,
         "baseHeight": 7,
         "topHeight": 7.3,
-        "productId": null
+        "productId": 39
       },
       "geometry": {
         "type": "Polygon",
@@ -2722,7 +2722,7 @@
         "groundElevation": 402.8,
         "baseHeight": 3.5,
         "topHeight": 3.9,
-        "productId": null
+        "productId": 49
       },
       "geometry": {
         "type": "Polygon",
@@ -2775,7 +2775,7 @@
         "groundElevation": 402.8,
         "baseHeight": 3.5,
         "topHeight": 3.95,
-        "productId": null
+        "productId": 3
       },
       "geometry": {
         "type": "Polygon",
@@ -2828,7 +2828,7 @@
         "groundElevation": 277.8,
         "baseHeight": 7,
         "topHeight": 7.75,
-        "productId": null
+        "productId": 24
       },
       "geometry": {
         "type": "Polygon",
@@ -2881,7 +2881,7 @@
         "groundElevation": 277.8,
         "baseHeight": 7,
         "topHeight": 7.3,
-        "productId": null
+        "productId": 37
       },
       "geometry": {
         "type": "Polygon",
@@ -2934,7 +2934,7 @@
         "groundElevation": 277.8,
         "baseHeight": 7,
         "topHeight": 7.3,
-        "productId": null
+        "productId": 47
       },
       "geometry": {
         "type": "Polygon",
@@ -2987,7 +2987,7 @@
         "groundElevation": 435.6,
         "baseHeight": 3.5,
         "topHeight": 3.95,
-        "productId": null
+        "productId": 54
       },
       "geometry": {
         "type": "Polygon",
@@ -3040,7 +3040,7 @@
         "groundElevation": 435.6,
         "baseHeight": 3.5,
         "topHeight": 4.1,
-        "productId": null
+        "productId": 32
       },
       "geometry": {
         "type": "Polygon",
@@ -3093,7 +3093,7 @@
         "groundElevation": 435.6,
         "baseHeight": 3.5,
         "topHeight": 4.4,
-        "productId": null
+        "productId": 45
       },
       "geometry": {
         "type": "Polygon",
@@ -3158,7 +3158,7 @@
           "photo-1493663284031-b7e3aefcae8e"
         ],
         "listedAt": "2025-10-28",
-        "productId": null
+        "productId": 10
       },
       "geometry": {
         "type": "Polygon",
@@ -3223,7 +3223,7 @@
         ],
         "listedAt": "2025-12-01",
         "quantity": 4,
-        "productId": null
+        "productId": 55
       },
       "geometry": {
         "type": "Polygon",
@@ -3287,7 +3287,7 @@
           "photo-1513506003901-1e6a229e2d15"
         ],
         "listedAt": "2025-11-22",
-        "productId": null
+        "productId": 12
       },
       "geometry": {
         "type": "Polygon",
