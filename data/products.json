@@ -474,7 +474,7 @@
     },
     "color3d": "#94A3B8",
     "shape2d": "diamond",
-    "model3d": ""
+    "model3d": "assets/3d/artemide-tolomeo.glb"
   },
   {
     "id": 27,
@@ -835,7 +835,7 @@
     },
     "color3d": "#475569",
     "shape2d": "rect",
-    "model3d": ""
+    "model3d": "3d/fellowes-aktenvernichter.glb"
   },
   {
     "id": 43,

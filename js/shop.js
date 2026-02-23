@@ -707,41 +707,51 @@ function attachShopEvents() {
 }
 
 function updateProductGrid() {
-  const products = filterProducts();
+  const isCircular = state.page === 'circular';
+  const items = isCircular ? filterFurnitureItems() : filterProducts();
   const gridContainer = document.querySelector('.main-content');
   if (!gridContainer) return;
 
-  // Update product count
+  // Update count label
   const countEl = gridContainer.querySelector('.toolbar__count');
-  if (countEl) countEl.textContent = `${products.length} Produkt${products.length !== 1 ? 'e' : ''}`;
+  if (countEl) {
+    const noun = isCircular ? 'Objekt' : 'Produkt';
+    countEl.textContent = `${items.length} ${noun}${items.length !== 1 ? 'e' : ''}`;
+  }
 
   // Replace grid
   const existing = gridContainer.querySelector('.product-grid, .no-results');
   if (existing) existing.remove();
 
-  if (products.length) {
+  if (items.length) {
     const div = document.createElement('div');
     div.className = 'product-grid';
     div.id = 'productGrid';
-    div.innerHTML = products.map(p => renderProductCard(p)).join('');
+    div.innerHTML = items.map(item => isCircular ? renderFurnitureCard(item) : renderProductCard(item)).join('');
     gridContainer.appendChild(div);
   } else {
+    const emptyMsg = isCircular ? 'Keine gebrauchten Möbel gefunden.' : 'Keine Produkte gefunden.';
     const div = document.createElement('div');
     div.className = 'no-results';
-    div.innerHTML = `<div class="no-results__icon">${ICONS.placeholder}</div><p class="no-results__text">Keine Produkte gefunden.</p>`;
+    div.innerHTML = `<div class="no-results__icon">${ICONS.placeholder}</div><p class="no-results__text">${emptyMsg}</p>`;
     gridContainer.appendChild(div);
   }
 }
 
 function setCategory(catId) {
   state.activeCategory = catId;
-  for (const c of CATEGORIES) {
-    if (c.children) {
-      for (const ch of c.children) {
-        if (ch.id === catId) state.expandedCategories.add(c.id);
+  // Expand all ancestor categories so the selected category is visible in the tree
+  function expandAncestors(cats, target) {
+    for (const c of cats) {
+      if (c.id === target) return true;
+      if (c.children && expandAncestors(c.children, target)) {
+        state.expandedCategories.add(c.id);
+        return true;
       }
     }
+    return false;
   }
+  expandAncestors(CATEGORIES, catId);
   state.page = 'shop';
   render();
 }

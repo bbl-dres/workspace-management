@@ -83,7 +83,8 @@ class FloorPlanEditor {
         this.canvas.addEventListener('dblclick',   this._onDblClick.bind(this));
         this.canvas.addEventListener('contextmenu', e => e.preventDefault());
 
-        document.addEventListener('keydown', this._onKeyDown.bind(this));
+        this._boundKeyDown = this._onKeyDown.bind(this);
+        document.addEventListener('keydown', this._boundKeyDown);
     }
 
     /* ── Mouse Helpers ─────────────────────────────────────────────────── */
@@ -353,9 +354,9 @@ class FloorPlanEditor {
                 }));
             } else if (this.activeTool === 'add') {
                 // Place furniture at click position
-                const local = this.renderer.screenToLocal(pos.x, pos.y);
                 const p = this.renderer.projection;
                 if (p) {
+                    const local = this.renderer.screenToLocal(pos.x, pos.y);
                     const lon = local.x / p.metersPerDegreeLon + p.centerLon;
                     const lat = -local.y / p.metersPerDegreeLat + p.centerLat;
                     window.dispatchEvent(new CustomEvent('fp-asset-placed', {
@@ -409,8 +410,13 @@ class FloorPlanEditor {
             this.renderer.draw();
         }
         this.isDragging = false;
+        this.hasDragged = false;
         this.isPanning = false;
         this.gizmoAction = null;
+    }
+
+    destroy() {
+        document.removeEventListener('keydown', this._boundKeyDown);
     }
 
     /* ── Mouse Wheel (Zoom) ────────────────────────────────────────────── */
@@ -423,7 +429,7 @@ class FloorPlanEditor {
         let newZoom = Math.max(0.3, Math.min(150, this.renderer.zoom * zoomFactor));
 
         // No change after clamping
-        if (newZoom === this.renderer.zoom) return;
+        if (Math.abs(newZoom - this.renderer.zoom) < 1e-9) return;
 
         // Zoom towards cursor
         const ratio = newZoom / this.renderer.zoom;

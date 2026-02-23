@@ -161,6 +161,17 @@ class FloorPlan3DRenderer {
         this.clearMockups();
         this._removeGhost();
         this._removeGizmo();
+        // Dispose cached GLB models
+        for (const [, scene] of this._modelCache) {
+            scene.traverse(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                    else child.material.dispose();
+                }
+            });
+        }
+        this._modelCache.clear();
         if (this._resizeObserver) this._resizeObserver.disconnect();
         if (this.orbitControls) this.orbitControls.dispose();
         const canvas = this.rendererGL.domElement;
@@ -370,7 +381,7 @@ class FloorPlan3DRenderer {
             const points = [];
             for (let i = 0; i < coords.length; i++) {
                 const p = this._geoTo3D(coords[i][0], coords[i][1]);
-                points.push(new THREE.Vector3(p.x, 0.005, -p.z));
+                points.push(new THREE.Vector3(p.x, 0.005, p.z));
             }
 
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -690,6 +701,7 @@ class FloorPlan3DRenderer {
             this.camera = this.orbitCamera;
             this.orbitControls.enabled = true;
             this._walkLookActive = false;
+            this.walkKeys = { forward: false, backward: false, left: false, right: false };
         } else if (mode === 'walk') {
             // Place walk camera at center of floor, eye height
             this.walkCamera.position.set(0, 1.6, 0);
@@ -988,18 +1000,12 @@ class FloorPlan3DRenderer {
     }
 
     _setMeshEmissive(obj, color, intensity) {
-        if (obj.material && obj.material.emissive) {
-            obj.material.emissive.setHex(color);
-            obj.material.emissiveIntensity = intensity;
-        }
-        if (obj.children) {
-            obj.traverse(child => {
-                if (child.isMesh && child.material && child.material.emissive) {
-                    child.material.emissive.setHex(color);
-                    child.material.emissiveIntensity = intensity;
-                }
-            });
-        }
+        obj.traverse(child => {
+            if (child.isMesh && child.material && child.material.emissive) {
+                child.material.emissive.setHex(color);
+                child.material.emissiveIntensity = intensity;
+            }
+        });
     }
 
     _moveAsset3D(dx, dz) {
@@ -1187,7 +1193,7 @@ class FloorPlan3DRenderer {
         const sphereGeo = new THREE.SphereGeometry(0.08, 8, 8);
         const sphereMat = new THREE.MeshBasicMaterial({ color: 0x2563EB });
         for (const p of pts) {
-            const sphere = new THREE.Mesh(sphereGeo.clone(), sphereMat.clone());
+            const sphere = new THREE.Mesh(sphereGeo, sphereMat);
             sphere.position.copy(p);
             this._measureGroup.add(sphere);
         }
@@ -1506,6 +1512,7 @@ class FloorPlan3DRenderer {
 
     _onKeyDown(e) {
         if (this.mode !== 'walk') return;
+        if (this.rendererGL.domElement.style.display === 'none') return;
         switch (e.code) {
             case 'KeyW': case 'ArrowUp':    this.walkKeys.forward = true; break;
             case 'KeyS': case 'ArrowDown':  this.walkKeys.backward = true; break;
@@ -1556,7 +1563,7 @@ class FloorPlan3DRenderer {
 
     _animate() {
         this._animationId = requestAnimationFrame(() => this._animate());
-        const delta = this._clock.getDelta();
+        const delta = Math.min(this._clock.getDelta(), 0.1);
 
         if (this.mode === 'orbit') {
             this.orbitControls.update();

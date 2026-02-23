@@ -36,7 +36,8 @@ async function main() {
 
     for (const file of files) {
         const srcPath = path.join(SRC_DIR, file);
-        const outPath = path.join(OUT_DIR, file);
+        const baseName = path.parse(file).name + '.jpg';
+        const outPath = path.join(OUT_DIR, baseName);
 
         // Skip if thumbnail already exists and is newer than source
         if (fs.existsSync(outPath)) {
@@ -48,20 +49,24 @@ async function main() {
             }
         }
 
-        const srcBytes = fs.statSync(srcPath).size;
-        totalSrcBytes += srcBytes;
+        try {
+            const srcBytes = fs.statSync(srcPath).size;
+            totalSrcBytes += srcBytes;
 
-        await sharp(srcPath)
-            .resize(THUMB_WIDTH, null, { withoutEnlargement: true })
-            .jpeg({ quality: QUALITY, mozjpeg: true })
-            .toFile(outPath);
+            await sharp(srcPath)
+                .resize(THUMB_WIDTH, null, { withoutEnlargement: true })
+                .jpeg({ quality: QUALITY, mozjpeg: true })
+                .toFile(outPath);
 
-        const outBytes = fs.statSync(outPath).size;
-        totalOutBytes += outBytes;
-        processed++;
+            const outBytes = fs.statSync(outPath).size;
+            totalOutBytes += outBytes;
+            processed++;
 
-        const pct = ((1 - outBytes / srcBytes) * 100).toFixed(0);
-        console.log(`  ${file}: ${(srcBytes / 1024).toFixed(0)}KB → ${(outBytes / 1024).toFixed(0)}KB (-${pct}%)`);
+            const pct = srcBytes > 0 ? ((1 - outBytes / srcBytes) * 100).toFixed(0) : '0';
+            console.log(`  ${file}: ${(srcBytes / 1024).toFixed(0)}KB → ${(outBytes / 1024).toFixed(0)}KB (-${pct}%)`);
+        } catch (err) {
+            console.warn(`  ⚠ ${file}: ${err.message}`);
+        }
     }
 
     console.log(`\nDone: ${processed} generated, ${skipped} skipped (up-to-date)`);

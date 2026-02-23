@@ -36,56 +36,52 @@ function _buildCategoryCountCaches() {
   _furnitureCountCache.clear();
   // Product counts
   _productCountCache.set('alle', PRODUCTS.length);
-  const catIds = _collectAllCategoryIds(CATEGORIES);
-  for (const catId of catIds) {
-    const ids = getAllSubcategoryIds(catId);
-    const idSet = new Set(ids);
-    _productCountCache.set(catId, PRODUCTS.filter(p => idSet.has(p.category) || idSet.has(p.subcategory)).length);
-  }
   // Furniture counts
   const available = FURNITURE_ITEMS.filter(f => f.status === 'Zur Abgabe');
   _furnitureCountCache.set('alle', available.length);
-  for (const catId of catIds) {
-    const ids = getAllSubcategoryIds(catId);
-    const idSet = new Set(ids);
-    _furnitureCountCache.set(catId, available.filter(f => idSet.has(f.categoryId)).length);
+  // Walk the entire category tree and count for each node
+  function countAll(cats) {
+    for (const c of cats) {
+      const ids = getAllSubcategoryIds(c.id);
+      const idSet = new Set(ids);
+      _productCountCache.set(c.id, PRODUCTS.filter(p => idSet.has(p.category) || idSet.has(p.subcategory)).length);
+      _furnitureCountCache.set(c.id, available.filter(f => idSet.has(f.categoryId)).length);
+      if (c.children) countAll(c.children);
+    }
   }
-}
-
-function _collectAllCategoryIds(cats) {
-  const ids = [];
-  for (const c of cats) {
-    ids.push(c.id);
-    if (c.children) ids.push(..._collectAllCategoryIds(c.children));
-  }
-  return ids;
+  countAll(CATEGORIES);
 }
 
 async function loadData() {
-  const [catRes, prodRes, siteRes, bldRes, flrRes, roomRes, assetsRes, furnRes, modRes, planRes, cadRes] = await Promise.all([
-    fetch('data/categories.json'),
-    fetch('data/products.json'),
-    fetch('data/sites.json'),
-    fetch('data/buildings.geojson'),
-    fetch('data/floors.geojson'),
-    fetch('data/rooms.geojson'),
-    fetch('data/assets.geojson'),
-    fetch('data/assets-circular.json'),
-    fetch('data/multispace-module.json'),
-    fetch('data/planning-examples.json'),
-    fetch('data/cad-files.json')
+  async function fetchJson(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} loading ${url}`);
+    return res.json();
+  }
+  const [cats, prods, sites, bldGeo, flrGeo, roomGeo, assetsGeo, furn, mods, plans, cads] = await Promise.all([
+    fetchJson('data/categories.json'),
+    fetchJson('data/products.json'),
+    fetchJson('data/sites.json'),
+    fetchJson('data/buildings.geojson'),
+    fetchJson('data/floors.geojson'),
+    fetchJson('data/rooms.geojson'),
+    fetchJson('data/assets.geojson'),
+    fetchJson('data/assets-circular.json'),
+    fetchJson('data/multispace-module.json'),
+    fetchJson('data/planning-examples.json'),
+    fetchJson('data/cad-files.json')
   ]);
-  CATEGORIES = await catRes.json();
-  PRODUCTS = await prodRes.json();
-  SITES = await siteRes.json();
-  BUILDINGS_GEO = await bldRes.json();
-  FLOORS_GEO = await flrRes.json();
-  ROOMS_GEO = await roomRes.json();
-  ASSETS_GEO = await assetsRes.json();
-  FURNITURE_ITEMS = await furnRes.json();
-  MULTISPACE_MODULES = await modRes.json();
-  PLANUNGSBEISPIELE = await planRes.json();
-  CAD_SECTIONS = await cadRes.json();
+  CATEGORIES = cats;
+  PRODUCTS = prods;
+  SITES = sites;
+  BUILDINGS_GEO = bldGeo;
+  FLOORS_GEO = flrGeo;
+  ROOMS_GEO = roomGeo;
+  ASSETS_GEO = assetsGeo;
+  FURNITURE_ITEMS = furn;
+  MULTISPACE_MODULES = mods;
+  PLANUNGSBEISPIELE = plans;
+  CAD_SECTIONS = cads;
 
   // Extract BUILDINGS array from GeoJSON for backward compat (detail pages, tree, etc.)
   BUILDINGS = BUILDINGS_GEO.features.map(f => ({
@@ -131,12 +127,11 @@ function buildLocationTree() {
       rooms: f.rooms || []
     });
   }
-  // Sort floors by verticalOrder
+  // Sort floors by verticalOrder (use FLOOR_MAP for O(1) lookups)
   for (const bid in floorsByBuilding) {
-    const floorData = FLOORS.filter(f => f.buildingId === bid);
     floorsByBuilding[bid].sort((a, b) => {
-      const fa = floorData.find(f => f.floorId === a.id);
-      const fb = floorData.find(f => f.floorId === b.id);
+      const fa = FLOOR_MAP.get(a.id);
+      const fb = FLOOR_MAP.get(b.id);
       return (fa ? fa.verticalOrder : 0) - (fb ? fb.verticalOrder : 0);
     });
   }
@@ -291,34 +286,20 @@ function updateCartBadge() {
 // HELPERS
 // ===================================================================
 function getCategoryLabel(id) {
-  function find(cats) {
-    for (const c of cats) {
-      if (c.id === id) return c.label;
-      if (c.children && c.children.length) {
-        const found = find(c.children);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-  return find(CATEGORIES) || id;
+  return findCategory(id)?.label || id;
 }
 
 function getParentCategory(subcatId) {
-  for (const c of CATEGORIES) {
-    if (c.id === subcatId) return null;
-    if (c.children) {
-      for (const ch of c.children) {
-        if (ch.id === subcatId) return c;
-        if (ch.children) {
-          for (const gch of ch.children) {
-            if (gch.id === subcatId) return ch;
-          }
-        }
+  function find(cats, parent) {
+    for (const c of cats) {
+      if (c.id === subcatId) return parent;
+      if (c.children) {
+        const found = find(c.children, c);
+        if (found !== undefined) return found;
       }
     }
   }
-  return null;
+  return find(CATEGORIES, null) ?? null;
 }
 
 function getAllSubcategoryIds(catId) {
@@ -447,12 +428,15 @@ function filterFurnitureItems() {
   return filtered;
 }
 
+let _activeDebounceTimers = [];
 function debounce(fn, ms) {
   let t;
-  return function(...args) {
+  const debounced = function(...args) {
     clearTimeout(t);
     t = setTimeout(() => fn.apply(this, args), ms);
   };
+  _activeDebounceTimers.push(() => clearTimeout(t));
+  return debounced;
 }
 
 // ===================================================================
@@ -474,9 +458,13 @@ function render() {
     }
   });
 
-  // Trigger page transition
+  // Clear any pending debounced actions from the previous page
+  _activeDebounceTimers.forEach(cancel => cancel());
+  _activeDebounceTimers = [];
+
+  // Trigger page transition (force reflow to restart CSS animation)
   app.style.animation = 'none';
-  app.offsetHeight; // force reflow
+  app.offsetHeight;
   app.style.animation = '';
 
   switch (state.page) {
@@ -514,7 +502,7 @@ function navigateTo(page, subPage) {
   }
   state.subPage = (page === 'product') ? null : (subPage || null);
   state.productId = (page === 'product') ? Number(subPage) : null;
-  if (page !== 'search') state.searchQuery = '';
+  if (!['shop', 'circular', 'search'].includes(page)) state.searchQuery = '';
   state.mobileMenuOpen = false;
   if (page === 'cart' && prevPage !== 'cart') state.cartStep = 1;
   document.getElementById('appNav').classList.remove('main-navigation--mobile-open');
@@ -644,7 +632,6 @@ function initSwaggerUI() {
 }
 
 window.addEventListener('hashchange', handleHash);
-window.addEventListener('popstate', handleHash);
 
 // Card keyboard support (delegated)
 document.addEventListener('keydown', (e) => {
@@ -794,4 +781,8 @@ document.addEventListener('keydown', (e) => {
 // ===================================================================
 loadData().then(() => {
   handleHash();
+}).catch(err => {
+  console.error('Failed to load application data:', err);
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = '<div style="padding:2rem;text-align:center"><h2>Daten konnten nicht geladen werden.</h2><p>Bitte versuchen Sie es sp&auml;ter erneut.</p></div>';
 });

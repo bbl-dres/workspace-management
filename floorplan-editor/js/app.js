@@ -43,12 +43,17 @@ function escapeHtml(str) {
 
 async function loadData() {
     const base = '../data/';
+    async function fetchJson(url) {
+        const r = await fetch(url);
+        if (!r.ok) throw new Error(`HTTP ${r.status} loading ${url}`);
+        return r.json();
+    }
     const [buildingsGeo, floorsGeo, roomsGeo, assetsGeo, products] = await Promise.all([
-        fetch(base + 'buildings.geojson').then(r => r.json()),
-        fetch(base + 'floors.geojson').then(r => r.json()),
-        fetch(base + 'rooms.geojson').then(r => r.json()),
-        fetch(base + 'assets.geojson').then(r => r.json()),
-        fetch(base + 'products.json').then(r => r.json()),
+        fetchJson(base + 'buildings.geojson'),
+        fetchJson(base + 'floors.geojson'),
+        fetchJson(base + 'rooms.geojson'),
+        fetchJson(base + 'assets.geojson'),
+        fetchJson(base + 'products.json'),
     ]);
 
     state.buildingsGeo = buildingsGeo;
@@ -153,7 +158,7 @@ async function init() {
     });
 
     // Deferred 3D renderer init (renderer3d.js is an ES module, loads async)
-    (function init3DWhenReady() {
+    (function init3DWhenReady(retries) {
         if (window.FloorPlan3DRenderer) {
             renderer3d = new FloorPlan3DRenderer(document.getElementById('canvasWrap'));
             renderer3d.init();
@@ -162,10 +167,12 @@ async function init() {
             if (renderer.rooms.length || renderer.floorOutline) {
                 renderer3d.setData(renderer.rooms, renderer.assets, renderer.floorOutline);
             }
+        } else if (retries < 100) {
+            setTimeout(() => init3DWhenReady(retries + 1), 50);
         } else {
-            setTimeout(init3DWhenReady, 50);
+            console.warn('3D renderer failed to load after max retries');
         }
-    })();
+    })(0);
 }
 
 /* ── View Mode Switching ──────────────────────────────────────────────── */
@@ -268,6 +275,7 @@ function loadFloor(floorId) {
     state.selectedFloorId = floorId;
 
     const floorFeature = state.floorsGeo.features.find(f => f.properties.floorId === floorId);
+    if (!floorFeature) return;
     const rooms = state.roomsGeo.features.filter(f => f.properties.floorId === floorId);
     const assets = state.assetsGeo.features.filter(f => f.properties.floorId === floorId);
 
@@ -304,8 +312,10 @@ function loadFloor(floorId) {
     // Update header label
     const building = state.buildings.find(b => b.buildingId === state.selectedBuildingId);
     const floor = state.floors.find(f => f.floorId === floorId);
-    document.getElementById('floorLabel').textContent =
-        `${building.name} – ${floor.name}`;
+    if (building && floor) {
+        document.getElementById('floorLabel').textContent =
+            `${building.name} – ${floor.name}`;
+    }
 
     // Update URL and back link
     pushHash();
@@ -645,13 +655,13 @@ function renderLibraryContent() {
     for (const product of filtered) {
         const imgUrl = getProductImageUrl(product.photo);
         html += `
-            <div class="fp-library-item" data-category="${escapeHtml(product.category)}" data-product-id="${product.id}" draggable="true">
+            <div class="fp-library-item" data-category="${escapeHtml(product.category)}" data-product-id="${escapeHtml(String(product.id))}" draggable="true">
                 <div class="fp-library-item__preview">
                     <img src="${imgUrl}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" width="120" height="80">
                 </div>
                 ${product.isNew ? '<span class="fp-library-item__badge">New</span>' : ''}
                 <span class="fp-library-item__name">${escapeHtml(product.name)}</span>
-                <span class="fp-library-item__price">${product.currency} ${product.price.toLocaleString('de-CH', { minimumFractionDigits: 2 })}</span>
+                <span class="fp-library-item__price">${product.currency} ${(product.price ?? 0).toLocaleString('de-CH', { minimumFractionDigits: 2 })}</span>
             </div>
         `;
     }
@@ -839,7 +849,7 @@ function renderRoomProperties(room) {
                     ${roomAssets.map(a => `
                         <div class="fp-asset-item" data-asset-id="${escapeHtml(a.properties.assetId)}">
                             <span class="fp-asset-item__name">${escapeHtml(a.properties._name || a.properties.name)}</span>
-                            <span class="fp-asset-item__status fp-asset-item__status--${a.properties.condition.toLowerCase()}">${escapeHtml(a.properties.condition)}</span>
+                            <span class="fp-asset-item__status fp-asset-item__status--${(a.properties.condition || 'unknown').toLowerCase()}">${escapeHtml(a.properties.condition || 'Unbekannt')}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -902,7 +912,7 @@ function renderAssetProperties(asset) {
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Kosten</span>
-                    <span class="fp-attr__value">CHF ${p.acquisitionCost.toLocaleString('de-CH')}</span>
+                    <span class="fp-attr__value">CHF ${(p.acquisitionCost || 0).toLocaleString('de-CH')}</span>
                 </div>
                 <div class="fp-attr">
                     <span class="fp-attr__label">Raum</span>

@@ -23,6 +23,10 @@ const ROOM_COLORS = {
 };
 const ROOM_COLOR_DEFAULT = '#B8B8B8';
 
+// Default map view (Switzerland center)
+const DEFAULT_MAP_CENTER = [7.9, 47.1];
+const DEFAULT_MAP_ZOOM = 7.2;
+
 // Build MapLibre match expression for room fill colors
 const ROOM_COLOR_MATCH = ['match', ['get', 'type']];
 for (const [type, color] of Object.entries(ROOM_COLORS)) {
@@ -254,7 +258,7 @@ function occRenderFloor(floor, path) {
           <thead><tr><th>Name</th><th>Raum</th><th>Marke</th><th>Zustand</th><th>Status</th><th>Wert</th></tr></thead>
           <tbody>
             ${assets.map(a => {
-              const room = (floor.rooms || []).find(r => r.id === a.roomId);
+              const room = (floor.rooms || []).find(r => r.nr === a.roomNr);
               const roomLabel = room ? room.nr : '–';
               return `<tr><td>${escapeHtml(a.name || '')}</td><td>${escapeHtml(roomLabel)}</td><td>${escapeHtml(a.brand || '–')}</td><td>${escapeHtml(a.condition || '–')}</td><td>${escapeHtml(a.status || '–')}</td><td>${a.acquisitionCost ? a.acquisitionCost.toLocaleString('de-CH') + ' CHF' : '–'}</td></tr>`;
             }).join('')}
@@ -294,6 +298,14 @@ function occRenderFloor(floor, path) {
     </div>`;
 }
 
+// Navigate to a location tree node (safe for use from breadcrumbs)
+function occNavigateToNode(nodeId) {
+  state.occSelectedId = nodeId;
+  state.occExpandedIds.add(nodeId);
+  occUpdateView();
+  occPushHash();
+}
+
 function renderOccupancy() {
   const selected = state.occSelectedId ? occFindNode(state.occSelectedId) : null;
   const nodeType = selected ? selected.node.type : null;
@@ -309,13 +321,12 @@ function renderOccupancy() {
   if (selected) {
     selected.path.forEach(n => {
       const lbl = n.type === 'building' && n.code ? n.code : n.label;
-      bcItems.push([lbl, `(function(){ state.occSelectedId='${n.id}'; state.occExpandedIds.add('${n.id}'); occUpdateView(); occPushHash(); })()`]);
+      bcItems.push([lbl, `occNavigateToNode('${escapeHtml(n.id)}')`]);
     });
     const selNode = selected.node;
     const selLbl = selNode.type === 'building' && selNode.code ? selNode.code : selNode.label;
     bcItems.push([selLbl]);
   } else {
-    // No selection — Arbeitsplätze verwalten is the current page (no link)
     bcItems.length = 0;
     bcItems.push(['Arbeitsplätze verwalten']);
   }
@@ -353,7 +364,73 @@ function renderOccupancy() {
 // ===================================================================
 // MAP
 // ===================================================================
+
+// Shared helper: filter BUILDINGS_GEO based on the current selection
+function getFilteredBuildingsGeo() {
+  let filteredGeo = BUILDINGS_GEO;
+  const selId = state.occSelectedId;
+  if (selId && selId !== 'ch') {
+    const found = occFindNode(selId);
+    if (found) {
+      const node = found.node;
+      let buildingIds;
+      if (node.type === 'kanton') buildingIds = (node.children || []).map(b => b.id);
+      else if (node.type === 'building') buildingIds = [node.id];
+      else if (node.type === 'floor') {
+        const parentB = found.path.find(n => n.type === 'building');
+        buildingIds = parentB ? [parentB.id] : [];
+      }
+      if (buildingIds && buildingIds.length) {
+        filteredGeo = { type: 'FeatureCollection', features: BUILDINGS_GEO.features.filter(f => buildingIds.includes(f.properties.buildingId)) };
+      }
+    }
+  }
+  return filteredGeo;
+}
+
+// Shared helper: add all data sources and layers to the map
+function addAllDataLayers(filteredGeo) {
+  _occMap.addSource('buildings', { type: 'geojson', data: buildingPointsFromGeo(filteredGeo) });
+  _occMap.addSource('building-footprints', { type: 'geojson', data: filteredGeo });
+
+  _occMap.addLayer({ id: 'building-footprints-fill', type: 'fill', source: 'building-footprints', minzoom: 15, paint: { 'fill-color': '#d73027', 'fill-opacity': 0.15 } });
+  _occMap.addLayer({ id: 'building-footprints-outline', type: 'line', source: 'building-footprints', minzoom: 15, paint: { 'line-color': '#d73027', 'line-width': 2, 'line-opacity': 0.6 } });
+
+  addFloorLayers();
+  addRoomLayers();
+  addAssetLayers();
+
+  _occMap.addLayer({ id: 'building-points', type: 'circle', source: 'buildings', paint: { 'circle-radius': 8, 'circle-color': '#d73027', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' } });
+  _occMap.addLayer({ id: 'building-labels', type: 'symbol', source: 'buildings', minzoom: 14, layout: { 'text-field': ['get', 'objectCode'], 'text-size': 12, 'text-anchor': 'bottom', 'text-offset': [0, -1.2], 'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 } });
+
+  if (!_occMap.getSource('terrain-dem')) {
+    _occMap.addSource('terrain-dem', {
+      type: 'raster-dem',
+      tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+      encoding: 'terrarium',
+      tileSize: 256,
+      maxzoom: 15
+    });
+  }
+  if (_is3D) _occMap.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
+
+  if (!_occMap.getSource('furniture-mockup')) {
+    _occMap.addSource('furniture-mockup', { type: 'geojson', data: { type: 'FeatureCollection', features: _furnitureFeatures } });
+    _occMap.addLayer({ id: 'furniture-fills', type: 'fill', source: 'furniture-mockup', paint: { 'fill-color': '#6B7B8D', 'fill-opacity': 0.7 } });
+    _occMap.addLayer({ id: 'furniture-outlines', type: 'line', source: 'furniture-mockup', paint: { 'line-color': '#3d4f5f', 'line-width': 1.5 } });
+    _occMap.addLayer({ id: 'furniture-labels', type: 'symbol', source: 'furniture-mockup', layout: { 'text-field': ['get', 'label'], 'text-size': 9, 'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#fff', 'text-halo-color': '#3d4f5f', 'text-halo-width': 0.5 } });
+  }
+
+  if (!_occMap.getSource('edit-selection')) {
+    _occMap.addSource('edit-selection', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    _occMap.addLayer({ id: 'edit-selection-outline', type: 'line', source: 'edit-selection', paint: { 'line-color': '#00bfff', 'line-width': 3, 'line-dasharray': [2, 1] } });
+  }
+
+  ensureLayerOrder();
+}
+
 let _occMap = null;
+let _occAbort = null; // AbortController for document/window event listeners
 let _searchMarker = null;
 let _is3D = false;
 let _3dTransitioning = false;
@@ -379,23 +456,20 @@ function buildingPointsFromGeo(geo) {
   };
 }
 
+// Shared helper: filter a GeoJSON FeatureCollection to features matching the selected floor
+function _filterGeoBySelectedFloor(geoCollection) {
+  const empty = { type: 'FeatureCollection', features: [] };
+  if (!geoCollection) return empty;
+  const selId = state.occSelectedId;
+  if (!selId || selId === 'ch') return empty;
+  const found = occFindNode(selId);
+  if (!found || found.node.type !== 'floor') return empty;
+  return { type: 'FeatureCollection', features: geoCollection.features.filter(f => f.properties.floorId === selId) };
+}
+
 // Get filtered floor features based on current selection
 function getFilteredFloors() {
-  if (!FLOORS_GEO) return { type: 'FeatureCollection', features: [] };
-  const selId = state.occSelectedId;
-  if (!selId || selId === 'ch') return { type: 'FeatureCollection', features: [] };
-
-  const found = occFindNode(selId);
-  if (!found) return { type: 'FeatureCollection', features: [] };
-
-  const node = found.node;
-  let features;
-  if (node.type === 'floor') {
-    features = FLOORS_GEO.features.filter(f => f.properties.floorId === selId);
-  } else {
-    features = [];
-  }
-  return { type: 'FeatureCollection', features };
+  return _filterGeoBySelectedFloor(FLOORS_GEO);
 }
 
 // Add floor polygon sources and layers to the map
@@ -461,21 +535,7 @@ function addFloorLayers() {
 
 // Get filtered room features based on current selection
 function getFilteredRooms() {
-  if (!ROOMS_GEO) return { type: 'FeatureCollection', features: [] };
-  const selId = state.occSelectedId;
-  if (!selId || selId === 'ch') return { type: 'FeatureCollection', features: [] };
-
-  const found = occFindNode(selId);
-  if (!found) return { type: 'FeatureCollection', features: [] };
-
-  const node = found.node;
-  let features;
-  if (node.type === 'floor') {
-    features = ROOMS_GEO.features.filter(f => f.properties.floorId === selId);
-  } else {
-    features = [];
-  }
-  return { type: 'FeatureCollection', features };
+  return _filterGeoBySelectedFloor(ROOMS_GEO);
 }
 
 // Add all room-related sources and layers to the map
@@ -541,21 +601,7 @@ function addRoomLayers() {
 
 // Get filtered asset features based on current selection
 function getFilteredAssets() {
-  if (!ASSETS_GEO) return { type: 'FeatureCollection', features: [] };
-  const selId = state.occSelectedId;
-  if (!selId || selId === 'ch') return { type: 'FeatureCollection', features: [] };
-
-  const found = occFindNode(selId);
-  if (!found) return { type: 'FeatureCollection', features: [] };
-
-  const node = found.node;
-  let features;
-  if (node.type === 'floor') {
-    features = ASSETS_GEO.features.filter(f => f.properties.floorId === selId);
-  } else {
-    features = [];
-  }
-  return { type: 'FeatureCollection', features };
+  return _filterGeoBySelectedFloor(ASSETS_GEO);
 }
 
 // Add all asset-related sources and layers to the map
@@ -1140,7 +1186,8 @@ function occInitMap() {
   const container = document.getElementById('rp-mapbox');
   if (!container) return;
 
-  // Clean up previous map instance
+  // Clean up previous map instance and event listeners
+  if (_occAbort) { _occAbort.abort(); _occAbort = null; }
   if (_searchMarker) { _searchMarker.remove(); _searchMarker = null; }
   if (_occMap) {
     _occMap.remove();
@@ -1154,11 +1201,15 @@ function occInitMap() {
   clearMeasurement();
   _measureDisplay = null;
 
+  // Create AbortController for document/window listeners (cleaned up on next init or nav)
+  _occAbort = new AbortController();
+  const _signal = _occAbort.signal;
+
   _occMap = new maplibregl.Map({
     container: 'rp-mapbox',
     style: MAP_STYLES[state.occMapStyle] ? MAP_STYLES[state.occMapStyle].url : MAP_STYLES['positron'].url,
-    center: [7.9, 47.1],
-    zoom: 7.2,
+    center: DEFAULT_MAP_CENTER,
+    zoom: DEFAULT_MAP_ZOOM,
     preserveDrawingBuffer: true
   });
 
@@ -1185,7 +1236,7 @@ function occInitMap() {
         exitIcon.style.display = isFs ? '' : 'none';
         btn.title = isFs ? 'Vollbild beenden' : 'Vollbild';
         btn.setAttribute('aria-label', btn.title);
-      });
+      }, { signal: _signal });
       return div;
     },
     onRemove() {}
@@ -1399,12 +1450,13 @@ function occInitMap() {
   // ---- Print preview overlay ----
   _printOverlay = document.createElement('div');
   _printOverlay.className = 'rp-print-overlay';
+  const _maskId = 'rp-print-mask-' + Date.now();
   _printOverlay.innerHTML = `
-    <svg><defs><mask id="rp-print-mask">
+    <svg><defs><mask id="${_maskId}">
       <rect width="100%" height="100%" fill="white"/>
       <rect id="rp-print-crop-mask" fill="black"/>
     </mask></defs>
-    <rect width="100%" height="100%" fill="rgba(0,0,0,0.45)" mask="url(#rp-print-mask)"/>
+    <rect width="100%" height="100%" fill="rgba(0,0,0,0.45)" mask="url(#${_maskId})"/>
     </svg>
     <div class="rp-print-crop">
       <div class="rp-print-crop-label"></div>
@@ -1500,7 +1552,7 @@ function occInitMap() {
         if (startBtn) startBtn.textContent = 'Messung starten';
       }
     }
-  });
+  }, { signal: _signal });
 
   // Context menu: copy coordinates
   ctxMenu.querySelector('#rpCtxCoords').addEventListener('click', () => {
@@ -1508,7 +1560,7 @@ function occInitMap() {
     navigator.clipboard.writeText(text).then(() => {
       ctxMenu.querySelector('#rpCtxCoords').classList.add('copied');
       setTimeout(hideContextMenu, 300);
-    });
+    }).catch(() => {});
   });
 
   // Context menu: measure
@@ -1643,7 +1695,7 @@ function occInitMap() {
   // Update preview on window resize
   window.addEventListener('resize', () => {
     if (_printOverlay && _printOverlay.classList.contains('active')) updatePrintPreview();
-  });
+  }, { signal: _signal });
 
   accordion.querySelector('#rpPrintBtn').addEventListener('click', () => {
     const title = accordion.querySelector('#rpPrintTitle').value || 'Karte';
@@ -1662,7 +1714,7 @@ function occInitMap() {
     // Header
     const header = document.createElement('div');
     header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:5mm;padding-bottom:3mm;border-bottom:1px solid #ccc;';
-    header.innerHTML = `<div style="font-size:14pt;font-weight:bold;">${title}</div><div style="font-size:10pt;color:#666;">${new Date().toLocaleDateString('de-CH')}</div>`;
+    header.innerHTML = `<div style="font-size:14pt;font-weight:bold;">${escapeHtml(title)}</div><div style="font-size:10pt;color:#666;">${new Date().toLocaleDateString('de-CH')}</div>`;
     printContainer.appendChild(header);
 
     // Map canvas clone
@@ -1708,6 +1760,8 @@ function occInitMap() {
     printStyles.textContent = `@media print { body > *:not(#rp-print-container) { display: none !important; } #rp-print-container { position: static !important; } @page { size: ${pageSize}; margin: 0; } }`;
     document.head.appendChild(printStyles);
 
+    // Delay before print: allow the browser to render the off-screen print container.
+    // Delay after print: allow the print dialog to fully close before removing the container.
     setTimeout(() => {
       window.print();
       setTimeout(() => {
@@ -1731,7 +1785,7 @@ function occInitMap() {
       const btn = accordion.querySelector('#rpCopyLink');
       btn.textContent = 'Kopiert!';
       setTimeout(() => { btn.textContent = 'Kopieren'; }, 2000);
-    });
+    }).catch(() => {});
   });
   // Update share URL when section opens
   accordion.querySelector('[data-section="teilen"] .rp-accordion__toggle').addEventListener('click', () => {
@@ -1800,7 +1854,7 @@ function occInitMap() {
       stylePanel.classList.remove('rp-style-switcher__panel--show');
       styleBtn.classList.remove('rp-style-switcher__btn--active');
     }
-  });
+  }, { signal: _signal });
 
   styleSwitcher.querySelectorAll('.rp-style-option').forEach(opt => {
     opt.addEventListener('click', () => {
@@ -1989,66 +2043,7 @@ function occInitMap() {
   _occMap.on('style.load', () => {
     if (!BUILDINGS_GEO) return;
     if (_occMap.getSource('buildings')) return; // already loaded
-
-    let filteredGeo = BUILDINGS_GEO;
-    const selId = state.occSelectedId;
-    if (selId && selId !== 'ch') {
-      const found = occFindNode(selId);
-      if (found) {
-        const node = found.node;
-        let buildingIds;
-        if (node.type === 'kanton') buildingIds = (node.children || []).map(b => b.id);
-        else if (node.type === 'building') buildingIds = [node.id];
-        else if (node.type === 'floor') {
-          const parentB = found.path.find(n => n.type === 'building');
-          buildingIds = parentB ? [parentB.id] : [];
-        }
-        if (buildingIds && buildingIds.length) {
-          filteredGeo = { type: 'FeatureCollection', features: BUILDINGS_GEO.features.filter(f => buildingIds.includes(f.properties.buildingId)) };
-        }
-      }
-    }
-    _occMap.addSource('buildings', { type: 'geojson', data: buildingPointsFromGeo(filteredGeo) });
-    _occMap.addSource('building-footprints', { type: 'geojson', data: filteredGeo });
-    _occMap.addLayer({ id: 'building-footprints-fill', type: 'fill', source: 'building-footprints', minzoom: 15, paint: { 'fill-color': '#d73027', 'fill-opacity': 0.15 } });
-    _occMap.addLayer({ id: 'building-footprints-outline', type: 'line', source: 'building-footprints', minzoom: 15, paint: { 'line-color': '#d73027', 'line-width': 2, 'line-opacity': 0.6 } });
-
-    // Layer order: building footprints → floors → rooms → assets → building markers/labels
-    addFloorLayers();
-    addRoomLayers();
-    addAssetLayers();
-
-    _occMap.addLayer({ id: 'building-points', type: 'circle', source: 'buildings', paint: { 'circle-radius': 8, 'circle-color': '#d73027', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' } });
-    _occMap.addLayer({ id: 'building-labels', type: 'symbol', source: 'buildings', minzoom: 14, layout: { 'text-field': ['get', 'objectCode'], 'text-size': 12, 'text-anchor': 'bottom', 'text-offset': [0, -1.2], 'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 } });
-
-    // Terrain DEM source for 3D elevation
-    if (!_occMap.getSource('terrain-dem')) {
-      _occMap.addSource('terrain-dem', {
-        type: 'raster-dem',
-        tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-        encoding: 'terrarium',
-        tileSize: 256,
-        maxzoom: 15
-      });
-    }
-    if (_is3D) _occMap.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
-
-    // Furniture mockup layer
-    if (!_occMap.getSource('furniture-mockup')) {
-      _occMap.addSource('furniture-mockup', { type: 'geojson', data: { type: 'FeatureCollection', features: _furnitureFeatures } });
-      _occMap.addLayer({ id: 'furniture-fills', type: 'fill', source: 'furniture-mockup', paint: { 'fill-color': '#6B7B8D', 'fill-opacity': 0.7 } });
-      _occMap.addLayer({ id: 'furniture-outlines', type: 'line', source: 'furniture-mockup', paint: { 'line-color': '#3d4f5f', 'line-width': 1.5 } });
-      _occMap.addLayer({ id: 'furniture-labels', type: 'symbol', source: 'furniture-mockup', layout: { 'text-field': ['get', 'label'], 'text-size': 9, 'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#fff', 'text-halo-color': '#3d4f5f', 'text-halo-width': 0.5 } });
-    }
-
-    // Edit selection highlight
-    if (!_occMap.getSource('edit-selection')) {
-      _occMap.addSource('edit-selection', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-      _occMap.addLayer({ id: 'edit-selection-outline', type: 'line', source: 'edit-selection', paint: { 'line-color': '#00bfff', 'line-width': 3, 'line-dasharray': [2, 1] } });
-    }
-
-    // Ensure correct z-order: fills/outlines → labels → markers → selection
-    ensureLayerOrder();
+    addAllDataLayers(getFilteredBuildingsGeo());
   });
 
   _occMap.on('load', () => {
@@ -2056,121 +2051,11 @@ function occInitMap() {
 
     // Add sources/layers if not already added by style.load
     if (!_occMap.getSource('buildings')) {
-      // Determine which buildings to show based on current selection
-      let filteredGeo = BUILDINGS_GEO;
-      const selId = state.occSelectedId;
-      if (selId && selId !== 'ch') {
-        const found = occFindNode(selId);
-        if (found) {
-          const node = found.node;
-          let buildingIds;
-          if (node.type === 'kanton') {
-            buildingIds = (node.children || []).map(b => b.id);
-          } else if (node.type === 'building') {
-            buildingIds = [node.id];
-          } else if (node.type === 'floor') {
-            const parentB = found.path.find(n => n.type === 'building');
-            buildingIds = parentB ? [parentB.id] : [];
-          }
-          if (buildingIds && buildingIds.length) {
-            filteredGeo = {
-              type: 'FeatureCollection',
-              features: BUILDINGS_GEO.features.filter(f => buildingIds.includes(f.properties.buildingId))
-            };
-          }
-        }
-      }
-
-      // Point source for markers/labels (derived from centroids)
-      _occMap.addSource('buildings', {
-        type: 'geojson',
-        data: buildingPointsFromGeo(filteredGeo)
-      });
-
-      // Polygon source for building footprints
-      _occMap.addSource('building-footprints', {
-        type: 'geojson',
-        data: filteredGeo
-      });
-
-      // Layer order: building footprints → floors → rooms → assets → building markers/labels
-      _occMap.addLayer({
-        id: 'building-footprints-fill',
-        type: 'fill',
-        source: 'building-footprints',
-        minzoom: 15,
-        paint: { 'fill-color': '#d73027', 'fill-opacity': 0.15 }
-      });
-      _occMap.addLayer({
-        id: 'building-footprints-outline',
-        type: 'line',
-        source: 'building-footprints',
-        minzoom: 15,
-        paint: { 'line-color': '#d73027', 'line-width': 2, 'line-opacity': 0.6 }
-      });
-
-      // Floor layers
-      addFloorLayers();
-
-      // Room layers
-      addRoomLayers();
-
-      // Asset layers
-      addAssetLayers();
-
-      // Building markers/labels on top of all fills
-      _occMap.addLayer({
-        id: 'building-points',
-        type: 'circle',
-        source: 'buildings',
-        paint: { 'circle-radius': 8, 'circle-color': '#d73027', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' }
-      });
-      _occMap.addLayer({
-        id: 'building-labels',
-        type: 'symbol',
-        source: 'buildings',
-        minzoom: 14,
-        layout: {
-          'text-field': ['get', 'objectCode'],
-          'text-size': 12,
-          'text-anchor': 'bottom',
-          'text-offset': [0, -1.2],
-          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
-          'text-allow-overlap': true
-        },
-        paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 }
-      });
-
-      // Terrain DEM source for 3D elevation
-      if (!_occMap.getSource('terrain-dem')) {
-        _occMap.addSource('terrain-dem', {
-          type: 'raster-dem',
-          tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-          encoding: 'terrarium',
-          tileSize: 256,
-          maxzoom: 15
-        });
-      }
-      if (_is3D) _occMap.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
-
-      // Furniture mockup layer
-      if (!_occMap.getSource('furniture-mockup')) {
-        _occMap.addSource('furniture-mockup', { type: 'geojson', data: { type: 'FeatureCollection', features: _furnitureFeatures } });
-        _occMap.addLayer({ id: 'furniture-fills', type: 'fill', source: 'furniture-mockup', paint: { 'fill-color': '#6B7B8D', 'fill-opacity': 0.7 } });
-        _occMap.addLayer({ id: 'furniture-outlines', type: 'line', source: 'furniture-mockup', paint: { 'line-color': '#3d4f5f', 'line-width': 1.5 } });
-        _occMap.addLayer({ id: 'furniture-labels', type: 'symbol', source: 'furniture-mockup', layout: { 'text-field': ['get', 'label'], 'text-size': 9, 'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'], 'text-allow-overlap': true }, paint: { 'text-color': '#fff', 'text-halo-color': '#3d4f5f', 'text-halo-width': 0.5 } });
-      }
-
-      // Edit selection highlight
-      if (!_occMap.getSource('edit-selection')) {
-        _occMap.addSource('edit-selection', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-        _occMap.addLayer({ id: 'edit-selection-outline', type: 'line', source: 'edit-selection', paint: { 'line-color': '#00bfff', 'line-width': 3, 'line-dasharray': [2, 1] } });
-      }
-
-      // Ensure correct z-order: fills/outlines → labels → markers → selection
-      ensureLayerOrder();
+      const filteredGeo = getFilteredBuildingsGeo();
+      addAllDataLayers(filteredGeo);
 
       // Fit map to visible features
+      const selId = state.occSelectedId;
       if (filteredGeo.features.length > 0 && selId && selId !== 'ch') {
         if (filteredGeo.features.length === 1) {
           const coords = filteredGeo.features[0].properties.centroid;
@@ -2207,13 +2092,13 @@ function occInitMap() {
         .setLngLat(lngLat)
         .setHTML(`
           <div class="rp-map-popup">
-            <strong class="rp-map-popup__title">${p.name}</strong>
-            ${p.objectCode ? `<div class="rp-map-popup__code">${p.objectCode}</div>` : ''}
-            ${addressStr ? `<div class="rp-map-popup__row">${addressStr}</div>` : ''}
-            ${p.category ? `<div class="rp-map-popup__row">${p.category}</div>` : ''}
+            <strong class="rp-map-popup__title">${escapeHtml(p.name)}</strong>
+            ${p.objectCode ? `<div class="rp-map-popup__code">${escapeHtml(p.objectCode)}</div>` : ''}
+            ${addressStr ? `<div class="rp-map-popup__row">${escapeHtml(addressStr)}</div>` : ''}
+            ${p.category ? `<div class="rp-map-popup__row">${escapeHtml(p.category)}</div>` : ''}
             ${areaStr ? `<div class="rp-map-popup__row">${areaStr}</div>` : ''}
-            ${p.status ? `<div class="rp-map-popup__row">${p.status}</div>` : ''}
-            <a class="rp-map-popup__link" href="javascript:void(0)" onclick="occSelectBuilding('${buildingId}')">Details anzeigen →</a>
+            ${p.status ? `<div class="rp-map-popup__row">${escapeHtml(p.status)}</div>` : ''}
+            <a class="rp-map-popup__link" href="javascript:void(0)" data-building-id="${escapeHtml(buildingId)}">Details anzeigen →</a>
           </div>
         `)
         .addTo(_occMap);
@@ -2221,6 +2106,15 @@ function occInitMap() {
     _occMap.on('click', 'building-points', handleMarkerClick);
     _occMap.on('click', 'building-labels', handleMarkerClick);
     _occMap.on('click', 'building-footprints-fill', handleMarkerClick);
+
+    // Delegated click for building popup "Details" link
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('[data-building-id]');
+      if (link) {
+        e.preventDefault();
+        occSelectBuilding(link.dataset.buildingId);
+      }
+    }, { signal: _signal });
 
     // Pointer cursor on hover
     ['building-points', 'building-labels', 'building-footprints-fill'].forEach(layer => {
@@ -2240,7 +2134,7 @@ function occInitMap() {
       const centroid = JSON.parse(f.properties.centroid || 'null');
       const lngLat = centroid || e.lngLat;
       hoverPopup.setLngLat(lngLat)
-        .setHTML(`<strong>${f.properties.name}</strong>`)
+        .setHTML(`<strong>${escapeHtml(f.properties.name)}</strong>`)
         .addTo(_occMap);
     };
     const hideHover = () => hoverPopup.remove();
@@ -2265,10 +2159,10 @@ function occInitMap() {
         .setLngLat(e.lngLat)
         .setHTML(`
           <div class="rp-map-popup">
-            <strong class="rp-map-popup__title">${p.nr}</strong>
-            <div class="rp-map-popup__row">${p.type}</div>
-            <div class="rp-map-popup__row">${p.area} m²</div>
-            ${p.workspaces ? `<div class="rp-map-popup__row">${p.workspaces} Arbeitsplätze</div>` : ''}
+            <strong class="rp-map-popup__title">${escapeHtml(p.nr)}</strong>
+            <div class="rp-map-popup__row">${escapeHtml(p.type)}</div>
+            <div class="rp-map-popup__row">${escapeHtml(p.area)} m²</div>
+            ${p.workspaces ? `<div class="rp-map-popup__row">${escapeHtml(p.workspaces)} Arbeitsplätze</div>` : ''}
           </div>
         `)
         .addTo(_occMap);
@@ -2291,11 +2185,11 @@ function occInitMap() {
         .setLngLat(e.lngLat)
         .setHTML(`
           <div class="rp-map-popup">
-            <strong class="rp-map-popup__title">${p.name}</strong>
-            ${p.brand ? `<div class="rp-map-popup__row">${p.brand}</div>` : ''}
-            <div class="rp-map-popup__row">Zustand: ${condLabel}</div>
-            <div class="rp-map-popup__row">Status: ${statusLabel}</div>
-            ${p.acquisitionDate ? `<div class="rp-map-popup__row">Beschafft: ${p.acquisitionDate}</div>` : ''}
+            <strong class="rp-map-popup__title">${escapeHtml(p.name)}</strong>
+            ${p.brand ? `<div class="rp-map-popup__row">${escapeHtml(p.brand)}</div>` : ''}
+            <div class="rp-map-popup__row">Zustand: ${escapeHtml(condLabel)}</div>
+            <div class="rp-map-popup__row">Status: ${escapeHtml(statusLabel)}</div>
+            ${p.acquisitionDate ? `<div class="rp-map-popup__row">Beschafft: ${escapeHtml(p.acquisitionDate)}</div>` : ''}
             ${costStr ? `<div class="rp-map-popup__row">${costStr}</div>` : ''}
           </div>
         `)
@@ -2433,7 +2327,7 @@ function occUpdateView() {
   if (selected) {
     selected.path.forEach(n => {
       const lbl = n.type === 'building' && n.code ? n.code : n.label;
-      bcItems.push([lbl, `(function(){ state.occSelectedId='${n.id}'; state.occExpandedIds.add('${n.id}'); occUpdateView(); occPushHash(); })()`]);
+      bcItems.push([lbl, `occNavigateToNode('${escapeHtml(n.id)}')`]);
     });
     const selNode = selected.node;
     const selLbl = selNode.type === 'building' && selNode.code ? selNode.code : selNode.label;
@@ -2644,7 +2538,7 @@ function occPushHash() {
     }
   }
   // Append map style as query parameter if not default
-  if (state.occMapStyle && state.occMapStyle !== 'light-v11') {
+  if (state.occMapStyle && state.occMapStyle !== 'positron') {
     hash += (hash.includes('?') ? '&' : '?') + 'bg=' + state.occMapStyle;
   }
   history.pushState(null, '', hash);

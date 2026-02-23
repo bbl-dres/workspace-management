@@ -35,10 +35,11 @@ function resolveProductImage(path) {
 
 function resolveProductThumb(path) {
   if (!path) return null;
-  // images/foo.jpg → images/thumbs/foo.jpg
+  // images/foo.png → images/thumbs/foo.jpg
   const parts = path.split('/');
   const filename = parts.pop();
-  return 'assets/' + parts.join('/') + '/thumbs/' + filename;
+  const base = filename.replace(/\.[^.]+$/, '');
+  return 'assets/' + parts.join('/') + '/thumbs/' + base + '.jpg';
 }
 
 function getProductImage(product) {
@@ -154,11 +155,15 @@ function renderCarousel(photos, altText, badgeHtml) {
 function handleShareClick() {
   const url = window.location.href;
   if (navigator.share) {
-    navigator.share({ title: document.title, url: url });
+    navigator.share({ title: document.title, url: url }).catch(() => {});
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(() => {
       showToast('Link in die Zwischenablage kopiert');
+    }).catch(() => {
+      prompt('Link kopieren:', url);
     });
+  } else {
+    prompt('Link kopieren:', url);
   }
 }
 

@@ -357,7 +357,7 @@ function attachScanEvents() {
 
     // Search circular economy items
     const circular = FURNITURE_ITEMS.find(
-      x => x.itemId.toUpperCase() === val || x.inventoryNumber.toUpperCase() === val
+      x => x.itemId?.toUpperCase() === val || x.inventoryNumber?.toUpperCase() === val
     );
     if (circular) {
       navigateTo('item', circular.itemId);
@@ -367,7 +367,7 @@ function attachScanEvents() {
     // Search all inventory (GeoJSON assets)
     if (ASSETS_GEO && ASSETS_GEO.features) {
       const asset = ASSETS_GEO.features.find(
-        f => f.properties.assetId.toUpperCase() === val || f.properties.inventoryNumber.toUpperCase() === val
+        f => f.properties.assetId?.toUpperCase() === val || f.properties.inventoryNumber?.toUpperCase() === val
       );
       if (asset) {
         navigateTo('item', asset.properties.assetId);
@@ -478,8 +478,8 @@ function filterGlobalSearch() {
   );
 
   if (state.searchFilterCategory) {
-    const ids = getAllSubcategoryIds(state.searchFilterCategory);
-    results = results.filter(p => ids.includes(p.category) || ids.includes(p.subcategory));
+    const idSet = new Set(getAllSubcategoryIds(state.searchFilterCategory));
+    results = results.filter(p => idSet.has(p.category) || idSet.has(p.subcategory));
   }
 
   if (state.searchFilterBrand) {

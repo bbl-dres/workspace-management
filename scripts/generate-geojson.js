@@ -19,7 +19,9 @@ const roomsGeoIn = JSON.parse(fs.readFileSync(path.join(dataDir, 'rooms.geojson'
 // ── COORDINATE CONSTANTS ─────────────────────────────────────────────
 // At ~47°N latitude:
 const M_PER_DEG_LAT = 111200;
-const M_PER_DEG_LNG = 75823;
+// Computed at ~47°N: 111200 * cos(47°) ≈ 75823
+const REF_LAT = 47.0;
+const M_PER_DEG_LNG = M_PER_DEG_LAT * Math.cos(REF_LAT * Math.PI / 180);
 
 // ── LAYOUT CONSTANTS (meters) ────────────────────────────────────────
 const ROOM_DEPTH = 5.5;
@@ -73,6 +75,7 @@ async function fetchElevation(lat, lon) {
   const { E, N } = wgs84ToLV95(lat, lon);
   const url = `https://api3.geo.admin.ch/rest/services/height?easting=${E.toFixed(2)}&northing=${N.toFixed(2)}&sr=2056`;
   const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} from Swisstopo height API`);
   const data = await res.json();
   return parseFloat(data.height) || 0;
 }
@@ -275,7 +278,7 @@ for (const floorF of floorsGeoIn.features) {
     const availableForRooms = usableWidth - totalGaps;
 
     // Scale factor if rooms don't fit
-    const scale = totalIdealWidth > availableForRooms
+    const scale = totalIdealWidth > 0 && totalIdealWidth > availableForRooms
       ? availableForRooms / totalIdealWidth
       : 1;
 
@@ -557,10 +560,16 @@ const enrichedBuildings = {
   }))
 };
 
-fs.writeFileSync(path.join(dataDir, 'buildings.geojson'), JSON.stringify(enrichedBuildings, null, 2));
-fs.writeFileSync(path.join(dataDir, 'floors.geojson'), JSON.stringify(floorsGeo, null, 2));
-fs.writeFileSync(path.join(dataDir, 'rooms.geojson'), JSON.stringify(roomsGeo, null, 2));
-fs.writeFileSync(path.join(dataDir, 'assets.geojson'), JSON.stringify(assetsGeo, null, 2));
+// Atomic writes: write to .tmp then rename to prevent partial reads
+function writeJsonAtomic(filePath, data) {
+  const tmp = filePath + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
+  fs.renameSync(tmp, filePath);
+}
+writeJsonAtomic(path.join(dataDir, 'buildings.geojson'), enrichedBuildings);
+writeJsonAtomic(path.join(dataDir, 'floors.geojson'), floorsGeo);
+writeJsonAtomic(path.join(dataDir, 'rooms.geojson'), roomsGeo);
+writeJsonAtomic(path.join(dataDir, 'assets.geojson'), assetsGeo);
 
 console.log(`✓ buildings.geojson: ${enrichedBuildings.features.length} features (+ groundElevation)`);
 console.log(`✓ floors.geojson:  ${floorFeatures.length} features (inset polygons + height)`);

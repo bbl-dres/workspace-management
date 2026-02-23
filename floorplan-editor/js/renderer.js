@@ -211,14 +211,6 @@ class FloorPlanRenderer {
         this.draw();
     }
 
-    /* ── Node Update (Archilogic drawNodeUpdate pattern) ───────────────── */
-
-    drawNodeUpdate(nodeId, style) {
-        // Future: allow per-node style overrides
-        // For now, re-render handles this via hover/selected state
-        this.requestDraw();
-    }
-
     /* ── Projection ────────────────────────────────────────────────────── */
 
     _calculateProjection() {
@@ -256,6 +248,7 @@ class FloorPlanRenderer {
 
     geoToLocal(lon, lat) {
         const p = this.projection;
+        if (!p) return { x: 0, y: 0 };
         return {
             x: (lon - p.centerLon) * p.metersPerDegreeLon,
             y: -(lat - p.centerLat) * p.metersPerDegreeLat, // flip Y
@@ -281,8 +274,8 @@ class FloorPlanRenderer {
     fitView() {
         if (!this.projection) return;
         const padding = 60;
-        const scaleX = (this.displayWidth - padding * 2) / this.projection.widthMeters;
-        const scaleY = (this.displayHeight - padding * 2) / this.projection.heightMeters;
+        const scaleX = (this.displayWidth - padding * 2) / Math.max(this.projection.widthMeters, 0.1);
+        const scaleY = (this.displayHeight - padding * 2) / Math.max(this.projection.heightMeters, 0.1);
         this.zoom = Math.min(scaleX, scaleY);
         this.panX = 0;
         this.panY = 0;
@@ -300,8 +293,8 @@ class FloorPlanRenderer {
             if (local.y > maxY) maxY = local.y;
         }
         const padding = 80;
-        const scaleX = (this.displayWidth - padding * 2) / (maxX - minX);
-        const scaleY = (this.displayHeight - padding * 2) / (maxY - minY);
+        const scaleX = (this.displayWidth - padding * 2) / Math.max(maxX - minX, 0.1);
+        const scaleY = (this.displayHeight - padding * 2) / Math.max(maxY - minY, 0.1);
         this.zoom = Math.min(Math.min(scaleX, scaleY) * 0.85, 150);
         this.panX = -(minX + maxX) / 2 * this.zoom;
         this.panY = -(minY + maxY) / 2 * this.zoom;
@@ -413,6 +406,7 @@ class FloorPlanRenderer {
     _drawGrid() {
         const ctx = this.ctx;
         const spacing = this._gridSpacing();
+        if (spacing <= 0) return;
 
         const topLeft = this.screenToLocal(0, 0);
         const botRight = this.screenToLocal(this.displayWidth, this.displayHeight);
@@ -924,7 +918,7 @@ class FloorPlanRenderer {
         return nice * Math.pow(10, exp);
     }
 
-    /* ── Spatial Queries (Archilogic getResourcesFromPosition pattern) ── */
+    /* ── Spatial Queries ─────────────────────────────────────────────────── */
 
     hitTest(screenX, screenY) {
         // Assets first (on top layer)
@@ -940,21 +934,6 @@ class FloorPlanRenderer {
             }
         }
         return null;
-    }
-
-    getResourcesFromPosition(screenX, screenY) {
-        const result = { spaces: [], assets: [] };
-        for (const room of this.rooms) {
-            if (this._isPointInFeature(screenX, screenY, room)) {
-                result.spaces.push(room);
-            }
-        }
-        for (const asset of this.assets) {
-            if (this._isPointInFeature(screenX, screenY, asset)) {
-                result.assets.push(asset);
-            }
-        }
-        return result;
     }
 
     _isPointInFeature(sx, sy, feature) {
