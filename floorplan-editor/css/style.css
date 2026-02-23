@@ -1299,20 +1299,20 @@ body.fp-edit-mode .fp-header {
     flex-shrink: 0;
 }
 .fp-footer__left {
-    display: flex;
-    gap: 12px;
-}
-.fp-footer__left a {
-    color: var(--color-text-secondary, #6B7280);
-    text-decoration: none;
-}
-.fp-footer__left a:hover {
-    text-decoration: underline;
+    color: var(--color-text-tertiary, #9CA3AF);
 }
 .fp-footer__center {
     font-weight: 700;
     color: #DC2626;
 }
 .fp-footer__right {
-    color: var(--color-text-tertiary, #9CA3AF);
+    display: flex;
+    gap: 12px;
+}
+.fp-footer__right a {
+    color: var(--color-text-secondary, #6B7280);
+    text-decoration: none;
+}
+.fp-footer__right a:hover {
+    text-decoration: underline;
 }
