@@ -822,7 +822,20 @@ class FloorPlanRenderer {
         ctx.fillStyle = '#F59E0B';
         ctx.fill();
 
-        // Center handle (white circle with crosshair)
+        // Rotate handle – small circle with dot at top of ring
+        ctx.beginPath();
+        ctx.arc(cx, cy - R, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        ctx.strokeStyle = '#374151';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx, cy - R, 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = '#374151';
+        ctx.fill();
+
+        // Center move handle – circle with smaller circle inside
         ctx.beginPath();
         ctx.arc(cx, cy, 7, 0, Math.PI * 2);
         ctx.fillStyle = '#FFFFFF';
@@ -830,11 +843,10 @@ class FloorPlanRenderer {
         ctx.strokeStyle = '#374151';
         ctx.lineWidth = 1.5;
         ctx.stroke();
-
-        // Crosshair inside center
         ctx.beginPath();
-        ctx.moveTo(cx - 3.5, cy); ctx.lineTo(cx + 3.5, cy);
-        ctx.moveTo(cx, cy - 3.5); ctx.lineTo(cx, cy + 3.5);
+        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
         ctx.strokeStyle = '#374151';
         ctx.lineWidth = 1;
         ctx.stroke();
@@ -844,6 +856,9 @@ class FloorPlanRenderer {
         if (!this.editMode || !this.selectedAsset) return null;
         const { cx, cy } = this._getAssetScreenCenter(this.selectedAsset);
         const dist = Math.hypot(sx - cx, sy - cy);
+
+        // Rotate handle at top of ring (generous 12px radius)
+        if (Math.hypot(sx - cx, sy - (cy - 55)) < 12) return 'rotate';
 
         // Center handle (generous 14px radius)
         if (dist < 14) return 'center';
