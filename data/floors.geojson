@@ -1035,6 +1035,51 @@
           ]
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "id": "b-2011-4",
+      "properties": {
+        "floorId": "b-2011-4",
+        "buildingId": "b-2011",
+        "name": "4. OG",
+        "nameShort": "4",
+        "levelNumber": 4,
+        "verticalOrder": 4,
+        "areaGross": 4427,
+        "workspaceCount": 79,
+        "roomCount": 85,
+        "groundElevation": 560,
+        "baseHeight": 14,
+        "topHeight": 17.5
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.3870681683,
+              46.9458273717
+            ],
+            [
+              7.3882526308,
+              46.9458273717
+            ],
+            [
+              7.3882526308,
+              46.9465746297
+            ],
+            [
+              7.3870681683,
+              46.9465746297
+            ],
+            [
+              7.3870681683,
+              46.9458273717
+            ]
+          ]
+        ]
+      }
     }
   ]
 }

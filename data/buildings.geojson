@@ -378,6 +378,60 @@
           ]
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "id": "b-2011",
+      "properties": {
+        "buildingId": "b-2011",
+        "siteId": "be",
+        "name": "Fellerstrasse 21",
+        "objectCode": "2011.DM",
+        "address": {
+          "street": "Fellerstrasse 21",
+          "postalCode": "3027",
+          "city": "Bern",
+          "canton": "BE",
+          "country": "CH"
+        },
+        "centroid": [
+          7.387941,
+          46.946539
+        ],
+        "yearBuilt": "",
+        "status": "Gebäude bestehend",
+        "category": "Verwaltungsgebäude",
+        "areaGross": 4427,
+        "photo": "photo-1486406146926-c627a92ad1ab",
+        "groundElevation": 560
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.3870481683,
+              46.9458073717
+            ],
+            [
+              7.3882726308,
+              46.9458073717
+            ],
+            [
+              7.3882726308,
+              46.9465946297
+            ],
+            [
+              7.3870481683,
+              46.9465946297
+            ],
+            [
+              7.3870481683,
+              46.9458073717
+            ]
+          ]
+        ]
+      }
     }
   ]
 }

@@ -41,7 +41,9 @@
       "Read(//c/Users/DavidRasner/Documents/GitHub/workspace-management/**)",
       "Bash(magick:*)",
       "Bash(convert:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(sort -t',' -k1 -n)",
+      "Bash(sort -t',' -k2 -n)"
     ]
   }
 }
