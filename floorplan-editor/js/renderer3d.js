@@ -381,7 +381,7 @@ class FloorPlan3DRenderer {
             const points = [];
             for (let i = 0; i < coords.length; i++) {
                 const p = this._geoTo3D(coords[i][0], coords[i][1]);
-                points.push(new THREE.Vector3(p.x, 0.005, p.z));
+                points.push(new THREE.Vector3(p.x, 0.005, -p.z));
             }
 
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
