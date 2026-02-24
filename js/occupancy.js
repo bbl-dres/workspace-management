@@ -2056,8 +2056,16 @@ function occInitMap() {
 
       // Fit map to visible features
       const selId = state.occSelectedId;
-      if (filteredGeo.features.length > 0 && selId && selId !== 'ch') {
-        if (filteredGeo.features.length === 1) {
+      if (state.occMapZoom && state.occMapCenter) {
+        // Zoom/center from shared URL — use directly
+        _occMap.jumpTo({ center: state.occMapCenter, zoom: state.occMapZoom });
+      } else if (filteredGeo.features.length > 0 && selId && selId !== 'ch') {
+        const found = occFindNode(selId);
+        const nodeType = found ? found.node.type : null;
+        if (nodeType === 'floor') {
+          const centroid = filteredGeo.features[0].properties.centroid;
+          _occMap.jumpTo({ center: centroid, zoom: 18.5 });
+        } else if (filteredGeo.features.length === 1) {
           const coords = filteredGeo.features[0].properties.centroid;
           _occMap.jumpTo({ center: coords, zoom: 17 });
         } else {
@@ -2066,7 +2074,18 @@ function occInitMap() {
           _occMap.fitBounds(bounds, { padding: 80, maxZoom: 15 });
         }
       }
+
+      // Hide building layers when a floor is selected
+      const foundNode = selId ? occFindNode(selId) : null;
+      if (foundNode && foundNode.node.type === 'floor') {
+        ['building-points', 'building-labels', 'building-footprints-fill', 'building-footprints-outline'].forEach(id => {
+          if (_occMap.getLayer(id)) _occMap.setLayoutProperty(id, 'visibility', 'none');
+        });
+      }
     }
+
+    // Silently sync map position to URL on move
+    _occMap.on('moveend', occSyncHashMapState);
 
     // Click popup with building info
     const clickPopup = new maplibregl.Popup({ closeButton: true, closeOnClick: false, offset: 12, maxWidth: '280px' });
@@ -2537,11 +2556,34 @@ function occPushHash() {
       hash += '/' + state.occTab;
     }
   }
-  // Append map style as query parameter if not default
+  const params = new URLSearchParams();
   if (state.occMapStyle && state.occMapStyle !== 'positron') {
-    hash += (hash.includes('?') ? '&' : '?') + 'bg=' + state.occMapStyle;
+    params.set('bg', state.occMapStyle);
   }
+  if (_occMap) {
+    const center = _occMap.getCenter();
+    params.set('z', _occMap.getZoom().toFixed(1));
+    params.set('lat', center.lat.toFixed(6));
+    params.set('lng', center.lng.toFixed(6));
+  }
+  const qs = params.toString();
+  if (qs) hash += '?' + qs;
   history.pushState(null, '', hash);
+}
+
+/** Silently update URL hash with current map position (replaceState, no history entry) */
+function occSyncHashMapState() {
+  if (!_occMap || state.page !== 'occupancy') return;
+  const center = _occMap.getCenter();
+  const rawHash = location.hash.replace('#/', '');
+  const qIdx = rawHash.indexOf('?');
+  const hashPath = qIdx >= 0 ? rawHash.substring(0, qIdx) : rawHash;
+  const params = qIdx >= 0 ? new URLSearchParams(rawHash.substring(qIdx + 1)) : new URLSearchParams();
+  params.set('z', _occMap.getZoom().toFixed(1));
+  params.set('lat', center.lat.toFixed(6));
+  params.set('lng', center.lng.toFixed(6));
+  const qs = params.toString();
+  history.replaceState(null, '', '#/' + hashPath + (qs ? '?' + qs : ''));
 }
 
 function attachOccupancyEvents() {

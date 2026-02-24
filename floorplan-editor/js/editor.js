@@ -250,13 +250,10 @@ class FloorPlanEditor {
                 if (dist > this.DRAG_THRESHOLD) {
                     this.hasDragged = true;
 
-                    // In select mode, drag on empty space = pan
+                    // In select mode, drag always pans (click-without-drag = select)
                     if (this.activeTool === 'select' && !this.isPanning) {
-                        const hit = this.renderer.hitTest(this.dragStart.x, this.dragStart.y);
-                        if (!hit) {
-                            this.isPanning = true;
-                            this.canvas.style.cursor = 'grabbing';
-                        }
+                        this.isPanning = true;
+                        this.canvas.style.cursor = 'grabbing';
                     }
                     // In measure mode, drag on empty space = pan
                     if (this.activeTool === 'measure' && !this.isPanning) {

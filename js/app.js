@@ -199,7 +199,9 @@ let state = {
   occSelectedId: null,
   occExpandedIds: new Set(['ch']),
   occTab: 'map',
-  occMapStyle: 'positron'
+  occMapStyle: 'positron',
+  occMapZoom: null,
+  occMapCenter: null
 };
 
 const MAP_STYLES = {
@@ -581,6 +583,17 @@ function handleHash() {
     // Restore map background style from URL
     const bgFromUrl = hashParams ? hashParams.get('bg') : null;
     state.occMapStyle = (bgFromUrl && MAP_STYLES[bgFromUrl]) ? bgFromUrl : state.occMapStyle;
+    // Restore map position from URL
+    const zFromUrl = hashParams ? hashParams.get('z') : null;
+    const latFromUrl = hashParams ? hashParams.get('lat') : null;
+    const lngFromUrl = hashParams ? hashParams.get('lng') : null;
+    if (zFromUrl && latFromUrl && lngFromUrl) {
+      state.occMapZoom = parseFloat(zFromUrl);
+      state.occMapCenter = [parseFloat(lngFromUrl), parseFloat(latFromUrl)];
+    } else {
+      state.occMapZoom = null;
+      state.occMapCenter = null;
+    }
   } else if (['home', 'shop', 'planning', 'circular', 'scan', 'register', 'charter', 'multispace-module', 'examples', 'cad', 'api-docs', 'cart', 'search'].includes(page)) {
     state.page = page;
     state.subPage = sub;
