@@ -377,10 +377,8 @@ class FloorPlanRenderer {
             this._drawRoom(room, room === this.hoveredRoom, room === this.selectedRoom);
         }
 
-        // Layer 4: Room Labels
-        for (const room of this.rooms) {
-            this._drawRoomLabel(room);
-        }
+        // Layer 4: Room Labels (with overlap culling, largest rooms first)
+        this._drawRoomLabels();
 
         // Layer 5: Assets (furniture)
         for (const asset of this.assets) {
@@ -506,43 +504,89 @@ class FloorPlanRenderer {
 
     /* ── Layer: Room Label ─────────────────────────────────────────────── */
 
-    _drawRoomLabel(room) {
+    _drawRoomLabels() {
         const ctx = this.ctx;
         const ppm = this.zoom;
         if (ppm < 3) return; // too zoomed out
 
-        const coords = room.geometry.coordinates[0];
-        const n = coords.length - 1;
-        let cx = 0, cy = 0;
-        for (let i = 0; i < n; i++) {
-            const local = this.geoToLocal(coords[i][0], coords[i][1]);
-            cx += local.x;
-            cy += local.y;
+        const PAD = 2; // px padding between labels
+        const twoLine = ppm > 6;
+
+        // Pre-compute label info for every room
+        const labels = [];
+        for (const room of this.rooms) {
+            const coords = room.geometry.coordinates[0];
+            const n = coords.length - 1;
+            let cx = 0, cy = 0;
+            for (let i = 0; i < n; i++) {
+                const local = this.geoToLocal(coords[i][0], coords[i][1]);
+                cx += local.x;
+                cy += local.y;
+            }
+            cx /= n;
+            cy /= n;
+            const s = this.localToScreen(cx, cy);
+
+            const nr = room.properties.nr;
+            const area = room.properties.area;
+            let w, h;
+
+            if (twoLine) {
+                ctx.font = '600 11px "Noto Sans", sans-serif';
+                const w1 = ctx.measureText(nr).width;
+                ctx.font = '400 10px "Noto Sans", sans-serif';
+                const w2 = ctx.measureText(area + ' m\u00B2').width;
+                w = Math.max(w1, w2);
+                h = 24; // spans from y-8-6 to y+7+5
+            } else {
+                ctx.font = '500 9px "Noto Sans", sans-serif';
+                w = ctx.measureText(nr).width;
+                h = 12;
+            }
+
+            labels.push({
+                sx: s.x, sy: s.y, nr, area, roomArea: area,
+                // bounding box (with padding)
+                x0: s.x - w / 2 - PAD, y0: s.y - h / 2 - PAD,
+                x1: s.x + w / 2 + PAD, y1: s.y + h / 2 + PAD,
+            });
         }
-        cx /= n;
-        cy /= n;
-        const s = this.localToScreen(cx, cy);
 
-        const nr = room.properties.nr;
-        const area = room.properties.area;
+        // Sort largest rooms first so their labels get priority
+        labels.sort((a, b) => b.roomArea - a.roomArea);
 
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        // Place labels, skipping those that overlap already-placed ones
+        const placed = [];
+        for (const lb of labels) {
+            // Skip if off-screen
+            if (lb.x1 < 0 || lb.x0 > this.displayWidth || lb.y1 < 0 || lb.y0 > this.displayHeight) continue;
 
-        if (ppm > 6) {
-            // Show room number + area
-            ctx.font = '600 11px "Noto Sans", sans-serif';
-            ctx.fillStyle = '#374151';
-            ctx.fillText(nr, s.x, s.y - 8);
+            let overlaps = false;
+            for (const p of placed) {
+                if (lb.x0 < p.x1 && lb.x1 > p.x0 && lb.y0 < p.y1 && lb.y1 > p.y0) {
+                    overlaps = true;
+                    break;
+                }
+            }
+            if (overlaps) continue;
 
-            ctx.font = '400 10px "Noto Sans", sans-serif';
-            ctx.fillStyle = '#6B7280';
-            ctx.fillText(area + ' m²', s.x, s.y + 7);
-        } else {
-            // Just room number
-            ctx.font = '500 9px "Noto Sans", sans-serif';
-            ctx.fillStyle = '#374151';
-            ctx.fillText(nr, s.x, s.y);
+            placed.push(lb);
+
+            // Draw
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            if (twoLine) {
+                ctx.font = '600 11px "Noto Sans", sans-serif';
+                ctx.fillStyle = '#374151';
+                ctx.fillText(lb.nr, lb.sx, lb.sy - 8);
+                ctx.font = '400 10px "Noto Sans", sans-serif';
+                ctx.fillStyle = '#6B7280';
+                ctx.fillText(lb.area + ' m\u00B2', lb.sx, lb.sy + 7);
+            } else {
+                ctx.font = '500 9px "Noto Sans", sans-serif';
+                ctx.fillStyle = '#374151';
+                ctx.fillText(lb.nr, lb.sx, lb.sy);
+            }
         }
     }
 
