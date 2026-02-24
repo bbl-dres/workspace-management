@@ -982,6 +982,12 @@ class FloorPlan3DRenderer {
         this._gizmoGroup.position.copy(center);
     }
 
+    /** Public: re-sync a single asset's 3D mesh from its current GeoJSON coords */
+    updateAsset(asset) {
+        this._rebuildAssetMesh(asset);
+        this._updateGizmoPosition();
+    }
+
     _rebuildAssetMesh(asset) {
         // Find and remove old mesh
         const idx = this.assetMeshes.findIndex(e => e.feature === asset);

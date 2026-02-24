@@ -1138,6 +1138,14 @@ function onAssetPlaced(e) {
 function onAssetMoved(e) {
     if (!state.editMode || !e.detail) return;
     const asset = e.detail;
+
+    // Sync between 2D and 3D renderers
+    if (state.viewMode === '2d' && renderer3d) {
+        renderer3d.updateAsset(asset);
+    } else if (state.viewMode !== '2d') {
+        renderer.draw();
+    }
+
     const posXInput = document.getElementById('editPosX');
     const posZInput = document.getElementById('editPosZ');
     if (posXInput && posZInput) {
