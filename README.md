@@ -23,6 +23,15 @@ A single-page application (SPA) prototype for the Swiss Federal Office for Build
   <img src="assets/Preview2.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
+**Floor Plan Editor:** https://bbl-dres.github.io/workspace-management/floorplan-editor/index.html#/b-2011/b-2011-4
+
+<p align="center">
+  <img src="assets/Preview4.jpg" width="45%" style="vertical-align: top;"/>
+  <img src="assets/Preview5.jpg" width="45%" style="vertical-align: top;"/>
+</p>
+
+
+
 ## Tech Stack
 
 - **Vanilla HTML / CSS / JavaScript** — no frameworks or build tools
