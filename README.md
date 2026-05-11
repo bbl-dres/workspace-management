@@ -16,6 +16,8 @@
 
 A single-page application (SPA) prototype for the Swiss Federal Office for Buildings and Logistics (BBL). It manages workspace infrastructure — furniture ordering, office planning, circular economy, and building occupancy.
 
+## Preview
+
 **Live Demo:** https://bbl-dres.github.io/workspace-management/
 
 <p align="center">
@@ -29,8 +31,6 @@ A single-page application (SPA) prototype for the Swiss Federal Office for Build
   <img src="assets/Preview4.jpg" width="45%" style="vertical-align: top;"/>
   <img src="assets/Preview5.jpg" width="45%" style="vertical-align: top;"/>
 </p>
-
-
 
 ## Tech Stack
 
