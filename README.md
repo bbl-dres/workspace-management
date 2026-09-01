@@ -5,10 +5,10 @@
 [![Demo](https://img.shields.io/badge/demo-GitHub%20Pages-2ea44f?logo=github&logoColor=white)](https://bbl-dres.github.io/workspace-management/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A single-page BBL prototype for furniture ordering, workspace planning, circular reuse, and building occupancy.
-
 > [!CAUTION]
 > This is an unofficial mockup for demonstration purposes only. All records are fictional, not every function is implemented, and it is not intended for production use.
+
+A single-page BBL prototype for furniture ordering, workspace planning, circular reuse, and building occupancy.
 
 ## Demo
 
