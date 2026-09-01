@@ -16,12 +16,10 @@ A single-page BBL prototype for furniture ordering, workspace planning, circular
 
 **Floor-plan editor:** https://bbl-dres.github.io/workspace-management/floorplan-editor/index.html#/b-2011/b-2011-4
 
-<table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-  <tr>
-    <td width="50%" valign="top"><img src="assets/preview-1.jpg" alt="Workspace Management furniture catalogue with category filters and product cards" width="100%"/></td>
-    <td width="50%" valign="top"><img src="assets/preview-4.jpg" alt="Workspace Management floor-plan editor showing color-coded rooms and floor metrics" width="100%"/></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/preview-1.jpg" alt="Workspace Management furniture catalogue with category filters and product cards" width="49%"/>
+  <img src="assets/preview-4.jpg" alt="Workspace Management floor-plan editor showing color-coded rooms and floor metrics" width="49%"/>
+</p>
 
 ## Features
 
